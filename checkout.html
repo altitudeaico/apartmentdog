@@ -3,82 +3,63 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Checkout — The Apartment Dog Guide</title>
+<title>Checkout — Bored Dog Club</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,600&family=Mulish:wght@400;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
-</head>
-<body>
-<header class="hero" style="padding:36px 0 0">
-  <div class="wrap">
-    <div class="brandline">
-      <svg class="logo" viewBox="0 0 64 64" fill="#D0623C"><ellipse cx="20" cy="20" rx="7" ry="9"/><ellipse cx="44" cy="20" rx="7" ry="9"/><ellipse cx="10" cy="36" rx="6" ry="8"/><ellipse cx="54" cy="36" rx="6" ry="8"/><path d="M32 30c-9 0-16 7-16 15 0 6 5 9 10 8 3-1 4-2 6-2s3 1 6 2c5 1 10-2 10-8 0-8-7-15-16-15z"/></svg>
-      <span class="bn">The Indoor Dog Co.</span>
-    </div>
-  </div>
-</header>
-
-<section class="pagepad">
-  <div class="wrap">
-    <div class="sec-head" style="margin-bottom:26px">
-      <div class="eyebrow">Almost there</div>
-      <h2 class="big">Complete your order</h2>
-      <p class="muted">Instant download &bull; 30-day happy-dog guarantee &bull; secure checkout</p>
-    </div>
-
-    <div class="co-grid">
-      <div>
-        <div class="co-card">
-          <div class="field"><label for="name">Your name</label><input id="name" type="text" placeholder="Jane Smith" autocomplete="name"></div>
-          <div class="field"><label for="email">Email (where we send the guide)</label><input id="email" type="email" placeholder="you@email.com" autocomplete="email"></div>
-          <!-- Payment fields are provided by your checkout processor (Stripe / Payhip / Gumroad) -->
-          <div class="field"><label>Card details</label><input type="text" placeholder="Card number — connect your processor here" disabled></div>
-
-          <!-- ORDER BUMP -->
-          <div class="bump">
-            <label>
-              <input type="checkbox" id="bump" onchange="recalc()">
-              <span>
-                <span class="bh">✚ Yes — add the 30-Day Enrichment Plan for just £9</span>
-                <p>You've got the games. This turns them into a done-for-you daily plan: one game a day for 30 days, building week by week, with a tick-off tracker so you never have to think about what to do next. Most owners add this — it's what makes the habit actually stick. <b>One-time £9, normally £19.</b></p>
-              </span>
-            </label>
-          </div>
-
-          <button class="btn" style="width:100%; justify-content:center" onclick="go()">Complete order — £<span id="btnTotal">14</span> →</button>
-          <p class="btn-sub center" style="margin-top:14px">🔒 Secure checkout. Instant access. 30-day money-back guarantee.</p>
-        </div>
-      </div>
-
-      <div>
-        <div class="summary">
-          <h3 style="font-family:'Fraunces';font-size:22px;margin-bottom:14px">Order summary</h3>
-          <div class="sumrow"><span>50 Brain Games for the Apartment Dog</span><span>£14</span></div>
-          <div class="sumrow" id="bumpRow" style="display:none"><span>30-Day Enrichment Plan</span><span>£9</span></div>
-          <div class="sumrow total"><span>Total</span><span>£<span id="sumTotal">14</span></span></div>
-          <p class="muted" style="font-size:14px;margin-top:14px">You'll get an instant download link by email the moment you order.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<footer><div class="wrap"><div>© The Indoor Dog Co.</div><div class="fnav"><a href="index.html">← Back</a></div></div></footer>
-
+<!-- Meta Pixel Code -->
 <script>
-  function recalc(){
-    var on=document.getElementById('bump').checked;
-    var total=14+(on?9:0);
-    document.getElementById('btnTotal').textContent=total;
-    document.getElementById('sumTotal').textContent=total;
-    document.getElementById('bumpRow').style.display=on?'flex':'none';
-  }
-  function go(){
-    var bump=document.getElementById('bump').checked?'1':'0';
-    // Wire this to your real processor. For now, continue to the one-time offer.
-    window.location.href='upsell.html?bump='+bump;
-  }
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1235699329623868');
+fbq('track', 'PageView');
+fbq('track', 'InitiateCheckout');
 </script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=1235699329623868&ev=PageView&noscript=1"/></noscript>
+<!-- End Meta Pixel Code -->
+<style>
+  .co-wrap{max-width:640px;margin:0 auto;padding:40px 16px 60px}
+  .co-head{text-align:center;margin-bottom:24px}
+  .co-brand{font-family:Georgia,serif;font-size:13px;font-weight:bold;letter-spacing:3px;color:#C0563F;text-transform:uppercase}
+  .co-h1{font-family:Georgia,serif;font-size:28px;color:#2E2620;margin:14px 0 8px;line-height:1.2}
+  .co-sub{font-family:Arial,Helvetica,sans-serif;font-size:15.5px;color:#7A6A5A;line-height:1.5;max-width:46ch;margin:0 auto}
+  .co-reassure{display:flex;justify-content:center;gap:22px;flex-wrap:wrap;margin:18px 0 26px;font-family:Arial,Helvetica,sans-serif;font-size:13.5px;color:#6E8A46;font-weight:700}
+  .co-form{background:#FFFDF8;border:1px solid #EBDDC8;border-radius:16px;padding:8px;overflow:hidden}
+  .co-form iframe{width:100%;min-height:980px;border:none;border-radius:10px;display:block}
+</style>
+</head>
+<body style="background:#FBF4E9">
+<div class="co-wrap">
+  <div class="co-head">
+    <div class="co-brand">Bored Dog Club</div>
+    <div class="co-h1">You're one step from a calmer dog 🐾</div>
+    <div class="co-sub">Enter your details below to get <b>50 Brain Games for the Apartment Dog</b>, instant download, keep it forever.</div>
+    <div class="co-reassure"><span>🔒 Secure checkout</span><span>⚡ Instant access</span><span>🐾 Any dog, any age</span></div>
+  </div>
+  <div class="co-form">
+    <iframe
+      src="https://api.leadconnectorhq.com/widget/form/DcaBFJW2FJaFtOr9fMtu"
+      id="inline-DcaBFJW2FJaFtOr9fMtu"
+      data-layout="{'id':'INLINE'}"
+      data-trigger-type="alwaysShow"
+      data-trigger-value=""
+      data-activation-type="alwaysActivated"
+      data-activation-value=""
+      data-deactivation-type="neverDeactivate"
+      data-deactivation-value=""
+      data-form-name="50 Brain Games"
+      data-height="961"
+      data-layout-iframe-id="inline-DcaBFJW2FJaFtOr9fMtu"
+      data-form-id="DcaBFJW2FJaFtOr9fMtu"
+      title="50 Brain Games">
+    </iframe>
+  </div>
+</div>
+<script src="https://link.msgsndr.com/js/form_embed.js"></script>
 </body>
 </html>
