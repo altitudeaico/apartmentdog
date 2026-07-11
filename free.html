@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Free: 5 Two-Minute Games to Calm a Bored Dog</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,600&family=Mulish:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1235699329623868');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=1235699329623868&ev=PageView&noscript=1"/></noscript>
+<!-- End Meta Pixel Code -->
+</head>
+<body>
+<section class="pagepad" style="padding-top:56px">
+  <div class="wrap">
+    <div class="oto" style="max-width:620px">
+      <svg width="56" height="56" viewBox="0 0 64 64" fill="#D0623C" style="margin:0 auto 16px"><ellipse cx="20" cy="20" rx="7" ry="9"/><ellipse cx="44" cy="20" rx="7" ry="9"/><ellipse cx="10" cy="36" rx="6" ry="8"/><ellipse cx="54" cy="36" rx="6" ry="8"/><path d="M32 30c-9 0-16 7-16 15 0 6 5 9 10 8 3-1 4-2 6-2s3 1 6 2c5 1 10-2 10-8 0-8-7-15-16-15z"/></svg>
+      <div class="eyebrow" style="margin-bottom:12px;color:#6E8A46">Free guide</div>
+      <h1 style="font-size:34px;line-height:1.12">5 Two-Minute Games to Calm a Bored Dog Tonight</h1>
+      <p class="lead2" style="max-width:50ch;margin:14px auto 4px">No garden, no kit, no training needed. Just five simple games, about two minutes each, using things you already have at home. A tired mind is a calm dog.</p>
+    </div>
+
+    <div class="stack" style="max-width:520px;margin:26px auto 0">
+      <div class="price-box" style="padding:26px 28px">
+        <ul style="list-style:none;padding:0;margin:0 0 20px;font-size:15.5px;color:#3A3128;line-height:2;text-align:left">
+          <li>🐾 Beat the 7pm pacing and zoomies</li>
+          <li>🐾 Works for any dog, any age</li>
+          <li>🐾 Uses stuff already in your kitchen</li>
+          <li>🐾 See him settle by bedtime</li>
+        </ul>
+        <input id="email" type="email" inputmode="email" placeholder="Your best email"
+          style="width:100%;padding:15px 16px;font-size:16px;border:2px solid #E0D2BE;border-radius:12px;background:#fff;color:#2E2620;outline:none;margin-bottom:6px">
+        <div id="err" style="display:none;color:#C0563F;font-size:13px;text-align:left;margin-bottom:8px">Please enter a valid email.</div>
+        <button id="go" class="btn" style="width:100%;margin-top:10px">Send me the games 🐾</button>
+        <p class="btn-sub" style="margin-top:12px">Instant access. No spam, unsubscribe anytime.</p>
+      </div>
+    </div>
+  </div>
+</section>
+<script>
+var WEBHOOK="https://services.leadconnectorhq.com/hooks/ZbgycnS81grCZ9KWMTLF/webhook-trigger/f2927597-1c49-4e01-b1ba-0e95c3927a98";
+var btn=document.getElementById('go'), field=document.getElementById('email'), err=document.getElementById('err');
+function valid(e){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);}
+function submit(){
+  var email=field.value.trim();
+  if(!valid(email)){err.style.display='block';return;}
+  err.style.display='none'; btn.disabled=true; btn.textContent='Sending... 🐾';
+  try{ fbq('track','Lead'); }catch(e){}
+  fetch(WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({email:email,source:'lead-magnet-5games',tag:'lead-magnet'})})
+    .catch(function(){}).finally(function(){
+      window.location.href='free-thankyou.html';
+    });
+}
+btn.addEventListener('click',submit);
+field.addEventListener('keydown',function(e){if(e.key==='Enter')submit();});
+</script>
+</body>
+</html>
