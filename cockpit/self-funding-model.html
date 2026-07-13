@@ -79,6 +79,43 @@
   td.hit{color:var(--green);font-weight:700}
   .foot-note{margin-top:26px;padding-top:20px;border-top:1px solid var(--line);font-size:12px;color:var(--dim);line-height:1.6}
   .foot-note b{color:var(--mid)}
+
+  @media(max-width:760px){
+    html{-webkit-text-size-adjust:100%}
+    body{-webkit-tap-highlight-color:transparent}
+    .wrap{padding:16px 12px 72px}
+    header{padding-bottom:14px;margin-bottom:14px}
+    h1{font-size:24px}
+    .lede{font-size:12.5px;margin-top:9px}
+    .grid{display:flex;flex-direction:column;gap:14px}
+    .grid > div:last-child{display:contents}
+    /* pinned swipeable results strip */
+    .kpis{order:-1;position:sticky;top:0;z-index:40;display:flex;overflow-x:auto;gap:9px;
+      margin:0 -12px;padding:11px 12px;background:rgba(12,15,21,.94);
+      -webkit-backdrop-filter:saturate(150%) blur(12px);backdrop-filter:saturate(150%) blur(12px);
+      border-bottom:1px solid var(--line);-webkit-overflow-scrolling:touch;scrollbar-width:none}
+    .kpis::-webkit-scrollbar{display:none}
+    .kpi{min-width:148px;flex:0 0 auto;padding:12px}
+    .kpi .num{font-size:20px}
+    .kpi .cap{font-size:9px;margin-bottom:6px}
+    .kpi .foot{font-size:9.5px;margin-top:5px}
+    .panel{padding:16px;border-radius:16px}
+    .edge{padding:15px 16px}
+    .edge .l .big{font-size:32px}
+    .edge .r{text-align:left;max-width:none}
+    .ctrl{margin-bottom:20px}
+    .ctrl label{font-size:13.5px}
+    input[type=range]{height:6px;border-radius:6px}
+    input[type=range]::-webkit-slider-thumb{width:28px;height:28px}
+    input[type=range]::-moz-range-thumb{width:28px;height:28px}
+    .glabel{font-size:11px}
+    .help{font-size:12px}
+    .chart-head .legend{font-size:10px;gap:10px}
+    table{display:block;overflow-x:auto;white-space:nowrap;font-size:11px}
+    th,td{padding:7px 8px}
+    .verdict{font-size:13px}
+    .glossary .d,.foot-note{font-size:12px}
+  }
 </style>
 </head>
 <body>
