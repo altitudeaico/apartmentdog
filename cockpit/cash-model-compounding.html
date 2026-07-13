@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Compounding Machine — Cash Model</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0C0F15; --panel:#141922; --panel2:#0F141C; --line:#242C39;
+    --hi:#EAEEF4; --mid:#8593A6; --dim:#5A6675;
+    --gold:#E8B84B; --green:#4ADE80; --risk:#F87462; --blue:#5B93E8;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--hi);font-family:'Inter',system-ui,sans-serif;line-height:1.5;
+    background-image:radial-gradient(circle at 10% -10%, rgba(232,184,75,.06), transparent 42%),radial-gradient(circle at 100% 0%, rgba(74,222,128,.05), transparent 35%);min-height:100vh}
+  .mono{font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums}
+  .wrap{max-width:1180px;margin:0 auto;padding:34px 22px 70px}
+  header{border-bottom:1px solid var(--line);padding-bottom:22px;margin-bottom:26px}
+  .kick{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
+  h1{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:33px;letter-spacing:-.02em;line-height:1.08}
+  h1 .thin{color:var(--mid);font-weight:400}
+  .lede{color:var(--mid);font-size:14.5px;margin-top:12px;max-width:74ch}
+  .lede b{color:var(--hi);font-weight:500}
+
+  .grid{display:grid;grid-template-columns:340px 1fr;gap:22px;align-items:start}
+  @media(max-width:860px){.grid{grid-template-columns:1fr}}
+  .panel{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:14px;padding:20px}
+  .panel h2{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;color:var(--hi);margin-bottom:2px}
+  .panel .sub{font-size:11.5px;color:var(--dim);margin-bottom:16px}
+  .group{margin-bottom:18px}.group:last-child{margin-bottom:0}
+  .glabel{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;display:block;opacity:.85}
+  .ctrl{margin-bottom:15px}.ctrl:last-child{margin-bottom:0}
+  .ctrl .row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px}
+  .ctrl label{font-size:12.5px;color:var(--mid)}
+  .ctrl .val{font-family:'JetBrains Mono',monospace;font-weight:500;font-size:13.5px;color:var(--hi)}
+  .ctrl.hero .row label{color:var(--gold);font-weight:500}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:3px;border-radius:3px;background:#2A3444;outline:none}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;background:var(--gold);cursor:pointer;border:2px solid #0C0F15;box-shadow:0 0 0 1px var(--gold)}
+  input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;background:var(--gold);cursor:pointer;border:2px solid #0C0F15}
+  input#rein::-webkit-slider-thumb{background:var(--green);box-shadow:0 0 0 1px var(--green)}
+  input#rein::-moz-range-thumb{background:var(--green)}
+
+  .edge{background:linear-gradient(135deg,rgba(232,184,75,.12),rgba(74,222,128,.06));border:1px solid rgba(232,184,75,.3);border-radius:14px;padding:18px 20px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px}
+  .edge .l .cap{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--mid);margin-bottom:6px}
+  .edge .l .big{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:38px;letter-spacing:-.02em;line-height:1;color:var(--gold)}
+  .edge .l .big small{font-size:17px;color:var(--mid);font-weight:400}
+  .edge .r{font-size:12.5px;color:var(--mid);max-width:44ch;text-align:right}
+  .edge .r b{color:var(--hi)}
+
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+  @media(max-width:680px){.kpis{grid-template-columns:repeat(2,1fr)}}
+  .kpi{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:12px;padding:15px 15px 13px}
+  .kpi .cap{font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--dim);margin-bottom:9px;line-height:1.35}
+  .kpi .num{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:24px;letter-spacing:-.02em;line-height:1}
+  .kpi .foot{font-size:10.5px;color:var(--mid);margin-top:7px}
+  .kpi.green .num{color:var(--green)} .kpi.gold .num{color:var(--gold)} .kpi.risk .num{color:var(--risk)}
+
+  .chartpanel{margin-bottom:18px}
+  .chart-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;flex-wrap:wrap;gap:8px}
+  .legend{display:flex;gap:15px;font-size:11px;color:var(--mid);align-items:center;flex-wrap:wrap}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .dot{width:9px;height:9px;border-radius:2px;display:inline-block}
+  .dash{width:14px;height:0;border-top:2px dashed var(--blue);display:inline-block}
+  svg{width:100%;height:auto;display:block}
+  .verdict{border-radius:12px;padding:15px 18px;font-size:13.5px;line-height:1.6;border:1px solid var(--line);background:var(--panel2)}
+  .verdict b{color:var(--hi)} .verdict .tag{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;display:block;margin-bottom:7px;color:var(--green)}
+  table{width:100%;border-collapse:collapse;margin-top:14px;font-family:'JetBrains Mono',monospace;font-size:11.5px}
+  th,td{text-align:right;padding:7px 9px;border-bottom:1px solid var(--line)}
+  th{color:var(--dim);font-weight:500;font-size:10px;letter-spacing:.08em;text-transform:uppercase}
+  td:first-child,th:first-child{text-align:left;color:var(--mid)}
+  td.neg{color:var(--risk)} td.pos{color:var(--green)} td.base{color:var(--green)}
+  .foot-note{margin-top:26px;padding-top:20px;border-top:1px solid var(--line);font-size:12px;color:var(--dim);line-height:1.6}
+  .foot-note b{color:var(--mid)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="kick">Altitude · Compounding Engine</div>
+    <h1>The Compounding Machine <span class="thin">/ reinvest the spread</span></h1>
+    <p class="lede">A trader doesn't bank profit mid-run, they <b>reinvest it to compound the position</b>. Your edge is the gap between what a buyer costs (<b>CAC</b>) and what they're worth (<b>LTV</b>). Feed the surplus back into ads and the machine grows itself. The <b>membership</b> is the compounding principal: members stack every month. Drag <b>reinvest</b> from 0 (linear) upward and watch the gold curve pull away from the dashed line.</p>
+  </header>
+
+  <div class="grid">
+    <div class="panel">
+      <h2>Levers</h2>
+      <div class="sub">Reinvest is the compounding dial.</div>
+
+      <div class="group">
+        <span class="glabel">The compounding dial</span>
+        <div class="ctrl hero"><div class="row"><label>Reinvest % of revenue → ads</label><span class="val" id="v_rein">50%</span></div><input type="range" id="rein" min="0" max="100" step="5" value="50"></div>
+        <div class="ctrl"><div class="row"><label>Seed ad budget / month</label><span class="val" id="v_seed">£3,000</span></div><input type="range" id="seed" min="500" max="12000" step="250" value="3000"></div>
+      </div>
+
+      <div class="group">
+        <span class="glabel">Acquisition</span>
+        <div class="ctrl"><div class="row"><label>Blended CAC</label><span class="val" id="v_cac">£15.00</span></div><input type="range" id="cac" min="8" max="40" step="0.5" value="15"></div>
+        <div class="ctrl"><div class="row"><label>Months to run</label><span class="val" id="v_mo">6</span></div><input type="range" id="mo" min="3" max="12" step="1" value="6"></div>
+      </div>
+
+      <div class="group">
+        <span class="glabel">Ladder economics</span>
+        <div class="ctrl"><div class="row"><label>Front-end order</label><span class="val" id="v_aov">£17.00</span></div><input type="range" id="aov" min="14" max="30" step="0.5" value="17"></div>
+        <div class="ctrl"><div class="row"><label>Climb to £39 System</label><span class="val" id="v_sys">25%</span></div><input type="range" id="sys" min="0" max="60" step="1" value="25"></div>
+        <div class="ctrl"><div class="row"><label>Climb to £97 rung</label><span class="val" id="v_p97">8%</span></div><input type="range" id="p97" min="0" max="30" step="1" value="8"></div>
+      </div>
+
+      <div class="group">
+        <span class="glabel">The compounding principal</span>
+        <div class="ctrl"><div class="row"><label>Take £20/mo membership</label><span class="val" id="v_mem">12%</span></div><input type="range" id="mem" min="0" max="40" step="1" value="12"></div>
+        <div class="ctrl"><div class="row"><label>Monthly churn</label><span class="val" id="v_churn">10%</span></div><input type="range" id="churn" min="2" max="30" step="1" value="10"></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="edge">
+        <div class="l"><div class="cap">Your edge · return per acquisition</div><div class="big mono" id="e_mult">0.0<small>×</small></div></div>
+        <div class="r" id="e_txt"></div>
+      </div>
+
+      <div class="kpis">
+        <div class="kpi green"><div class="cap">Recurring base<br>by end (MRR)</div><div class="num mono" id="k_mrr">£0</div><div class="foot" id="k_mrr_f">the compounding part</div></div>
+        <div class="kpi gold"><div class="cap">Collected<br>compounding</div><div class="num mono" id="k_comp">£0</div><div class="foot" id="k_comp_f"></div></div>
+        <div class="kpi"><div class="cap">Collected<br>linear (0% reinv)</div><div class="num mono" id="k_lin">£0</div><div class="foot">for comparison</div></div>
+        <div class="kpi risk"><div class="cap">Max float<br>at risk</div><div class="num mono" id="k_float">£0</div><div class="foot" id="k_float_f">cushion to commit</div></div>
+      </div>
+
+      <div class="panel chartpanel">
+        <div class="chart-head">
+          <div><h2>Compounding vs linear · cumulative collected</h2><div class="sub">Same seed, same edge. The only difference is reinvesting the surplus.</div></div>
+          <div class="legend">
+            <span><i class="dot" style="background:var(--gold)"></i>compound</span>
+            <span><i class="dash"></i>linear</span>
+            <span><i class="dot" style="background:var(--green)"></i>MRR base</span>
+          </div>
+        </div>
+        <svg id="chart" viewBox="0 0 800 320" preserveAspectRatio="xMidYMid meet"></svg>
+      </div>
+
+      <div id="verdict" class="verdict"></div>
+
+      <div class="panel" style="margin-top:18px">
+        <h2>Month by month · compounding path</h2>
+        <div class="sub">Ad spend grows as reinvested surplus feeds back in. Watch buyers and the recurring base climb together.</div>
+        <table id="tbl"><thead><tr><th>Month</th><th>Ad spend</th><th>Buyers</th><th>MRR base</th><th>Revenue in</th><th>Cash position</th></tr></thead><tbody></tbody></table>
+      </div>
+
+      <div class="foot-note">
+        <b>The insight.</b> Linear income is a straight line: fixed budget, flat buyers, flat growth. Compounding curves upward because each month's surplus buys next month's buyers, and the membership base stacks on top of itself every month (new members minus churn). The recurring base is the only part that keeps paying after you stop spending, and the only part that gives the business a sellable multiple. Push reinvest too high and the float deepens, so size it against the cushion you can actually commit while Conquer holds your life. The edge multiple (LTV ÷ CAC) is the interest rate on the whole machine; everything you do to widen it, lower CAC, deepen the ladder, raise retention, compounds harder.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const gbp=(n,d=0)=>'£'+Number(n).toLocaleString('en-GB',{minimumFractionDigits:d,maximumFractionDigits:d});
+['rein','seed','cac','mo','aov','sys','p97','mem','churn'].forEach(i=>$(i).addEventListener('input',render));
+
+function run(reinPct){
+  const cac=+$('cac').value, seed=+$('seed').value, mo=+$('mo').value, aov=+$('aov').value;
+  const sysR=+$('sys').value/100, p97R=+$('p97').value/100, memR=+$('mem').value/100, churn=+$('churn').value/100;
+  const backOnce=sysR*39+p97R*97;
+  let base=0, cum=0, minCum=0, rows=[], nb=[], totalRev=0, totalAd=0, totalBuyers=0;
+  for(let m=1;m<=mo;m++){
+    const adSpend = seed + reinPct*(m>1?rows[m-2].rev:0);
+    const newB=adSpend/cac; nb[m]=newB; totalBuyers+=newB;
+    base = base*(1-churn) + newB*memR;
+    let rev = newB*aov + (m>1?nb[m-1]*backOnce:0) + base*20;
+    const net=rev-adSpend; cum+=net; if(cum<minCum)minCum=cum;
+    totalRev+=rev; totalAd+=adSpend;
+    rows.push({m,adSpend,newB,base,rev,net,cum});
+  }
+  return {rows,totalRev,totalAd,banked:totalRev-totalAd,floatRisk:Math.max(0,-minCum),endBase:base,totalBuyers,cac,aov,sysR,p97R,memR,churn};
+}
+function ltvOf(r){ const memLife = r.churn>0?1/r.churn:0; return r.aov + r.sysR*39 + r.p97R*97 + r.memR*20*memLife; }
+
+function drawChart(comp,lin){
+  const W=800,H=320,padL=58,padR=20,padT=18,padB=34, mo=comp.rows.length;
+  const compC=comp.rows.map(d=>d.cum>0?d.cum:0), compCum=[]; let s=0; comp.rows.forEach(d=>{s+=d.rev;compCum.push(s);});
+  let sl=0; const linCum=[]; lin.rows.forEach(d=>{sl+=d.rev;linCum.push(sl);});
+  const baseArr=comp.rows.map(d=>d.base*20);
+  const maxY=Math.max(...compCum,...linCum,1);
+  const maxBase=Math.max(...baseArr,1);
+  const x=m=>padL+(m-1)/Math.max(mo-1,1)*(W-padL-padR);
+  const y=v=>padT+(1-v/maxY)*(H-padT-padB);
+  const yB=v=>padT+(1-v/maxBase)*(H-padT-padB);
+  let svg=`<defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#E8B84B" stop-opacity="0.22"/><stop offset="100%" stop-color="#E8B84B" stop-opacity="0"/></linearGradient>
+    <linearGradient id="gb" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#4ADE80" stop-opacity="0.18"/><stop offset="100%" stop-color="#4ADE80" stop-opacity="0"/></linearGradient></defs>`;
+  // y gridlines
+  for(let i=0;i<=3;i++){ const v=maxY*i/3, yy=y(v); svg+=`<line x1="${padL}" y1="${yy}" x2="${W-padR}" y2="${yy}" stroke="#1E2632" stroke-width="1"/>`;
+    svg+=`<text x="${padL-8}" y="${yy+3}" fill="#5A6675" font-size="10" text-anchor="end" font-family="JetBrains Mono">${gbp(Math.round(v))}</text>`; }
+  // MRR base area (green, scaled to its own max, drawn low)
+  let bpath=`M ${x(1)} ${H-padB}`; comp.rows.forEach(d=> bpath+=` L ${x(d.m)} ${yB(d.base*20)}`); bpath+=` L ${x(mo)} ${H-padB} Z`;
+  svg+=`<path d="${bpath}" fill="url(#gb)"/>`;
+  let bline='M '+x(1)+' '+yB(comp.rows[0].base*20); comp.rows.forEach(d=> bline+=` L ${x(d.m)} ${yB(d.base*20)}`);
+  svg+=`<path d="${bline}" fill="none" stroke="#4ADE80" stroke-width="1.5" opacity="0.7"/>`;
+  // linear cumulative (dashed blue)
+  let lp='M '+x(1)+' '+y(linCum[0]); linCum.forEach((v,i)=> lp+=` L ${x(i+1)} ${y(v)}`);
+  svg+=`<path d="${lp}" fill="none" stroke="#5B93E8" stroke-width="2" stroke-dasharray="5 4" opacity="0.85"/>`;
+  // compound cumulative (gold area+line)
+  let cp=`M ${x(1)} ${H-padB}`; compCum.forEach((v,i)=> cp+=` L ${x(i+1)} ${y(v)}`); cp+=` L ${x(mo)} ${H-padB} Z`;
+  svg+=`<path d="${cp}" fill="url(#g)"/>`;
+  let cl='M '+x(1)+' '+y(compCum[0]); compCum.forEach((v,i)=> cl+=` L ${x(i+1)} ${y(v)}`);
+  svg+=`<path d="${cl}" fill="none" stroke="#E8B84B" stroke-width="2.6"/>`;
+  comp.rows.forEach((d,i)=>{ svg+=`<circle cx="${x(d.m)}" cy="${y(compCum[i])}" r="3.2" fill="#E8B84B"/>`;
+    svg+=`<text x="${x(d.m)}" y="${H-12}" fill="#5A6675" font-size="10" text-anchor="middle" font-family="JetBrains Mono">M${d.m}</text>`; });
+  // end labels
+  svg+=`<text x="${x(mo)-4}" y="${y(compCum[mo-1])-9}" fill="#E8B84B" font-size="10.5" text-anchor="end" font-family="JetBrains Mono">${gbp(Math.round(compCum[mo-1]))}</text>`;
+  svg+=`<text x="${x(mo)-4}" y="${y(linCum[mo-1])+15}" fill="#5B93E8" font-size="10.5" text-anchor="end" font-family="JetBrains Mono">${gbp(Math.round(linCum[mo-1]))}</text>`;
+  $('chart').innerHTML=svg;
+}
+
+function render(){
+  $('v_rein').textContent=$('rein').value+'%';
+  $('v_seed').textContent=gbp(+$('seed').value);
+  $('v_cac').textContent=gbp(+$('cac').value,2);
+  $('v_mo').textContent=$('mo').value;
+  $('v_aov').textContent=gbp(+$('aov').value,2);
+  $('v_sys').textContent=$('sys').value+'%';
+  $('v_p97').textContent=$('p97').value+'%';
+  $('v_mem').textContent=$('mem').value+'%';
+  $('v_churn').textContent=$('churn').value+'%';
+
+  const comp=run(+$('rein').value/100);
+  const lin=run(0);
+  const ltv=ltvOf(comp), mult=ltv/comp.cac;
+
+  $('e_mult').innerHTML=mult.toFixed(1)+'<small>×</small>';
+  $('e_txt').innerHTML=`Each buyer costs <b>${gbp(comp.cac,2)}</b> and is worth <b>${gbp(ltv,0)}</b> over their life. That is your interest rate. Above ~3× you have a real edge worth compounding hard.`;
+
+  $('k_mrr').textContent=gbp(Math.round(comp.endBase*20));
+  $('k_mrr_f').textContent=Math.round(comp.endBase)+' members × £20/mo';
+  $('k_comp').textContent=gbp(Math.round(comp.totalRev));
+  const uplift=comp.totalRev-lin.totalRev;
+  $('k_comp_f').textContent=uplift>0?('+'+gbp(Math.round(uplift))+' vs linear'):'set reinvest above 0';
+  $('k_lin').textContent=gbp(Math.round(lin.totalRev));
+  $('k_float').textContent=gbp(Math.round(comp.floatRisk));
+  $('k_float_f').textContent=comp.floatRisk<=0?'front end self-funds':'deepest dip';
+
+  drawChart(comp,lin);
+
+  const tb=$('tbl').querySelector('tbody'); tb.innerHTML='';
+  comp.rows.forEach(d=>{ const tr=document.createElement('tr');
+    tr.innerHTML=`<td>Month ${d.m}</td><td>${gbp(Math.round(d.adSpend))}</td><td>${Math.round(d.newB)}</td><td class="base">${Math.round(d.base)}</td><td>${gbp(Math.round(d.rev))}</td><td class="${d.cum<0?'neg':'pos'}">${gbp(Math.round(d.cum))}</td>`;
+    tb.appendChild(tr); });
+
+  const v=$('verdict');
+  const rein=+$('rein').value;
+  let msg;
+  if(rein===0){ msg=`Reinvest is at <b>0%</b>, this is the flat line. You're banking every pound instead of compounding it. Push the green dial up and watch the gold curve lift away. Even 40-50% reinvest changes the shape of the year.`; }
+  else { msg=`Reinvesting <b>${rein}%</b> of revenue turns ${gbp(Math.round(lin.totalRev))} (linear) into <b>${gbp(Math.round(comp.totalRev))}</b> collected, and builds a <b>${gbp(Math.round(comp.endBase*20))}/month</b> recurring base that keeps paying after the spend stops. The float you carry to do it is <b>${gbp(Math.round(comp.floatRisk))}</b>. That recurring base is the re-ratable asset, the part a buyer would pay a multiple for.`; }
+  v.innerHTML=`<span class="tag">Compounding engine</span>${msg}`;
+}
+render();
+</script>
+</body>
+</html>
