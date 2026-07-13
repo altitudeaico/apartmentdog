@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Time to Self-Funding — Machine Model</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0C0F15;--panel:#141922;--panel2:#0F141C;--line:#242C39;--hi:#EAEEF4;--mid:#8593A6;--dim:#5A6675;--gold:#E8B84B;--green:#4ADE80;--risk:#F87462;--blue:#5B93E8}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--hi);font-family:'Inter',system-ui,sans-serif;line-height:1.5;background-image:radial-gradient(circle at 10% -10%,rgba(74,222,128,.06),transparent 42%),radial-gradient(circle at 100% 0%,rgba(232,184,75,.05),transparent 35%);min-height:100vh}
+  .mono{font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums}
+  .wrap{max-width:1180px;margin:0 auto;padding:34px 22px 70px}
+  header{border-bottom:1px solid var(--line);padding-bottom:22px;margin-bottom:26px}
+  .kick{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--green);margin-bottom:12px}
+  h1{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:33px;letter-spacing:-.02em;line-height:1.08}
+  h1 .thin{color:var(--mid);font-weight:400}
+  .lede{color:var(--mid);font-size:14.5px;margin-top:12px;max-width:76ch}
+  .lede b{color:var(--hi);font-weight:500}
+  .grid{display:grid;grid-template-columns:340px 1fr;gap:22px;align-items:start}
+  @media(max-width:860px){.grid{grid-template-columns:1fr}}
+  .panel{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:14px;padding:20px}
+  .panel h2{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;color:var(--hi);margin-bottom:2px}
+  .panel .sub{font-size:11.5px;color:var(--dim);margin-bottom:16px}
+  .group{margin-bottom:18px}.group:last-child{margin-bottom:0}
+  .glabel{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--green);margin-bottom:12px;display:block;opacity:.85}
+  .ctrl{margin-bottom:15px}.ctrl:last-child{margin-bottom:0}
+  .ctrl .row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px}
+  .ctrl label{font-size:12.5px;color:var(--mid)}
+  .ctrl .val{font-family:'JetBrains Mono',monospace;font-weight:500;font-size:13.5px;color:var(--hi)}
+  .help{font-size:11px;line-height:1.45;color:var(--dim);margin-top:6px}
+  .help b{color:var(--mid);font-weight:500}
+  .kpi .cap .q{color:var(--green);cursor:help;font-weight:700}
+  .glossary{margin-top:18px}
+  .glossary .term{padding:12px 0;border-bottom:1px solid var(--line)}
+  .glossary .term:last-child{border-bottom:none}
+  .glossary .t{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--gold);letter-spacing:.04em}
+  .glossary .d{font-size:12.5px;color:var(--mid);line-height:1.55;margin-top:4px}
+  .glossary .d b{color:var(--hi);font-weight:500}
+  .ctrl.hero .row label{color:var(--green);font-weight:500}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:3px;border-radius:3px;background:#2A3444;outline:none}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;background:var(--gold);cursor:pointer;border:2px solid #0C0F15;box-shadow:0 0 0 1px var(--gold)}
+  input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;background:var(--gold);cursor:pointer;border:2px solid #0C0F15}
+  input.velo::-webkit-slider-thumb{background:var(--green);box-shadow:0 0 0 1px var(--green)}
+  input.velo::-moz-range-thumb{background:var(--green)}
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+  @media(max-width:680px){.kpis{grid-template-columns:repeat(2,1fr)}}
+  .kpi{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:12px;padding:15px 15px 13px}
+  .kpi .cap{font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--dim);margin-bottom:9px;line-height:1.35}
+  .kpi .num{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:25px;letter-spacing:-.02em;line-height:1}
+  .kpi .foot{font-size:10.5px;color:var(--mid);margin-top:7px}
+  .kpi.green{border-color:rgba(74,222,128,.35)}.kpi.green .num{color:var(--green)}
+  .kpi.gold .num{color:var(--gold)} .kpi .num small{font-size:14px;color:var(--mid);font-weight:400}
+  .chartpanel{margin-bottom:18px}
+  .chart-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;flex-wrap:wrap;gap:8px}
+  .legend{display:flex;gap:15px;font-size:11px;color:var(--mid);align-items:center;flex-wrap:wrap}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .dot{width:9px;height:9px;border-radius:2px;display:inline-block}
+  .dash{width:14px;border-top:2px dashed var(--gold);display:inline-block}
+  svg{width:100%;height:auto;display:block}
+  .verdict{border-radius:12px;padding:15px 18px;font-size:13.5px;line-height:1.6;border:1px solid var(--line);background:var(--panel2);margin-top:0}
+  .verdict b{color:var(--hi)}.verdict .tag{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;display:block;margin-bottom:7px;color:var(--green)}
+  table{width:100%;border-collapse:collapse;margin-top:14px;font-family:'JetBrains Mono',monospace;font-size:11.5px}
+  th,td{text-align:right;padding:7px 9px;border-bottom:1px solid var(--line)}
+  th{color:var(--dim);font-weight:500;font-size:10px;letter-spacing:.08em;text-transform:uppercase}
+  td:first-child,th:first-child{text-align:left;color:var(--mid)}
+  td.hit{color:var(--green);font-weight:700}
+  .foot-note{margin-top:26px;padding-top:20px;border-top:1px solid var(--line);font-size:12px;color:var(--dim);line-height:1.6}
+  .foot-note b{color:var(--mid)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="kick">Altitude · Self-Funding Engine</div>
+    <h1>Time to Self-Funding <span class="thin">/ when the machine feeds itself</span></h1>
+    <p class="lede">Option 2, drilled in. You seed a small monthly top-up; the machine returns cash; you recycle it. The question is <b>how many months until the machine throws off enough on its own to fund £5k, then £15k, a month</b> without your top-up. The hidden lever is not lifetime value, it's <b>velocity</b>: how much of each buyer's worth lands in the first 30 days. Drag it and watch the crossover move.</p>
+  </header>
+
+  <div class="grid">
+    <div class="panel">
+      <h2>Levers</h2>
+      <div class="sub">Velocity is the one that moves the date most.</div>
+
+      <div class="group">
+        <span class="glabel">The velocity lever</span>
+        <div class="ctrl hero"><div class="row"><label>Cash back in first 30 days</label><span class="val" id="v_early">40%</span></div><input type="range" class="velo" id="early" min="15" max="80" step="5" value="40"><div class="help">How much of a buyer's total worth comes back in the <b>first 30 days</b> (front-end + bump + fast upsells). The single biggest lever on how soon the machine self-funds.</div></div>
+        <div class="ctrl"><div class="row"><label>Rest drips over (months)</label><span class="val" id="v_tail">5</span></div><input type="range" id="tail" min="2" max="9" step="1" value="5"><div class="help">How many months the <b>rest</b> of a buyer's value drips in over (membership payments, later climbs).</div></div>
+      </div>
+
+      <div class="group">
+        <span class="glabel">Your fuel</span>
+        <div class="ctrl"><div class="row"><label>Monthly top-up you inject</label><span class="val" id="v_top">£1,250</span></div><input type="range" id="top" min="0" max="4000" step="250" value="1250"><div class="help">The money <b>you</b> put in each month from your own pocket (your ~£1,250 float). Your fuel until the machine takes over.</div></div>
+        <div class="ctrl"><div class="row"><label>One-time seed (commission)</label><span class="val" id="v_seed">£0</span></div><input type="range" id="seed" min="0" max="10000" step="500" value="0"><div class="help">A one-off lump you drop in at the start (e.g. the <b>commission</b>). Optional. It speeds everything up but isn't required.</div></div>
+        <div class="ctrl"><div class="row"><label>Reinvest rate</label><span class="val" id="v_rein">90%</span></div><input type="range" id="rein" min="50" max="100" step="5" value="90"><div class="help">How much of the returned cash you <b>plough back</b> into ads vs bank as profit. High early = faster compounding.</div></div>
+      </div>
+
+      <div class="group">
+        <span class="glabel">The machine</span>
+        <div class="ctrl"><div class="row"><label>Blended CAC</label><span class="val" id="v_cac">£15.00</span></div><input type="range" id="cac" min="8" max="40" step="0.5" value="15"><div class="help"><b>CAC = Cost to get one buyer</b> via ads. Spend £150, get 10 buyers, CAC is £15. Lower is better.</div></div>
+        <div class="ctrl"><div class="row"><label>Lifetime value per buyer</label><span class="val" id="v_ltv">£58</span></div><input type="range" id="ltv" min="20" max="100" step="1" value="58"><div class="help"><b>LTV = Lifetime Value</b>. What one buyer is worth across everything they ever buy (guide + bump + System + membership). Higher is better.</div></div>
+        <div class="ctrl"><div class="row"><label>Horizon (months)</label><span class="val" id="v_mo">12</span></div><input type="range" id="mo" min="6" max="18" step="1" value="12"><div class="help">How many months into the future the model runs.</div></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="kpis">
+        <div class="kpi green"><div class="cap">Self-funds<br>£5k / month</div><div class="num mono" id="k_m5">–</div><div class="foot">machine covers it</div></div>
+        <div class="kpi green"><div class="cap">Self-funds<br>£15k / month</div><div class="num mono" id="k_m15">–</div><div class="foot">full scale</div></div>
+        <div class="kpi gold"><div class="cap">Your capital<br>to get there</div><div class="num mono" id="k_cap">£0</div><div class="foot" id="k_cap_f">total injected</div></div>
+        <div class="kpi"><div class="cap">Banked by<br>end of horizon</div><div class="num mono" id="k_bank">£0</div><div class="foot" id="k_bank_f"></div></div>
+      </div>
+
+      <div class="panel chartpanel">
+        <div class="chart-head">
+          <div><h2>Monthly cash the machine throws off</h2><div class="sub">When the green line clears a threshold, the machine self-funds that spend level.</div></div>
+          <div class="legend"><span><i class="dot" style="background:var(--green)"></i>machine output/mo</span><span><i class="dash"></i>£5k / £15k lines</span></div>
+        </div>
+        <svg id="chart" viewBox="0 0 800 300" preserveAspectRatio="xMidYMid meet"></svg>
+      </div>
+
+      <div id="verdict" class="verdict"></div>
+
+      <div class="panel" style="margin-top:18px">
+        <h2>Month by month</h2>
+        <div class="sub">Your top-up shrinks as a share of spend until the machine carries itself.</div>
+        <table id="tbl"><thead><tr><th>Month</th><th>You inject</th><th>Ad spend</th><th>Buyers</th><th>Machine output</th></tr></thead><tbody></tbody></table>
+      </div>
+
+      <div class="panel glossary" style="margin-top:18px">
+        <h2>Plain-English glossary</h2>
+        <div class="sub">Every term on this page, in normal words.</div>
+        <div class="term"><div class="t">CAC — Customer Acquisition Cost</div><div class="d">What it costs in ads to get <b>one buyer</b>. Spend £150 on ads, get 10 buyers, your CAC is £15. You want it low.</div></div>
+        <div class="term"><div class="t">LTV — Lifetime Value</div><div class="d">What one buyer is worth to you in <b>total</b>, across everything they ever buy (the guide, the bump, the System, months of membership). You want it high.</div></div>
+        <div class="term"><div class="t">The edge / the spread</div><div class="d">The gap between LTV and CAC. At £15 CAC and £58 LTV your edge is ~<b>3.9x</b>, each buyer is worth nearly four times what they cost. This is the engine of the whole thing.</div></div>
+        <div class="term"><div class="t">Velocity (cash back in first 30 days)</div><div class="d">How <b>fast</b> a buyer's value comes back, not just how much. Two buyers worth £58 each are very different if one pays most of it now and one dribbles it over months. Fast cash is what lets you buy next month's ads sooner.</div></div>
+        <div class="term"><div class="t">Reinvest / recycle</div><div class="d">Ploughing returned cash <b>back into more ads</b> instead of banking it, so the machine grows itself. Like a snowball.</div></div>
+        <div class="term"><div class="t">Machine output</div><div class="d">The cash that <b>comes back to you each month</b> that you can spend on ads again. It's arrived cash, not profit and not lifetime value. When it clears £5k, the machine can fund £5k of ads on its own.</div></div>
+        <div class="term"><div class="t">Self-funding / crossover</div><div class="d">The month the machine throws off enough on its own to pay for its next ads <b>without your top-up</b>. The whole goal here.</div></div>
+        <div class="term"><div class="t">MRR — Monthly Recurring Revenue</div><div class="d">The predictable money in <b>every month</b> from the £20 membership. 460 members = £9,200 MRR. The part that compounds and makes the business sellable.</div></div>
+        <div class="term"><div class="t">Float</div><div class="d">The money you have <b>out in the market</b> on ads at any moment, spent before the revenue comes back. Your cushion-at-risk.</div></div>
+      </div>
+
+      <div class="foot-note">
+        <b>Why velocity beats lifetime value here.</b> Two machines can have the same £58 lifetime value, but the one that returns more of it in the first 30 days reaches self-funding far sooner, because that cash comes back in time to buy next month's buyers. So for Option 2, the fastest lever is not the membership (it drips over months), it's the immediate upsells: the order bump and the System offer that convert in the first 48 hours. Push the velocity dial and watch the crossover months drop. Everything here still rides on the real CAC and take-rates the live campaigns are about to report; drop those in and the crossover becomes a date, not an estimate.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const gbp=(n,d=0)=>'£'+Number(n).toLocaleString('en-GB',{minimumFractionDigits:d,maximumFractionDigits:d});
+['early','tail','top','seed','rein','cac','ltv','mo'].forEach(i=>$(i).addEventListener('input',render));
+
+function run(){
+  const early=+$('early').value/100, tail=+$('tail').value, top=+$('top').value, seed=+$('seed').value,
+        rein=+$('rein').value/100, cac=+$('cac').value, ltv=+$('ltv').value, months=+$('mo').value;
+  const ret=new Array(months+tail+3).fill(0);
+  let warchest=0, banked=0, injected=0, rows=[], m5=null, m15=null, capAtM5=0;
+  for(let m=1;m<=months;m++){
+    const inject = top + (m===1?seed:0); injected+=inject; warchest+=inject;
+    const output = ret[m];               // cash the machine returns this month
+    warchest += output;
+    const adSpend = rein*warchest; banked += (1-rein)*warchest; warchest=0;
+    const buyers = adSpend/cac;
+    const rev = buyers*ltv;
+    ret[m+1]+= rev*early;                 // fast cash lands next month
+    const deferred=rev*(1-early);
+    for(let k=1;k<=tail;k++) ret[m+1+k]+=deferred/tail;
+    if(m5===null && output>=5000){ m5=m; capAtM5=injected; }
+    if(m15===null && output>=15000){ m15=m; }
+    rows.push({m,inject,adSpend,buyers,output});
+  }
+  return {rows,months,banked,injected,m5,m15,capAtM5,top};
+}
+
+function drawChart(r){
+  const W=800,H=300,padL=56,padR=18,padT=20,padB=34,mo=r.months;
+  const out=r.rows.map(d=>d.output);
+  const maxY=Math.max(...out,16000);
+  const x=m=>padL+(m-1)/Math.max(mo-1,1)*(W-padL-padR);
+  const y=v=>padT+(1-v/maxY)*(H-padT-padB);
+  let svg='';
+  for(let i=0;i<=3;i++){const v=maxY*i/3,yy=y(v);svg+=`<line x1="${padL}" y1="${yy}" x2="${W-padR}" y2="${yy}" stroke="#1E2632"/><text x="${padL-8}" y="${yy+3}" fill="#5A6675" font-size="10" text-anchor="end" font-family="JetBrains Mono">${gbp(Math.round(v))}</text>`;}
+  // threshold lines
+  [[5000,'£5k'],[15000,'£15k']].forEach(([v,lab])=>{const yy=y(v);svg+=`<line x1="${padL}" y1="${yy}" x2="${W-padR}" y2="${yy}" stroke="#E8B84B" stroke-width="1.3" stroke-dasharray="5 4" opacity="0.7"/><text x="${W-padR}" y="${yy-5}" fill="#E8B84B" font-size="10" text-anchor="end" font-family="JetBrains Mono">${lab}</text>`;});
+  // area + line of machine output
+  let area=`M ${x(1)} ${H-padB}`; r.rows.forEach(d=>area+=` L ${x(d.m)} ${y(d.output)}`); area+=` L ${x(mo)} ${H-padB} Z`;
+  svg+=`<defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#4ADE80" stop-opacity="0.25"/><stop offset="100%" stop-color="#4ADE80" stop-opacity="0"/></linearGradient></defs>`;
+  svg+=`<path d="${area}" fill="url(#g)"/>`;
+  let line='M '+x(1)+' '+y(out[0]); r.rows.forEach(d=>line+=` L ${x(d.m)} ${y(d.output)}`);
+  svg+=`<path d="${line}" fill="none" stroke="#4ADE80" stroke-width="2.6"/>`;
+  r.rows.forEach(d=>{svg+=`<circle cx="${x(d.m)}" cy="${y(d.output)}" r="3" fill="#4ADE80"/><text x="${x(d.m)}" y="${H-12}" fill="#5A6675" font-size="10" text-anchor="middle" font-family="JetBrains Mono">M${d.m}</text>`;});
+  // crossover markers
+  if(r.m5){const d=r.rows[r.m5-1];svg+=`<circle cx="${x(r.m5)}" cy="${y(d.output)}" r="6" fill="none" stroke="#E8B84B" stroke-width="2"/>`;}
+  if(r.m15){const d=r.rows[r.m15-1];svg+=`<circle cx="${x(r.m15)}" cy="${y(d.output)}" r="6" fill="none" stroke="#E8B84B" stroke-width="2"/>`;}
+  $('chart').innerHTML=svg;
+}
+
+function render(){
+  $('v_early').textContent=$('early').value+'%';
+  $('v_tail').textContent=$('tail').value;
+  $('v_top').textContent=gbp(+$('top').value);
+  $('v_seed').textContent=gbp(+$('seed').value);
+  $('v_rein').textContent=$('rein').value+'%';
+  $('v_cac').textContent=gbp(+$('cac').value,2);
+  $('v_ltv').textContent=gbp(+$('ltv').value);
+  $('v_mo').textContent=$('mo').value;
+
+  const r=run();
+  $('k_m5').innerHTML = r.m5? ('Month '+r.m5) : '<small>not in range</small>';
+  $('k_m15').innerHTML = r.m15? ('Month '+r.m15) : '<small>not in range</small>';
+  $('k_cap').textContent = gbp(Math.round(r.capAtM5||r.injected));
+  $('k_cap_f').textContent = r.m5? ('injected by month '+r.m5) : 'over full horizon';
+  $('k_bank').textContent = gbp(Math.round(r.banked));
+  $('k_bank_f').textContent = r.months+' months, skimmed profit';
+
+  drawChart(r);
+
+  const tb=$('tbl').querySelector('tbody'); tb.innerHTML='';
+  r.rows.forEach(d=>{const tr=document.createElement('tr');
+    const hit5=d.output>=5000, hit15=d.output>=15000;
+    tr.innerHTML=`<td>Month ${d.m}</td><td>${gbp(Math.round(d.inject))}</td><td>${gbp(Math.round(d.adSpend))}</td><td>${Math.round(d.buyers)}</td><td class="${hit15?'hit':(hit5?'hit':'')}">${gbp(Math.round(d.output))}</td>`;
+    tb.appendChild(tr);});
+
+  const v=$('verdict');
+  if(r.m5){
+    v.innerHTML=`<span class="tag">Crossover</span>The machine self-funds <b>£5k/month by month ${r.m5}</b>${r.m15?` and <b>£15k/month by month ${r.m15}</b>`:''}. To get there you inject about <b>${gbp(Math.round(r.capAtM5))}</b> of your own fuel (your top-up${(+$('seed').value>0)?' plus the seed':''}). After that, the machine carries its own scaling and your top-up becomes optional. Push the green velocity dial up and both dates pull earlier, that is the single biggest lever you control.`;
+  } else {
+    v.innerHTML=`<span class="tag">Not yet crossing</span>At these settings the machine does not reach £5k/month of self-generated cash within the horizon. Raise the velocity (more cash back in the first 30 days via immediate upsells), widen the spread (lower CAC or higher LTV), or add a one-time seed to get it over the line.`;
+  }
+}
+render();
+</script>
+</body>
+</html>
