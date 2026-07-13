@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Altitude Cockpit — Cash Models</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0C0F15;--panel:#141922;--panel2:#0F141C;--line:#242C39;--hi:#EAEEF4;--mid:#8593A6;--dim:#5A6675;--gold:#E8B84B;--green:#4ADE80;--blue:#5B93E8}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--hi);font-family:'Inter',system-ui,sans-serif;line-height:1.5;background-image:radial-gradient(circle at 12% -10%,rgba(232,184,75,.07),transparent 42%),radial-gradient(circle at 100% 0%,rgba(74,222,128,.05),transparent 35%);min-height:100vh}
+  .wrap{max-width:820px;margin:0 auto;padding:44px 22px 70px}
+  .kick{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
+  h1{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:36px;letter-spacing:-.02em;line-height:1.08}
+  .lede{color:var(--mid);font-size:15px;margin-top:14px;max-width:60ch}
+  .cards{display:grid;gap:16px;margin-top:34px}
+  a.card{display:block;text-decoration:none;background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:14px;padding:22px 24px;transition:border-color .15s,transform .15s}
+  a.card:hover{border-color:var(--gold);transform:translateY(-2px)}
+  .card .n{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);letter-spacing:.1em}
+  .card h2{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:600;color:var(--hi);margin:6px 0 8px}
+  .card p{font-size:13.5px;color:var(--mid);line-height:1.55}
+  .card .go{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--gold);margin-top:12px;display:inline-block}
+  h3{font-family:'Space Grotesk',sans-serif;font-size:15px;margin:40px 0 4px}
+  .gsub{font-size:12px;color:var(--dim);margin-bottom:14px}
+  .term{padding:12px 0;border-bottom:1px solid var(--line)}
+  .term:last-child{border-bottom:none}
+  .t{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--gold);letter-spacing:.04em}
+  .d{font-size:12.5px;color:var(--mid);line-height:1.55;margin-top:4px}
+  .d b{color:var(--hi);font-weight:500}
+  footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--line);font-size:12px;color:var(--dim)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="kick">Altitude · Cockpit</div>
+  <h1>Cash Models</h1>
+  <p class="lede">Three instruments for the £140k decision. Every figure is an assumption until the live campaigns replace it, then these turn guesses into dates.</p>
+
+  <div class="cards">
+    <a class="card" href="cash-model.html">
+      <div class="n">01 · Viability</div>
+      <h2>The £100k Machine</h2>
+      <p>Can it hit the target? Punch in CAC, ladder take-rates and monthly budget; see buyers needed, the cushion at risk, and what you bank by year-end.</p>
+      <span class="go">Open →</span>
+    </a>
+    <a class="card" href="cash-model-compounding.html">
+      <div class="n">02 · Compounding</div>
+      <h2>The Compounding Machine</h2>
+      <p>Linear vs compounding, side by side. Drag the reinvest dial and watch the curve pull away. Shows the recurring membership base stacking, the part that compounds and sells.</p>
+      <span class="go">Open →</span>
+    </a>
+    <a class="card" href="self-funding-model.html">
+      <div class="n">03 · Self-funding</div>
+      <h2>Time to Self-Funding</h2>
+      <p>Option 2, drilled in. When does the machine throw off enough on its own to fund £5k, then £15k, a month, without your top-up? The velocity lever, plus a plain-English glossary.</p>
+      <span class="go">Open →</span>
+    </a>
+  </div>
+
+  <h3>Plain-English glossary</h3>
+  <div class="gsub">Every term across the models, in normal words.</div>
+  <div class="term"><div class="t">CAC — Customer Acquisition Cost</div><div class="d">What it costs in ads to get <b>one buyer</b>. Spend £150, get 10 buyers, CAC is £15. Lower is better.</div></div>
+  <div class="term"><div class="t">LTV — Lifetime Value</div><div class="d">What one buyer is worth in <b>total</b>, across everything they ever buy. Higher is better.</div></div>
+  <div class="term"><div class="t">The edge / spread</div><div class="d">The gap between LTV and CAC (£58 vs £15 = ~<b>3.9x</b>). The engine of the business, the interest rate on your money.</div></div>
+  <div class="term"><div class="t">AOV — Average Order Value</div><div class="d">Average spend in a <b>single</b> purchase (~£17 front-end). One transaction, not lifetime.</div></div>
+  <div class="term"><div class="t">ROAS — Return On Ad Spend</div><div class="d">Revenue back per £1 of ads. £1 in, £3 back = 3x. The edge as a ratio.</div></div>
+  <div class="term"><div class="t">CPL — Cost Per Lead</div><div class="d">Like CAC but for a <b>free opt-in</b> (an email), not a buyer. Want it very low (£1–4).</div></div>
+  <div class="term"><div class="t">Pixel</div><div class="d">Code on your pages that tells Meta what people did (visited, opted in, bought), so ads can learn and be measured.</div></div>
+  <div class="term"><div class="t">Lead / Purchase (events)</div><div class="d">Moments the pixel reports. A <b>Lead</b> is an email opt-in; a <b>Purchase</b> is a sale. Meta optimises toward whichever you pick.</div></div>
+  <div class="term"><div class="t">Funnel</div><div class="d">The path a stranger travels: ad → page → opt-in/buy → upsell → climb the ladder.</div></div>
+  <div class="term"><div class="t">Value ladder</div><div class="d">The rungs (free → £14 → £39 → membership). Each rung sells the next; that's how LTV climbs.</div></div>
+  <div class="term"><div class="t">Lead magnet / tripwire</div><div class="d">The <b>lead magnet</b> is the free thing that gets the email. The <b>tripwire</b> is the cheap first paid thing (£14) that turns a lead into a buyer.</div></div>
+  <div class="term"><div class="t">Upsell / order bump / OTO</div><div class="d">An <b>upsell</b> is a bigger offer after buying (£39 System). An <b>order bump</b> is the checkout tick-box (£9). An <b>OTO</b> is a one-time offer shown right after purchase.</div></div>
+  <div class="term"><div class="t">MRR — Monthly Recurring Revenue</div><div class="d">The predictable money in <b>every month</b> from the membership. The compounding principal; the part that makes a business sellable.</div></div>
+  <div class="term"><div class="t">Churn</div><div class="d">The rate members <b>cancel</b> each month. Low churn = the recurring base stacks; high churn = it leaks.</div></div>
+  <div class="term"><div class="t">Velocity (first-30-day cash)</div><div class="d">How <b>fast</b> a buyer's value comes back, not just how much. Fast cash lets you buy next month's ads sooner, the biggest lever on self-funding.</div></div>
+  <div class="term"><div class="t">Reinvest / recycle</div><div class="d">Ploughing returned cash <b>back into ads</b> so the machine grows itself.</div></div>
+  <div class="term"><div class="t">Float</div><div class="d">Money out in the market on ads before the revenue returns. Your cushion-at-risk.</div></div>
+  <div class="term"><div class="t">Self-funding / crossover</div><div class="d">The month the machine funds its own next ads <b>without your top-up</b>.</div></div>
+  <div class="term"><div class="t">Machine output</div><div class="d">The cash that <b>comes back each month</b> to recycle. Arrived cash, not profit, not lifetime value.</div></div>
+  <div class="term"><div class="t">GHL / CRM</div><div class="d"><b>GoHighLevel</b> is your all-in-one: contacts, checkout, emails, automations. Your <b>CRM</b> is the contact database inside it.</div></div>
+  <div class="term"><div class="t">Tag</div><div class="d">A label on a contact (lead-magnet, buyer-tripwire, buyer-system) tracking where they are on the ladder and which emails they get.</div></div>
+  <div class="term"><div class="t">Webhook / CAPI</div><div class="d">A <b>webhook</b> instantly pings one system from another (page → GHL "new lead"). <b>CAPI</b> is a more accurate, server-side way to report sales to Meta. (Later.)</div></div>
+  <div class="term"><div class="t">The two clocks</div><div class="d"><b>Cash-now</b> (money for family/living, urgent) vs <b>leverage</b> (building the owned, compounding asset). Score every move on both.</div></div>
+
+  <footer>Altitude cockpit · assumptions until the live data lands · then dates, not guesses.</footer>
+</div>
+</body>
+</html>
