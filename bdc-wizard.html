@@ -58,35 +58,31 @@ body { font-family: 'Inter', sans-serif; background: var(--faint); color: var(--
 .choice.selected .choice-tick { background: var(--terra); border-color: var(--terra); }
 .choice.selected .choice-tick::after { content:''; width:6px; height:10px; border:2px solid white; border-top:none; border-left:none; transform:rotate(45deg) translate(-1px,-1px); display:block; }
 
-/* Email step */
 .email-input { width: 100%; padding: 16px 18px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-size: 18px; font-family: 'Inter', sans-serif; color: var(--ink); background: white; outline: none; transition: border-color 0.2s; margin-bottom: 12px; }
 .email-input:focus { border-color: var(--terra); }
 .email-input::placeholder { color: var(--border); font-size: 16px; }
 .email-note { font-size: 12px; color: var(--muted); line-height: 1.5; }
 
 /* Calculation screen */
-.calc-wrap { display: flex; flex-direction: column; align-items: center; gap: 0; }
+.calc-video-wrap { width: 100%; border-radius: var(--radius); overflow: hidden; background: var(--ink); aspect-ratio: 9/16; max-height: 320px; margin-bottom: 24px; }
+.calc-video { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-.scruffy-video-wrap { width: 100%; border-radius: var(--radius); overflow: hidden; margin-bottom: 20px; background: var(--ink); aspect-ratio: 9/16; max-height: 340px; position: relative; }
-.scruffy-video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.calc-lines { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+.calc-line { display: flex; align-items: center; gap: 12px; font-size: 15px; color: var(--warm); opacity: 0; transition: opacity 0.5s; }
+.calc-line.visible { opacity: 1; }
+.calc-tick { width: 22px; height: 22px; border-radius: 50%; background: var(--olive); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.calc-tick::after { content:''; width:5px; height:9px; border:2px solid white; border-top:none; border-left:none; transform:rotate(45deg) translate(-1px,-1px); display:block; }
+.calc-line-text { font-size: 15px; color: var(--ink); line-height: 1.4; }
 
-.calc-title { font-family: 'Lora', serif; font-size: 22px; color: var(--ink); text-align: center; margin-bottom: 6px; }
-.calc-sub { font-size: 14px; color: var(--warm); text-align: center; margin-bottom: 24px; }
-
-.calc-lines { display: flex; flex-direction: column; gap: 8px; width: 100%; }
-.calc-line { display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: var(--card); border-radius: var(--radius-sm); border: 1.5px solid var(--border); opacity: 0; transition: opacity 0.4s, border-color 0.3s, background 0.3s; }
-.calc-line.active { opacity: 1; border-color: var(--terra); background: var(--terra-light); }
-.calc-line.done { opacity: 1; border-color: var(--olive); background: var(--olive-light); }
-.calc-line-icon { font-size: 16px; flex-shrink: 0; }
-.calc-line-text { font-size: 14px; color: var(--warm); line-height: 1.4; }
-.calc-line-text strong { color: var(--ink); font-weight: 600; }
+.calc-building { font-family: 'Lora', serif; font-size: 20px; color: var(--terra); text-align: center; opacity: 0; transition: opacity 0.5s; margin-top: 8px; }
+.calc-building.visible { opacity: 1; }
 
 /* Plan reveal */
 .plan-header { background: var(--terra); border-radius: var(--radius); padding: 24px 22px; margin-bottom: 20px; color: white; animation: popIn 0.4s cubic-bezier(.4,0,.2,1) both; }
 @keyframes popIn { 0%{transform:scale(0.93);opacity:0;} 70%{transform:scale(1.02);} 100%{transform:scale(1);opacity:1;} }
 .plan-tag { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; opacity: 0.7; margin-bottom: 8px; text-transform: uppercase; }
 .plan-title { font-family: 'Lora', serif; font-size: 22px; line-height: 1.2; margin-bottom: 6px; }
-.plan-intro { font-size: 14px; opacity: 0.9; line-height: 1.6; }
+.plan-sub { font-size: 14px; opacity: 0.85; line-height: 1.6; }
 
 .day-one { background: var(--card); border-radius: var(--radius); border: 1.5px solid var(--border); overflow: hidden; margin-bottom: 16px; }
 .day-one-header { background: var(--ink); color: white; padding: 16px 20px; }
@@ -96,7 +92,6 @@ body { font-family: 'Inter', sans-serif; background: var(--faint); color: var(--
 .day-one-body { padding: 20px; display: flex; flex-direction: column; gap: 20px; }
 .day-one-intro { font-size: 15px; line-height: 1.65; color: var(--warm); font-style: italic; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
 
-/* Instructional video */
 .instruct-video-wrap { border-radius: var(--radius-sm); overflow: hidden; background: var(--ink); width: 100%; aspect-ratio: 9/16; max-height: 280px; }
 .instruct-video { width: 100%; height: 100%; object-fit: cover; display: block; }
 
@@ -118,8 +113,8 @@ body { font-family: 'Inter', sans-serif; background: var(--faint); color: var(--
 .tomorrow-label { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; color: rgba(255,255,255,0.5); text-transform: uppercase; margin-bottom: 6px; }
 .tomorrow-text { font-size: 14px; line-height: 1.6; color: rgba(255,255,255,0.85); }
 
-.days-tease { display: flex; flex-direction: column; gap: 6px; margin-bottom: 24px; }
-.day-row { display: flex; align-items: center; gap: 12px; background: var(--card); border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 14px 16px; opacity: 0.5; }
+.days-tease { display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; }
+.day-row { display: flex; align-items: center; gap: 12px; background: var(--card); border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 14px 16px; opacity: 0.45; }
 .day-num { width: 30px; height: 30px; border-radius: 50%; background: var(--faint); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: var(--muted); flex-shrink: 0; }
 .day-name { flex: 1; font-size: 14px; color: var(--muted); font-weight: 500; }
 .day-lock { font-size: 13px; color: var(--border); }
@@ -141,22 +136,22 @@ body { font-family: 'Inter', sans-serif; background: var(--faint); color: var(--
   <div class="step-counter" id="stepCounter">Step 1 of 4</div>
 </div>
 <div class="progress-wrap">
-  <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:25%"></div></div>
+  <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:20%"></div></div>
 </div>
 
 <!-- STEP 1: Name -->
 <div class="screen active" id="step1">
   <div class="screen-eyebrow">Let's start</div>
   <h1 class="screen-title">What's your dog's name?</h1>
-  <p class="screen-sub">We'll build everything around them — so let's start with who they are.</p>
+  <p class="screen-sub">We'll use it throughout — so everything feels like it was written for them.</p>
   <input class="name-input" id="dogName" type="text" placeholder="Their name..." autocomplete="off" autocapitalize="words" maxlength="24" oninput="onNameInput()">
 </div>
 
 <!-- STEP 2: Problem -->
 <div class="screen" id="step2">
-  <div class="screen-eyebrow" id="eyebrow2">Tell us about your dog</div>
-  <h1 class="screen-title">What's making life hardest right now?</h1>
-  <p class="screen-sub">Pick the one that's affecting you most. The whole plan builds around it.</p>
+  <div class="screen-eyebrow">Tell us about your dog</div>
+  <h1 class="screen-title" id="s2title">What's making life hardest right now?</h1>
+  <p class="screen-sub">Pick the one that's affecting you most. We'll start there.</p>
   <div class="choices">
     <div class="choice" data-val="alone" onclick="pick(this,'problem')">
       <div class="choice-icon">🏠</div>
@@ -178,106 +173,109 @@ body { font-family: 'Inter', sans-serif; background: var(--faint); color: var(--
       <div class="choice-icon">😅</div>
       <div class="choice-text">
         <div class="choice-title">Honestly both</div>
-        <div class="choice-desc">We'll start with the most urgent one</div>
+        <div class="choice-desc">We'll ask one more question to pick where to start</div>
       </div>
       <div class="choice-tick"></div>
     </div>
   </div>
 </div>
 
-<!-- STEP 3: Threshold -->
-<div class="screen" id="step3">
-  <div class="screen-eyebrow" id="eyebrow3">Where your dog is now</div>
-  <h1 class="screen-title" id="threshTitle">How long before it gets hard?</h1>
-  <p class="screen-sub">Think about the last time it happened — roughly how long before things went downhill?</p>
+<!-- STEP 2B: Both follow-up -->
+<div class="screen" id="step2b">
+  <div class="screen-eyebrow">One more thing</div>
+  <h1 class="screen-title" id="s2btitle">Which would make the biggest difference to sort first?</h1>
+  <p class="screen-sub">We'll tackle the other one once we've made a dent in this one.</p>
   <div class="choices">
-    <div class="choice" data-val="under5" onclick="pick(this,'threshold')">
-      <div class="choice-icon">⚡</div>
-      <div class="choice-text"><div class="choice-title">Almost straight away</div><div class="choice-desc">Under five minutes</div></div>
+    <div class="choice" data-val="alone" onclick="pick(this,'primaryProblem')">
+      <div class="choice-icon">🏠</div>
+      <div class="choice-text">
+        <div class="choice-title">Being left alone</div>
+        <div class="choice-desc">The anxiety when I go out is the bigger problem right now</div>
+      </div>
       <div class="choice-tick"></div>
     </div>
-    <div class="choice" data-val="5to15" onclick="pick(this,'threshold')">
-      <div class="choice-icon">🕐</div>
-      <div class="choice-text"><div class="choice-title">A few minutes in</div><div class="choice-desc">Roughly 5 to 15 minutes</div></div>
-      <div class="choice-tick"></div>
-    </div>
-    <div class="choice" data-val="15to30" onclick="pick(this,'threshold')">
-      <div class="choice-icon">🕕</div>
-      <div class="choice-text"><div class="choice-title">About half an hour</div><div class="choice-desc">Can hold it together for a while</div></div>
-      <div class="choice-tick"></div>
-    </div>
-    <div class="choice" data-val="dontknow" onclick="pick(this,'threshold')">
-      <div class="choice-icon">🤷</div>
-      <div class="choice-text"><div class="choice-title">Not sure</div><div class="choice-desc">Haven't been able to watch what happens</div></div>
+    <div class="choice" data-val="evenings" onclick="pick(this,'primaryProblem')">
+      <div class="choice-icon">🌙</div>
+      <div class="choice-text">
+        <div class="choice-title">Evenings</div>
+        <div class="choice-desc">The evening chaos is what's wearing me down most</div>
+      </div>
       <div class="choice-tick"></div>
     </div>
   </div>
+</div>
+
+<!-- STEP 3: Route-specific baseline -->
+<div class="screen" id="step3">
+  <div class="screen-eyebrow" id="s3eyebrow">Where things are right now</div>
+  <h1 class="screen-title" id="s3title">How long can they manage alone?</h1>
+  <p class="screen-sub" id="s3sub">Think about the last time. Roughly how long before things went downhill?</p>
+  <div class="choices" id="s3choices"></div>
 </div>
 
 <!-- STEP 4: Email -->
 <div class="screen" id="step4">
   <div class="screen-eyebrow">Almost there</div>
-  <h1 class="screen-title" id="emailTitle">Where should we send the plan?</h1>
-  <p class="screen-sub" id="emailSub">We'll build it now and send each day's session the night before — so you're always ready.</p>
+  <h1 class="screen-title" id="s4title">Where should we send the plan?</h1>
+  <p class="screen-sub">One short email a day for seven days. Just what you need for that day's session.</p>
   <input class="email-input" id="emailInput" type="email" placeholder="your@email.com" oninput="updateEmailCta()">
-  <p class="email-note">One email a day, for seven days. No inbox clutter, no sales emails — just the plan.</p>
+  <p class="email-note">We'll send day two tomorrow. Nothing else.</p>
 </div>
 
-<!-- STEP 5: Calculation + Reveal -->
+<!-- STEP 5: Calculation + Full Reveal -->
 <div class="screen" id="step5">
 
   <div id="calcState">
-    <div class="calc-wrap">
-      <div class="scruffy-video-wrap">
-        <video class="scruffy-video" id="scruffyVid" autoplay muted loop playsinline></video>
+    <div class="calc-video-wrap">
+      <video class="calc-video" id="calcVid" autoplay muted loop playsinline></video>
+    </div>
+    <div class="calc-lines">
+      <div class="calc-line" id="cl1">
+        <div class="calc-tick"></div>
+        <div class="calc-line-text" id="cl1t"></div>
       </div>
-      <div class="calc-title" id="calcTitle">Building the plan...</div>
-      <div class="calc-sub" id="calcSub">This takes a few seconds — we're being specific.</div>
+      <div class="calc-line" id="cl2">
+        <div class="calc-tick"></div>
+        <div class="calc-line-text" id="cl2t"></div>
+      </div>
+      <div class="calc-line" id="cl3">
+        <div class="calc-tick"></div>
+        <div class="calc-line-text" id="cl3t"></div>
+      </div>
     </div>
-    <div class="calc-lines" style="margin-top:20px">
-      <div class="calc-line" id="cl1"><div class="calc-line-icon">🐕</div><div class="calc-line-text" id="cl1t">Reading what you told us...</div></div>
-      <div class="calc-line" id="cl2"><div class="calc-line-icon">📍</div><div class="calc-line-text" id="cl2t">Finding the right starting point...</div></div>
-      <div class="calc-line" id="cl3"><div class="calc-line-icon">✍️</div><div class="calc-line-text" id="cl3t">Writing tonight's session...</div></div>
-      <div class="calc-line" id="cl4"><div class="calc-line-icon">✅</div><div class="calc-line-text" id="cl4t">Almost ready...</div></div>
-    </div>
+    <div class="calc-building" id="calcBuilding"></div>
   </div>
 
   <div id="planReveal" style="display:none">
-
     <div class="plan-header">
-      <div class="plan-tag">Your dog's programme</div>
+      <div class="plan-tag">Day 1 of 7</div>
       <div class="plan-title" id="planTitle"></div>
-      <div class="plan-intro" id="planIntro"></div>
+      <div class="plan-sub" id="planSub"></div>
     </div>
 
     <div class="day-one">
       <div class="day-one-header">
-        <div class="day-one-label">Day one — do this tonight</div>
+        <div class="day-one-label">Do this tonight</div>
         <div class="day-one-title" id="d1title"></div>
         <div class="day-one-duration" id="d1duration"></div>
       </div>
       <div class="day-one-body">
         <div class="day-one-intro" id="d1intro"></div>
-
         <div class="instruct-video-wrap">
           <video class="instruct-video" id="instructVid" autoplay muted loop playsinline></video>
         </div>
-
         <div>
           <div class="steps-label">What to do</div>
           <div class="steps" id="d1steps"></div>
         </div>
-
         <div class="insight">
           <div class="insight-label">What to watch for</div>
           <div class="insight-text" id="d1watch"></div>
         </div>
-
         <div class="why-box">
           <div class="why-label">Why this works</div>
           <div class="why-text" id="d1why"></div>
         </div>
-
         <div class="tomorrow-box">
           <div class="tomorrow-label">Tomorrow</div>
           <div class="tomorrow-text" id="d1tomorrow"></div>
@@ -286,8 +284,8 @@ body { font-family: 'Inter', sans-serif; background: var(--faint); color: var(--
     </div>
 
     <div class="days-tease" id="daysTease"></div>
-
   </div>
+
 </div>
 
 <!-- CTA -->
@@ -297,128 +295,212 @@ body { font-family: 'Inter', sans-serif; background: var(--faint); color: var(--
 </div>
 
 <script>
-const S = { step: 1, name: '', problem: null, threshold: null, email: '' };
+const S = { step: 1, name: '', problem: null, primaryProblem: null, threshold: null, email: '' };
 
 const BASE = 'https://altitudeaico.github.io/apartmentdog/videos/';
 const VIDS = ['scruffy-1.mp4','scruffy-2.mp4','scruffy-3.mp4','scruffy-4.mp4','scruffy-5.mp4','scruffy-6.mp4'];
 function randVid() { return BASE + VIDS[Math.floor(Math.random() * VIDS.length)]; }
+function n() { return S.name || 'your dog'; }
+function route() { return (S.primaryProblem || S.problem) === 'evenings' ? 'evenings' : 'alone'; }
+function thresh() { return S.threshold || 'dontknow'; }
+function key() { return route() + '_' + thresh(); }
+function f(s) { return (s||'').replace(/\{n\}/g, n()); }
 
+// Step 3 content — branches by route
+const S3 = {
+  alone: {
+    eyebrow: 'Where things are right now',
+    title: 'How long can {n} manage alone?',
+    sub: 'Think about the last time you left. Roughly how long before things went downhill?',
+    choices: [
+      { val:'under5', icon:'⚡', title:'Almost straight away', desc:'Under five minutes' },
+      { val:'5to15', icon:'🕐', title:'A few minutes in', desc:'Roughly 5 to 15 minutes' },
+      { val:'15to30', icon:'🕕', title:'About half an hour', desc:'Can hold it together for a while' },
+      { val:'dontknow', icon:'🤷', title:'Not sure', desc:"Haven't been able to watch what happens" }
+    ]
+  },
+  evenings: {
+    eyebrow: "When it's hardest",
+    title: "When are {n}'s evenings most difficult?",
+    sub: "Think about a typical evening. When does it usually kick off?",
+    choices: [
+      { val:'early', icon:'🌆', title:'As the evening starts', desc:'Ramping up from around 5 to 7pm' },
+      { val:'dinner', icon:'🍽️', title:'Around dinner time', desc:"That's usually when things kick off" },
+      { val:'relax', icon:'🛋️', title:"When we're trying to relax", desc:"They just won't switch off" },
+      { val:'varies', icon:'🤷', title:'It varies', desc:"No obvious pattern yet" }
+    ]
+  }
+};
+
+// Calculation screen lines — reflects their actual answers
+function calcLines() {
+  const name = n();
+  const rt = route();
+  const th = thresh();
+  if (rt === 'alone') {
+    const threshMap = { under5:'almost straight away', '5to15':'a few minutes in', '15to30':'about half an hour', dontknow:"we're not sure yet" };
+    return [
+      name + ' struggles most when left alone',
+      'Things get hard ' + (threshMap[th] || 'quickly'),
+      "So we're starting small tonight"
+    ];
+  } else {
+    const threshMap = { early:'as the evening starts', dinner:'around dinner time', relax:"when you're trying to relax", varies:'at different times', dontknow:'in the evenings' };
+    return [
+      name + ' struggles most in the evenings',
+      "It's hardest " + (threshMap[th] || 'in the evenings'),
+      "So we're starting small tonight"
+    ];
+  }
+}
+
+// Day one content library
 const D1 = {
   alone_under5: {
     title: "The 90-second test",
     duration: "5 minutes total",
     intro: "Because {n} struggles almost straight away, we don't start with a full departure. We start with something so short it can't fail.",
-    steps: ["Make {n}'s dinner as normal — or grab a small handful of kibble if it's not mealtime.","Scatter it across the kitchen floor, or fold it loosely into a tea towel on the ground.","Let {n} start sniffing it out. Once they're engaged and their nose is down, quietly step into the next room.","Come back after 90 seconds. No fuss, no big hello — just walk back in calmly.","That's it. One rep. Done."],
-    watch: "Did {n} notice you'd gone? Did they carry on sniffing, or did they look up and follow? Either answer is useful — it tells us exactly where to start tomorrow.",
+    steps: ["Make {n}'s dinner as normal — or grab a small handful of kibble if it's not mealtime.","Scatter it across the kitchen floor, or fold it loosely into a tea towel on the ground.","Let {n} start sniffing it out. Once their nose is down, quietly step into the next room.","Come back after 90 seconds. No fuss, no big hello — just walk back in calmly.","That's it. One rep. Done."],
+    watch: "Did {n} notice you'd gone? Did they carry on sniffing, or did they look up and follow? Either answer is useful — it tells us where to start tomorrow.",
     why: "Sniffing to find food is one of the fastest ways to shift a dog's brain from anxious to focused. 90 seconds is deliberately below {n}'s stress point. Calm departures have to be practised before they can be extended.",
-    tomorrow: "Tomorrow we do this again — but we stay out for two minutes. And we add something that makes it even easier for {n} to stay calm while you're gone."
+    tomorrow: "Tomorrow we do this again — but we stay out for two minutes. And we add something that makes it easier for {n} to stay calm while you're gone."
   },
   alone_5to15: {
     title: "The scatter feed departure",
     duration: "15 minutes total",
-    intro: "{n} can hold it together for a few minutes — which means there's already something to build on. Tonight we use that window.",
-    steps: ["Take {n}'s dinner and scatter it across a large area — the kitchen floor, a snuffle mat, or loosely rolled in a tea towel.","Let them start. Once their nose is fully down and they're working, pick up your keys and put your shoes on — calmly, no big deal.","Leave. Go outside or into another part of the house for 3 minutes.","Come back before they've had a chance to finish — walk in quietly, no fuss.","Let them complete the scatter feed while you're back in the room."],
+    intro: "{n} can hold it together for a few minutes, which means there's already something to build on. Tonight we use that window.",
+    steps: ["Take {n}'s dinner and scatter it across the kitchen floor, a snuffle mat, or loosely in a tea towel.","Let them start. Once their nose is fully down, pick up your keys and put your shoes on — calmly, no big deal.","Leave. Go outside or into another room for 3 minutes.","Come back before they've finished — walk in quietly, no fuss.","Let them complete the scatter feed while you're back in the room."],
     watch: "Did {n} notice you left? Did the scatter feed hold their attention, or did they abandon it to find you? That tells us whether 3 minutes was the right starting point.",
-    why: "A brain busy sniffing for food is a brain that isn't tracking your movements. We're not asking {n} to cope with being alone — we're giving them a job that makes your departure almost irrelevant.",
+    why: "A brain busy sniffing for food is a brain that isn't tracking your movements. We're not asking {n} to cope alone — we're giving them a job that makes your departure almost irrelevant.",
     tomorrow: "Tomorrow we extend to 5 minutes and change one small thing about how you leave. It makes a bigger difference than you'd expect."
   },
   alone_15to30: {
     title: "The calm departure drill",
     duration: "20 minutes total",
     intro: "{n} can already manage a decent stretch alone. The issue isn't duration — it's what happens around your departure. Tonight we work on that.",
-    steps: ["About 10 minutes before you plan to leave, give {n} a long-lasting chew or a scatter feed — something that takes real effort.","Go through your normal leaving routine: shoes, keys, coat. Do it slowly and without any emotional loading — no long goodbye.","Leave for 10 minutes. Come back before the chew or scatter feed is finished if you can.","Walk back in without making it a big moment. Hang up your coat, put your keys down — treat it as completely normal."],
+    steps: ["About 10 minutes before you plan to leave, give {n} a long-lasting chew or scatter feed — something that takes real effort.","Go through your normal leaving routine: shoes, keys, coat. Slowly, without emotional loading — no long goodbye.","Leave for 10 minutes. Come back before the chew is finished if you can.","Walk back in without making it a big moment. Hang up your coat, put your keys down."],
     watch: "How was {n} when you came back? Calm and still working on the chew, or up and anxious? And — did the goodbye feel different when you took the drama out of it?",
-    why: "Dogs read our leaving rituals and start anticipating them. The emotional charge around departure can actually make things worse. A boring, predictable exit is a kinder one. The chew gives {n} something to do during the bit that's hardest.",
+    why: "Dogs read our leaving rituals and start anticipating them. The emotional charge around departure can actually make things worse. A boring, predictable exit is a kinder one.",
     tomorrow: "Tomorrow we extend to 15 minutes and introduce something that changes how {n} experiences the moment you walk out the door."
   },
   alone_dontknow: {
     title: "Finding the baseline",
     duration: "10 minutes total",
     intro: "We don't know yet how long {n} can comfortably cope — so tonight we find out, safely. This is the most important session of the week.",
-    steps: ["Make {n}'s dinner and scatter it on the kitchen floor or in a tea towel.","Once they're sniffing and engaged, step out of the room — or out of the front door if that's the concern.","Come back after exactly 2 minutes.","Note what you find: were they still sniffing calmly? Did they come looking for you? Were they already distressed?","That's your baseline. Write it down — even a note in your phone."],
-    watch: "Calm and sniffing when you returned means their threshold is above 2 minutes. Looking for you but not distressed means it's around 2 minutes. Already anxious means it's below. All of these are useful.",
-    why: "You can't build a programme without knowing where you're starting. Two minutes with a scatter feed is the safest way to find {n}'s real baseline — calm enough to give an honest reading, short enough that nothing goes wrong.",
-    tomorrow: "Tomorrow we build directly from what you found tonight. If {n} was calm, we push a little further. If not, we make it easier and work up."
+    steps: ["Make {n}'s dinner and scatter it on the kitchen floor or in a tea towel.","Once they're sniffing and engaged, step out of the room — or out of the front door if that's the concern.","Come back after exactly 2 minutes.","Note what you find: still sniffing calmly? Looking for you? Already distressed?","That's your baseline. Write it down — even a note in your phone."],
+    watch: "Calm and sniffing = threshold is above 2 minutes. Looking for you but not distressed = around 2 minutes. Already anxious = below 2 minutes. All of these are useful.",
+    why: "You can't build a programme without knowing where you're starting. Two minutes with a scatter feed is the safest way to find {n}'s real baseline — short enough that nothing goes wrong.",
+    tomorrow: "Tomorrow we build from what you found tonight. If {n} was calm, we push a little further. If not, we make it easier and work up."
   },
-  evenings_under5: {
-    title: "Intercept the 7pm brain",
+  evenings_early: {
+    title: "Intercept the build-up",
+    duration: "15 minutes, starting at 5:30pm",
+    intro: "{n} starts ramping up before the chaos hits — which means there's a window. Tonight we step into it before the energy takes over.",
+    steps: ["At 5:30pm — before anything has started — scatter {n}'s dinner across the floor or in a loosely rolled tea towel.","Don't wait for the chaos to start. Earlier than feels necessary is exactly right.","Let them work through it at their own pace. Don't hurry them.","Once they've finished, sit down nearby and stay calm. Don't initiate play or interaction.","Notice what happens in the 30 minutes after."],
+    watch: "Does the scatter feed hold {n}'s attention through the usual build-up window? Does the peak come later than normal, or feel less intense? Any shift is worth noting.",
+    why: "We're not trying to exhaust {n} — we're giving the brain a satisfying job to do at the moment it's most likely to go looking for one. A brain that's been sniffing hard arrives at 7pm in a different state.",
+    tomorrow: "Tomorrow we add something that builds on this — and introduces a small routine that starts to signal what kind of evening this is going to be."
+  },
+  evenings_dinner: {
+    title: "The towel roll dinner",
     duration: "15 minutes, starting at 6pm",
-    intro: "{n}'s evenings escalate fast — the brain is overstimulated well before the chaos starts. Tonight we get ahead of it.",
-    steps: ["At 6pm — before anything has kicked off — take {n}'s dinner and scatter it across the floor or loosely roll it in a tea towel.","Don't wait for them to be already wound up. 6pm, not 7pm.","Let them work through the whole thing at their own pace — don't hurry them.","Once they've finished, notice what they do. Do they settle? Look for more? Start circling?","If they settle, even for a few minutes — leave them in it. That's the win."],
-    watch: "Does the scatter feed hold {n}'s attention for the full ten minutes? And what happens in the 20 minutes after — is the 7pm energy lower than usual, later than usual, or about the same?",
-    why: "The scatter feed at 6pm isn't just enrichment — it's timing. A dog whose brain has been working hard arrives at 7pm in a different state than one who's been waiting for something to happen. We're changing what the evening feels like before it starts.",
-    tomorrow: "Tomorrow we make the scatter feed slightly harder — and introduce something that builds a proper wind-down routine around it."
+    intro: "Dinner time is the trigger for {n} — so we're going to change what dinner time feels like. Tonight we slow it right down.",
+    steps: ["At 6pm, take {n}'s dinner and lay it along the length of a tea towel.","Roll the towel up loosely — not too tight, they need to be able to work it.","Put it on the floor and step back. Let them sniff, nudge, and unroll it at their own pace.","This should take 8 to 12 minutes if rolled well. If they give up in under 2, unroll it slightly.","When they're finished, leave them to settle without engaging."],
+    watch: "How long does {n} stay with it? And what do they do when they finish — do they settle, or do they immediately look for the next thing? That tells us what to add tomorrow.",
+    why: "A bowl empties in 30 seconds. A towel roll takes 10 minutes. That's 10 minutes of calm, focused brain work happening right at the moment {n} usually ignites. We're not suppressing the energy — we're redirecting it into something that actually tires the brain.",
+    tomorrow: "Tomorrow we combine this with something before dinner that makes the towel roll even more effective."
   },
-  evenings_5to15: {
-    title: "The pre-chaos session",
+  evenings_relax: {
+    title: "The pre-chaos scatter",
     duration: "15 minutes, starting at 6pm",
-    intro: "{n} has a wind-up period before the chaos — which means there's a window. Tonight we use it.",
-    steps: ["At 6pm, take {n}'s dinner and roll it into a tea towel — lay the towel flat, scatter the food along it, then roll it up loosely.","Put it on the floor and let {n} work it out. It should take 8 to 12 minutes if rolled tight enough.","While they're working, sit down nearby. Don't interact, don't encourage — just be present and calm.","When they finish, give them a moment before you do anything. See if they settle naturally."],
-    watch: "How long does {n} stay engaged with the towel roll? And does the evening feel different after — even slightly quieter, slightly later before the energy peaks?",
-    why: "The towel roll occupies {n}'s brain for longer than a bowl, and builds a pattern — this time of day means calm, focused work. Dogs build associations fast. A week of this at 6pm starts to change what 7pm looks like.",
-    tomorrow: "Tomorrow we add a sniff hunt on top of the towel roll. You'll see why the combination works better than either one alone."
+    intro: "{n} is fine until you try to sit down — then everything kicks off. Tonight we give the brain something to do before that moment arrives.",
+    steps: ["At 6pm, scatter {n}'s dinner across the floor — or hide small treats in 4 or 5 spots around one room.","Let them sniff it all out at their own pace. Don't help or encourage.","Once they're done, sit down as normal. Don't interact with them for the first 10 minutes.","Notice when (or whether) the usual chaos starts."],
+    watch: "Does the session buy you any quiet time once you sit down? Even 5 minutes later than usual, or 5 minutes quieter, is real progress. We're looking for any shift.",
+    why: "The moment you sit down is {n}'s cue that nothing interesting is happening — and they've learned that demanding attention changes that. We're front-loading the interesting thing so they arrive at that moment already satisfied.",
+    tomorrow: "Tomorrow we extend the sniff session and add a specific settle spot — somewhere {n} learns is their place when the evening is winding down."
   },
-  evenings_15to30: {
-    title: "The wind-down session",
-    duration: "20 minutes, starting at 5:45pm",
-    intro: "{n} can hold it together for a while before things get hard — the evening pattern is established but not severe. Tonight we start shifting it.",
-    steps: ["At 5:45pm, hide 10 to 15 small treats around one room — under the edge of a rug, behind a chair leg, beside a plant pot.","Bring {n} in and let them sniff around until they discover the first one.","Let them work through the whole room at their own pace. Don't point things out.","When they've found everything, give them their dinner in a towel roll.","Once they've finished both, leave them to settle without interaction for at least 10 minutes."],
-    watch: "How engaged is {n} with the search? And — what time does the evening energy peak tonight compared to usual? Even 15 minutes later is meaningful.",
-    why: "A sniff hunt followed by a towel roll gives the brain two kinds of work — searching, then extracting. That combination creates a more complete mental tiredness. The goal is a satisfying, calm evening rather than a restless one.",
-    tomorrow: "Tomorrow we introduce a settle spot — somewhere specific {n} learns to go at the end of the session. That's where the routine really starts to take shape."
+  evenings_varies: {
+    title: "The observation evening",
+    duration: "15 minutes, starting at 6pm",
+    intro: "Before we can build the right plan for {n}, we need to understand what their evenings actually look like. Tonight is about watching as much as doing.",
+    steps: ["At 6pm, give {n} their dinner scattered across the floor or in a tea towel.","While they eat, note the time.","After they finish, watch what they do. And watch what you do — do you automatically engage with them?","Note when the energy peaks. When is {n} at their most difficult or unsettled?","That gap between 6pm and the peak is the window we're going to work in."],
+    watch: "When does {n}'s energy peak tonight? What does it look like? And what usually happens just before it? Any pattern you notice is useful.",
+    why: "Every dog's evening rhythm is different. Some peak at 6:30, some at 8. Tonight gives us what we need to build {n}'s programme properly — rather than guessing.",
+    tomorrow: "Based on what you observe tonight, tomorrow's session will be timed to get ahead of {n}'s peak. That's when it's easiest to shift."
   },
   evenings_dontknow: {
     title: "The observation evening",
     duration: "15 minutes, starting at 6pm",
-    intro: "Before we can build the right plan for {n}, we need to know what their evenings actually look like. Tonight is about watching as much as doing.",
-    steps: ["At 6pm, give {n} their dinner scattered across the floor or in a tea towel.","While they eat, note the time.","After they finish, watch what they do — and what you do. Do you automatically engage with them?","Note the time when the energy peaks — when {n} is at their most difficult or unsettled.","That gap between 6pm and the peak is the window we're going to work in."],
-    watch: "When does {n}'s energy peak tonight? What does it look like — zoomies, barking, demanding attention? And what usually happens just before it?",
-    why: "Every dog's evening pattern is different. Some peak at 6:30, some at 8pm. Tonight gives us the information we need to build {n}'s programme properly — rather than guessing.",
-    tomorrow: "Based on what you observe tonight, tomorrow's session will be timed to intercept {n}'s peak — just before it, not during it. That's when it's easiest to change."
+    intro: "Before we build anything, we need to understand what {n}'s evenings actually look like. Tonight is about watching as much as doing.",
+    steps: ["At 6pm, give {n} their dinner scattered across the floor or in a tea towel.","While they eat, note the time.","After they finish, watch what they do. And watch what you do — do you automatically engage with them?","Note when the energy peaks — when is {n} at their most difficult or unsettled?","That gap between 6pm and the peak is the window we'll work in."],
+    watch: "When does {n}'s energy peak tonight? What does it look like? And what usually happens just before it?",
+    why: "Every dog's evening rhythm is different. Tonight gives us the information to build {n}'s programme properly rather than guessing.",
+    tomorrow: "Based on what you observe tonight, tomorrow's session will be timed to get ahead of {n}'s peak — just before it, not during it."
   }
 };
 
 const DAY_NAMES = {
   alone: ["The scatter feed","Departure practice","Extended solo time","Solo with a chew","Sniff walk + departure","Building the routine","Week one — look back"],
-  evenings: ["Scatter feed at 6pm","Towel roll dinner","Sniff hunt","Settle spot training","Early intercept session","Full routine practice","Week one — look back"]
+  evenings: ["Scatter feed at 6pm","The towel roll dinner","Sniff hunt","Settle spot training","Early intercept","Full routine practice","Week one — look back"]
 };
 
-function f(str) { return (str||'').replace(/\{n\}/g, S.name || 'your dog'); }
-function route() { return S.problem === 'evenings' ? 'evenings' : 'alone'; }
-function thresh() { return S.threshold || 'dontknow'; }
-function key() { return route() + '_' + thresh(); }
+// Step rendering
+const STEP_ORDER = ['step1','step2','step2b','step3','step4','step5'];
 
-function show(n) {
+function stepIndex(id) { return STEP_ORDER.indexOf(id); }
+
+function currentId() {
+  if (S.step === 1) return 'step1';
+  if (S.step === 2) return S.problem === 'both' ? 'step2' : 'step2';
+  if (S.step === '2b') return 'step2b';
+  if (S.step === 3) return 'step3';
+  if (S.step === 4) return 'step4';
+  if (S.step === 5) return 'step5';
+  return 'step1';
+}
+
+function show(screenId) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById('step' + n).classList.add('active');
-  const pct = (n / 4) * 100;
-  document.getElementById('progressFill').style.width = (n === 5 ? 100 : pct) + '%';
-  const labels = ['','Step 1 of 4','Step 2 of 4','Step 3 of 4','Step 4 of 4', S.name ? S.name + "'s plan" : 'Your plan'];
-  document.getElementById('stepCounter').textContent = labels[n] || '';
-  document.getElementById('backBtn').style.display = (n > 1 && n < 5) ? 'block' : 'none';
-  updateCta(n);
+  document.getElementById(screenId).classList.add('active');
+
+  const idx = stepIndex(screenId);
+  const totalSteps = 4;
+  const visualStep = screenId === 'step2b' ? 2 : (idx <= 1 ? idx + 1 : (idx === 2 ? 2 : idx));
+  const pct = screenId === 'step5' ? 100 : Math.min((visualStep / totalSteps) * 100, 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+
+  const labels = { step1:'Step 1 of 4', step2:'Step 2 of 4', step2b:'Step 2 of 4', step3:'Step 3 of 4', step4:'Step 4 of 4', step5: n() + "'s plan" };
+  document.getElementById('stepCounter').textContent = labels[screenId] || '';
+  document.getElementById('backBtn').style.display = (screenId !== 'step1' && screenId !== 'step5') ? 'block' : 'none';
+  updateCta(screenId);
   window.scrollTo(0,0);
 }
 
-function goBack() { if (S.step > 1) { S.step--; show(S.step); } }
-
-function handleCta() {
-  if (S.step === 4) {
-    S.email = document.getElementById('emailInput').value.trim();
-    S.step = 5;
-    show(5);
-    runCalc();
-    return;
-  }
-  if (S.step < 5) { S.step++; show(S.step); }
+function goBack() {
+  const cur = document.querySelector('.screen.active').id;
+  const map = { step2:'step1', step2b:'step2', step3: S.problem === 'both' ? 'step2b' : 'step2', step4:'step3' };
+  if (map[cur]) show(map[cur]);
 }
 
-function updateCta(n) {
+function handleCta() {
+  const cur = document.querySelector('.screen.active').id;
+  if (cur === 'step1') { show('step2'); return; }
+  if (cur === 'step2') {
+    if (S.problem === 'both') { show('step2b'); return; }
+    buildStep3(); show('step3'); return;
+  }
+  if (cur === 'step2b') { buildStep3(); show('step3'); return; }
+  if (cur === 'step3') { show('step4'); return; }
+  if (cur === 'step4') { S.email = document.getElementById('emailInput').value.trim(); show('step5'); runCalc(); return; }
+}
+
+function updateCta(screenId) {
   const btn = document.getElementById('mainCta');
-  if (n === 1) { btn.textContent = 'Continue'; btn.disabled = S.name.length < 2; }
-  else if (n === 2) { btn.textContent = 'Continue'; btn.disabled = !S.problem; }
-  else if (n === 3) { btn.textContent = 'Continue'; btn.disabled = !S.threshold; }
-  else if (n === 4) { btn.textContent = 'Build ' + (S.name||'their') + "'s plan"; btn.disabled = true; }
+  if (screenId === 'step1') { btn.textContent = 'Continue'; btn.disabled = S.name.length < 2; }
+  else if (screenId === 'step2') { btn.textContent = 'Continue'; btn.disabled = !S.problem; }
+  else if (screenId === 'step2b') { btn.textContent = 'Continue'; btn.disabled = !S.primaryProblem; }
+  else if (screenId === 'step3') { btn.textContent = 'Continue'; btn.disabled = !S.threshold; }
+  else if (screenId === 'step4') { btn.textContent = "Build " + n() + "'s plan"; btn.disabled = true; }
   else { btn.textContent = 'Start day one tonight'; btn.disabled = false; }
 }
 
@@ -429,10 +511,10 @@ function updateEmailCta() {
 
 function onNameInput() {
   S.name = document.getElementById('dogName').value.trim();
-  document.getElementById('eyebrow2').textContent = S.name ? 'Tell us about ' + S.name : 'Tell us about your dog';
-  document.getElementById('eyebrow3').textContent = S.name ? S.name + ' right now' : 'Your dog right now';
-  document.getElementById('emailTitle').textContent = S.name ? 'Where should we send ' + S.name + "'s plan?" : 'Where should we send the plan?';
-  updateCta(1);
+  document.getElementById('s2title').textContent = S.name ? 'What\'s making life hardest with ' + S.name + ' right now?' : 'What\'s making life hardest right now?';
+  document.getElementById('s2btitle').textContent = S.name ? 'Which would make the biggest difference to sort first for ' + S.name + '?' : 'Which would make the biggest difference to sort first?';
+  document.getElementById('s4title').textContent = S.name ? 'Where should we send ' + S.name + "'s plan?" : "Where should we send the plan?";
+  updateCta('step1');
 }
 
 document.getElementById('dogName').addEventListener('keydown', e => {
@@ -443,69 +525,63 @@ function pick(el, field) {
   el.parentElement.querySelectorAll('.choice').forEach(c => c.classList.remove('selected'));
   el.classList.add('selected');
   S[field] = el.dataset.val;
-  if (field === 'problem') {
-    document.getElementById('threshTitle').textContent = S.problem !== 'evenings' ? 'How long before it gets hard?' : 'When do evenings usually peak?';
-  }
-  updateCta(S.step);
-  setTimeout(() => { if (S.step === 2 || S.step === 3) handleCta(); }, 300);
+  updateCta(document.querySelector('.screen.active').id);
+  setTimeout(() => {
+    const cur = document.querySelector('.screen.active').id;
+    if (cur === 'step2' || cur === 'step2b' || cur === 'step3') handleCta();
+  }, 300);
+}
+
+function buildStep3() {
+  const rt = route();
+  const cfg = S3[rt];
+  document.getElementById('s3eyebrow').textContent = cfg.eyebrow;
+  document.getElementById('s3title').textContent = f(cfg.title);
+  document.getElementById('s3sub').textContent = f(cfg.sub);
+  const container = document.getElementById('s3choices');
+  container.innerHTML = '';
+  cfg.choices.forEach(c => {
+    container.innerHTML += '<div class="choice" data-val="' + c.val + '" onclick="pick(this,\'threshold\')">' +
+      '<div class="choice-icon">' + c.icon + '</div>' +
+      '<div class="choice-text"><div class="choice-title">' + c.title + '</div><div class="choice-desc">' + c.desc + '</div></div>' +
+      '<div class="choice-tick"></div></div>';
+  });
+  S.threshold = null;
+  updateCta('step3');
 }
 
 function runCalc() {
-  const name = S.name || 'your dog';
-
-  // Pick random Scruffy video
-  document.getElementById('scruffyVid').src = randVid();
-
-  const lines = [
-    { id:'cl1', text: '<strong>' + name + '</strong> — ' + (route() === 'evenings' ? 'evening chaos' : 'can\'t be left alone') },
-    { id:'cl2', text: 'Starting point: <strong>' + threshLabel() + '</strong>' },
-    { id:'cl3', text: 'Tonight\'s session: <strong>' + D1[key()].title + '</strong>' },
-    { id:'cl4', text: name + "'s plan is <strong>ready</strong> 🐾" },
-  ];
-
-  document.getElementById('calcTitle').textContent = 'Building ' + name + "'s plan...";
-
+  document.getElementById('calcVid').src = randVid();
+  const lines = calcLines();
+  const ids = ['cl1','cl2','cl3'];
   let i = 0;
   const tick = setInterval(() => {
-    if (i < lines.length) {
-      const el = document.getElementById(lines[i].id);
-      el.querySelector('div:last-child').innerHTML = lines[i].text;
-      el.classList.add('active');
-      if (i > 0) {
-        const prev = document.getElementById(lines[i-1].id);
-        prev.classList.remove('active');
-        prev.classList.add('done');
-      }
+    if (i < 3) {
+      document.getElementById(ids[i] + 't').textContent = lines[i];
+      document.getElementById(ids[i]).classList.add('visible');
       i++;
     } else {
       clearInterval(tick);
-      document.getElementById(lines[lines.length-1].id).classList.remove('active');
-      document.getElementById(lines[lines.length-1].id).classList.add('done');
-      setTimeout(buildReveal, 700);
+      const bld = document.getElementById('calcBuilding');
+      bld.textContent = 'Building ' + n() + "'s Day 1...";
+      bld.classList.add('visible');
+      setTimeout(buildReveal, 1800);
     }
-  }, 1800);
-}
-
-function threshLabel() {
-  const m = { under5:'under 5 minutes', '5to15':'5 to 15 minutes', '15to30':'15 to 30 minutes', dontknow:"unknown — we'll find it safely" };
-  return m[thresh()];
+  }, 1000);
 }
 
 function buildReveal() {
-  const d = D1[key()];
-  const name = S.name || 'your dog';
+  const d = D1[key()] || D1['alone_dontknow'];
   const rt = route();
 
-  document.getElementById('planTitle').textContent = name + ' — ' + (rt === 'evenings' ? 'settled evenings' : 'calm when left alone');
-  document.getElementById('planIntro').textContent = f('Seven sessions, one a day. Built around what you told us about {n}. Start tonight.');
+  document.getElementById('planTitle').textContent = n() + "'s plan starts here \uD83D\uDC3E";
+  document.getElementById('planSub').textContent = f('Seven sessions, one a day. Built around what you told us about {n}. Start tonight.');
   document.getElementById('d1title').textContent = d.title;
   document.getElementById('d1duration').textContent = d.duration;
   document.getElementById('d1intro').textContent = f(d.intro);
   document.getElementById('d1watch').textContent = f(d.watch);
   document.getElementById('d1why').textContent = f(d.why);
   document.getElementById('d1tomorrow').textContent = f(d.tomorrow);
-
-  // Pick a different random video for the instructional slot
   document.getElementById('instructVid').src = randVid();
 
   const stepsEl = document.getElementById('d1steps');
@@ -517,17 +593,16 @@ function buildReveal() {
   const tease = document.getElementById('daysTease');
   tease.innerHTML = '';
   DAY_NAMES[rt].slice(1).forEach((nm,i) => {
-    tease.innerHTML += '<div class="day-row"><div class="day-num">' + (i+2) + '</div><div class="day-name">' + nm + '</div><div class="day-lock">🔒</div></div>';
+    tease.innerHTML += '<div class="day-row"><div class="day-num">' + (i+2) + '</div><div class="day-name">' + nm + '</div><div class="day-lock">\uD83D\uDD12</div></div>';
   });
 
   document.getElementById('calcState').style.display = 'none';
   document.getElementById('planReveal').style.display = 'block';
-  updateCta(5);
-
-  // TODO: POST to GHL webhook { name: S.name, email: S.email, problem: S.problem, threshold: S.threshold }
+  updateCta('step5');
+  // TODO: POST to GHL webhook { name: S.name, email: S.email, problem: route(), threshold: S.threshold }
 }
 
-show(1);
+show('step1');
 </script>
 </body>
 </html>
