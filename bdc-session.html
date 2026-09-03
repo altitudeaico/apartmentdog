@@ -948,10 +948,24 @@ const authTimeout = setTimeout(() => {
 }, 4000);
 
 function showUnauthenticated() {
+  // Clear the loading/session placeholder — show a clean unauthenticated state
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screenHome').classList.add('active');
   document.getElementById('headerMeta').textContent = 'Welcome back';
+  document.getElementById('homeDogName').textContent = 'Welcome back';
+  document.getElementById('homeSarahText').textContent = 'To pick up where you left off, tap below to get a new sign-in link.';
+  const grid = document.getElementById('homeWeekGrid');
+  if (grid) grid.innerHTML = '';
+  const sarah = document.querySelector('.home-sarah');
+  if (sarah) sarah.style.display = 'block';
+  const streakEl = document.querySelector('.home-streak');
+  if (streakEl) streakEl.style.display = 'none';
+  const nextEl = document.querySelector('.home-next');
+  if (nextEl) nextEl.style.display = 'none';
   const cta = document.getElementById('mainCta');
   cta.textContent = 'Go to the wizard to get your link';
   cta.disabled = false;
+  cta.className = 'btn btn-primary';
   cta.onclick = () => { window.location.href = '/bdc-wizard.html'; };
 }
 </script>
