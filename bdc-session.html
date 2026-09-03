@@ -844,7 +844,7 @@ const SESSIONS = {
     // D6 is system-selected — this entry is the fallback if selectReinforcement returns null
     title: "The reinforcement session",
     duration: "About 15 minutes",
-    intro: "Based on how the week has gone, tonight we repeat the session that seemed to work best for " + n() + ".",
+    intro: "You gave this one the highest rating across the week, so we're bringing it back tonight.",
     stages: [
       { instruction: "Run the same session as the one that went best this week — same format, same timing.", hint: "You've done this before. " + n() + " knows what this means now.", cta: "Done ✓" },
       { instruction: "Sit down once they're working. Stay settled for the first 10 minutes after they finish.", hint: "This is consolidation. The routine is forming.", cta: "Done ✓" },
@@ -855,7 +855,7 @@ const SESSIONS = {
     // D7 is also system-selected — this entry is the fallback
     title: "The final session",
     duration: "About 15 minutes",
-    intro: "Last session of the week. Run the one that's worked best and notice how it feels compared to Day 1.",
+    intro: "Last session of the week. You gave this one the highest rating, so we're finishing on it.",
     stages: [
       { instruction: "Run the session that's rated highest this week — same format, same timing as before.", hint: "You've built this routine over 6 days. Tonight is the proof.", cta: "Done ✓" },
       { instruction: "Sit down once " + n() + " is working. First 10 minutes: stay settled, no engagement.", hint: "Notice the difference from where you started.", cta: "Done ✓" },
@@ -886,6 +886,275 @@ const SESSIONS = {
     obs: { label: "What did you notice tonight?", hint: "For example: when did things peak, what did it look like, and what happened just before it?" },
     day2: "Building on tonight",
   },
+
+  // ── EVENINGS EARLY D2-D7 ─────────────────────────────────────────────────
+  // early: difficulty builds from early evening. Intervention starts before the build-up.
+  evenings_early_d2: {
+    title: "The towel roll dinner",
+    duration: "About 15 minutes",
+    intro: "Same timing as last night. Tonight the format changes: dinner in a tea towel instead of scattered.",
+    stages: [
+      { instruction: "Lay " + n() + "'s dinner along a tea towel and roll it loosely.", hint: "Not too tight. " + n() + " needs to be able to work it open.", cta: "Done ✓" },
+      { instruction: "Put it on the floor at your usual early time and step back. Don't help or encourage.", hint: "Let them figure it out at their own pace.", cta: "They're done →" },
+      { instruction: "Once they've finished, sit down. Don't initiate interaction for the first 10 minutes.", hint: "Notice what " + n() + " does once they're done.", cta: "Done ✓" },
+    ],
+    obs: { label: "What did you notice when " + n() + " finished?", hint: "For example: did they settle, start pacing, come to you, or seem about the same as last night?" },
+  },
+  evenings_early_d3: {
+    title: "The sniff hunt",
+    duration: "About 15 minutes",
+    intro: "Tonight " + n() + " has to work for their treats. Hide them before the usual build-up begins.",
+    stages: [
+      { instruction: "Before " + n() + " comes in, hide 5 or 6 small treats around one room.", hint: "Some easy, a couple harder. Vary where you put them.", cta: "Done ✓" },
+      { instruction: "Let " + n() + " in and sit down. Don't guide or point things out.", hint: "They'll find them. Your job is to stay settled.", cta: "Searching →" },
+      { instruction: "Once they've found everything, don't initiate contact for the first 10 minutes.", hint: "Notice what " + n() + " does when the search is over.", cta: "Done ✓" },
+    ],
+    obs: { label: "What did " + n() + " do when the sniff hunt was done?", hint: "For example: did they settle, look for more, come to you, or wander off?" },
+  },
+  evenings_early_d4: {
+    title: "Even earlier tonight",
+    duration: "About 15 minutes",
+    intro: "Same format as yesterday. Tonight, start it even earlier than you have been — 30 minutes earlier if you can.",
+    stages: [
+      { instruction: "Set up the sniff hunt or towel roll 30 minutes earlier than you've been starting this week.", hint: "Earlier than feels necessary is fine. That's the point of tonight.", cta: "Done ✓" },
+      { instruction: "Sit down as " + n() + " works. Don't guide or interact.", hint: "Keep everything else the same.", cta: "They're working →" },
+      { instruction: "First 10 minutes after they finish: stay settled, no engagement.", hint: "Notice whether the earlier start changes how the evening goes.", cta: "Done ✓" },
+    ],
+    obs: { label: "Did starting even earlier change anything?", hint: "For example: did " + n() + " settle more easily, seem calmer, or was it much the same?" },
+  },
+  evenings_early_d5: {
+    title: "The long occupation",
+    duration: "About 15 minutes",
+    intro: "Tonight: a longer occupation at the same early timing. Something that takes a while without needing much setup.",
+    stages: [
+      { instruction: "At your usual early time, give " + n() + " a long-lasting chew or something similar they already enjoy.", hint: "Use what you know works for them. Nothing new tonight.", cta: "Done ✓" },
+      { instruction: "Sit down as normal. No fuss, no event.", hint: "Just put it down and settle.", cta: "They're working →" },
+      { instruction: "Once they finish, keep the first 10 minutes interaction-free.", hint: "Notice whether they settle into their own spot, or come straight to you.", cta: "Done ✓" },
+    ],
+    obs: { label: "How did " + n() + " settle once they'd finished?", hint: "For example: did they find their own spot, come to you, seem restless, or was it an easier evening than usual?" },
+  },
+  evenings_early_d6: {
+    title: "The reinforcement session",
+    duration: "About 15 minutes",
+    intro: "You gave this one the highest rating earlier this week, so we're bringing it back today.",
+    stages: [
+      { instruction: "Run the same session as your highest-rated day this week. Same format, same timing.", hint: "You've done this before.", cta: "Done ✓" },
+      { instruction: "Sit down once " + n() + " is working. First 10 minutes: stay settled, no engagement.", hint: "Notice what " + n() + " does.", cta: "Done ✓" },
+    ],
+    obs: { label: "How did tonight compare to earlier in the week?", hint: "For example: did things feel more settled, about the same, or did something feel off?" },
+  },
+  evenings_early_d7: {
+    title: "The final session",
+    duration: "About 15 minutes",
+    intro: "Last session of the week. You gave this one the highest rating across all seven days, so we're finishing on it.",
+    stages: [
+      { instruction: "Run the highest-rated session from this week. Same format, same timing.", hint: "One more time.", cta: "Done ✓" },
+      { instruction: "Sit down once " + n() + " is working. First 10 minutes: stay settled, no engagement.", hint: "Notice how this evening feels compared to Day 1.", cta: "Done ✓" },
+    ],
+    obs: { label: "How did this evening feel compared to Day 1?", hint: "Easier, harder, about the same? Any moment that stood out?" },
+  },
+
+  // ── EVENINGS DINNER D2-D7 ─────────────────────────────────────────────────
+  // dinner: trigger is around dinner time specifically. Occupation is always dinner-based.
+  evenings_dinner_d2: {
+    title: "Scatter feed at dinner time",
+    duration: "About 15 minutes",
+    intro: "Last night was the towel roll. Tonight we try the scatter instead — same dinner time trigger, different format.",
+    stages: [
+      { instruction: "At dinner time, scatter " + n() + "'s dinner across the floor or in several small piles.", hint: "Spread it out so there's plenty to sniff through.", cta: "Done ✓" },
+      { instruction: "Let " + n() + " work through it. Don't help or point things out.", hint: "Sit down nearby and stay quiet.", cta: "They're done →" },
+      { instruction: "Once they've finished, don't initiate interaction for the first 10 minutes.", hint: "Notice what " + n() + " does when the scatter is done.", cta: "Done ✓" },
+    ],
+    obs: { label: "What did you notice when " + n() + " finished?", hint: "For example: did they settle, come to you, start pacing, or seem about the same as last night?" },
+  },
+  evenings_dinner_d3: {
+    title: "The sniff hunt at dinner time",
+    duration: "About 15 minutes",
+    intro: "Same dinner-time slot. Tonight " + n() + " has to hunt for their treats.",
+    stages: [
+      { instruction: "Before " + n() + " comes in, hide 5 or 6 small treats around one room.", hint: "Some easy, a couple harder. Vary the spots.", cta: "Done ✓" },
+      { instruction: "Let " + n() + " in at the usual dinner time. Sit down and let them search.", hint: "Don't guide. They'll find them.", cta: "Searching →" },
+      { instruction: "Once they've found everything, don't initiate contact for the first 10 minutes.", hint: "Notice what " + n() + " does when the search is over.", cta: "Done ✓" },
+    ],
+    obs: { label: "What did " + n() + " do when the sniff hunt was done?", hint: "For example: did they settle, look for more, come to you, or wander off?" },
+  },
+  evenings_dinner_d4: {
+    title: "Start before dinner time",
+    duration: "About 15 minutes",
+    intro: "Same format as the start of the week. Tonight, set it up 30 minutes before the usual dinner trigger.",
+    stages: [
+      { instruction: "Set up the scatter or towel roll 30 minutes earlier than your usual dinner time.", hint: "Earlier than feels necessary is the point. You're getting ahead of the trigger.", cta: "Done ✓" },
+      { instruction: "Sit down as " + n() + " works.", hint: "Keep everything else the same.", cta: "They're working →" },
+      { instruction: "First 10 minutes after they finish: stay settled, no engagement.", hint: "Notice whether the earlier start changes how the rest of the evening goes.", cta: "Done ✓" },
+    ],
+    obs: { label: "Did starting before the usual dinner trigger change anything?", hint: "For example: did " + n() + " settle more easily afterwards, or was it much the same?" },
+  },
+  evenings_dinner_d5: {
+    title: "The long occupation",
+    duration: "About 15 minutes",
+    intro: "Tonight, a longer occupation at the dinner-time slot. Something that takes a while.",
+    stages: [
+      { instruction: "At dinner time, give " + n() + " a long-lasting chew or something similar they already enjoy.", hint: "Use what you know works for them. Nothing new tonight.", cta: "Done ✓" },
+      { instruction: "Sit down as normal.", hint: "Just put it down and settle.", cta: "They're working →" },
+      { instruction: "Once they finish, keep the first 10 minutes interaction-free.", hint: "Notice whether they settle into their own spot, or come straight to you.", cta: "Done ✓" },
+    ],
+    obs: { label: "How did " + n() + " settle once they'd finished?", hint: "For example: did they find their own spot, come to you, seem restless, or was it an easier evening than usual?" },
+  },
+  evenings_dinner_d6: {
+    title: "The reinforcement session",
+    duration: "About 15 minutes",
+    intro: "You gave this one the highest rating earlier this week, so we're bringing it back today.",
+    stages: [
+      { instruction: "Run the same session as your highest-rated day this week. Same format, same timing.", hint: "You've done this before.", cta: "Done ✓" },
+      { instruction: "Sit down once " + n() + " is working. First 10 minutes: stay settled, no engagement.", hint: "Notice what " + n() + " does.", cta: "Done ✓" },
+    ],
+    obs: { label: "How did tonight compare to earlier in the week?", hint: "For example: did things feel more settled, about the same, or did something feel off?" },
+  },
+  evenings_dinner_d7: {
+    title: "The final session",
+    duration: "About 15 minutes",
+    intro: "Last session of the week. You gave this one the highest rating across all seven days, so we're finishing on it.",
+    stages: [
+      { instruction: "Run the highest-rated session from this week. Same format, same timing.", hint: "One more time.", cta: "Done ✓" },
+      { instruction: "Sit down once " + n() + " is working. First 10 minutes: stay settled, no engagement.", hint: "Notice how this evening feels compared to Day 1.", cta: "Done ✓" },
+    ],
+    obs: { label: "How did this evening feel compared to Day 1?", hint: "Easier, harder, about the same? Any moment that stood out?" },
+  },
+
+  // ── EVENINGS VARIES D2-D7 ─────────────────────────────────────────────────
+  // varies: D1 was observation. D2 is first prescription. Arc uses what D1 told us.
+  evenings_varies_d2: {
+    title: "The scatter feed",
+    duration: "About 15 minutes",
+    intro: "Last night we watched what usually happens. Tonight we step in before " + n() + "'s usual peak time.",
+    stages: [
+      { instruction: "Based on what you noticed last night, set up a scatter feed about 30 minutes before " + n() + "'s usual difficult time. Or at 6pm if you're not sure yet.", hint: "Use the timing that makes sense from what you observed.", cta: "Done ✓" },
+      { instruction: "Scatter " + n() + "'s dinner across the floor or loosely in a tea towel. Step back and let them work.", hint: "Don't help or interact. Just watch.", cta: "They're done →" },
+      { instruction: "Once they've finished, sit down as normal. Don't engage for the first 10 minutes.", hint: "Notice what happens compared to last night.", cta: "Done ✓" },
+    ],
+    obs: { label: "What did you notice compared to last night?", hint: "For example: did the earlier scatter change anything about the difficult period? Or did things follow the usual pattern?" },
+  },
+  evenings_varies_d3: {
+    title: "The towel roll dinner",
+    duration: "About 15 minutes",
+    intro: "Same timing as yesterday. Tonight the format changes: dinner in a tea towel.",
+    stages: [
+      { instruction: "Lay " + n() + "'s dinner along a tea towel and roll it loosely.", hint: "Not too tight. " + n() + " needs to work it open.", cta: "Done ✓" },
+      { instruction: "Put it on the floor at the same time as yesterday. Step back and let them work.", hint: "Don't help or encourage.", cta: "They're done →" },
+      { instruction: "Sit down once they've finished. First 10 minutes: no engagement.", hint: "Notice what " + n() + " does once the towel roll is done.", cta: "Done ✓" },
+    ],
+    obs: { label: "What did you notice when " + n() + " finished?", hint: "For example: did they settle, come to you, start pacing, or seem about the same as yesterday?" },
+  },
+  evenings_varies_d4: {
+    title: "The sniff hunt",
+    duration: "About 15 minutes",
+    intro: "Same timing as the last two nights. Tonight " + n() + " has to search for their treats.",
+    stages: [
+      { instruction: "Before " + n() + " comes in, hide 5 or 6 small treats around one room.", hint: "Some easy, a couple harder.", cta: "Done ✓" },
+      { instruction: "Let " + n() + " in at the usual time. Sit down and let them search.", hint: "Don't guide. They'll find them.", cta: "Searching →" },
+      { instruction: "Once they've found everything, first 10 minutes: stay settled, no engagement.", hint: "Notice what " + n() + " does when the search is over.", cta: "Done ✓" },
+    ],
+    obs: { label: "What did " + n() + " do when the sniff hunt was done?", hint: "For example: did they settle, look for more, come to you, or wander off?" },
+  },
+  evenings_varies_d5: {
+    title: "The long occupation",
+    duration: "About 15 minutes",
+    intro: "Same timing as this week. Tonight: something that lasts a while, with less setup.",
+    stages: [
+      { instruction: "At the usual time, give " + n() + " a long-lasting chew or something similar they already enjoy.", hint: "Use what you know works for them.", cta: "Done ✓" },
+      { instruction: "Sit down as normal.", hint: "Just put it down and settle.", cta: "They're working →" },
+      { instruction: "Once they finish, keep the first 10 minutes interaction-free.", hint: "Notice whether they settle into their own spot, or come straight to you.", cta: "Done ✓" },
+    ],
+    obs: { label: "How did " + n() + " settle once they'd finished?", hint: "For example: did they find their own spot, come to you, seem restless, or was it an easier evening?" },
+  },
+  evenings_varies_d6: {
+    title: "The reinforcement session",
+    duration: "About 15 minutes",
+    intro: "You gave this one the highest rating earlier this week, so we're bringing it back today.",
+    stages: [
+      { instruction: "Run the same session as your highest-rated day this week. Same format, same timing.", hint: "You've done this before.", cta: "Done ✓" },
+      { instruction: "Sit down once " + n() + " is working. First 10 minutes: stay settled, no engagement.", hint: "Notice what " + n() + " does.", cta: "Done ✓" },
+    ],
+    obs: { label: "How did tonight compare to earlier in the week?", hint: "For example: did things feel more settled, about the same, or did something feel off?" },
+  },
+  evenings_varies_d7: {
+    title: "The final session",
+    duration: "About 15 minutes",
+    intro: "Last session of the week. You gave this one the highest rating across all seven days, so we're finishing on it.",
+    stages: [
+      { instruction: "Run the highest-rated session from this week. Same format, same timing.", hint: "One more time.", cta: "Done ✓" },
+      { instruction: "Sit down once " + n() + " is working. First 10 minutes: stay settled, no engagement.", hint: "Notice how this evening feels compared to Day 1.", cta: "Done ✓" },
+    ],
+    obs: { label: "How did this evening feel compared to Day 1?", hint: "Easier, harder, about the same? Any moment that stood out?" },
+  },
+
+  // ── EVENINGS DONTKNOW D2-D7 ──────────────────────────────────────────────
+  // dontknow: D1 was observation. D2 is first prescription. Arc same as varies.
+  evenings_dontknow_d2: {
+    title: "The scatter feed",
+    duration: "About 15 minutes",
+    intro: "Last night we watched what usually happens. Tonight we step in before the difficult part begins.",
+    stages: [
+      { instruction: "Based on what you noticed last night, give " + n() + " a scatter feed about 30 minutes before the time things usually get hard. Or at 6pm if you're still not sure.", hint: "Use the timing that makes sense from what you saw.", cta: "Done ✓" },
+      { instruction: "Scatter " + n() + "'s dinner across the floor or loosely in a tea towel. Step back.", hint: "Don't help or interact. Just watch.", cta: "They're done →" },
+      { instruction: "Sit down once they've finished. Don't engage for the first 10 minutes.", hint: "Notice what happens compared to last night.", cta: "Done ✓" },
+    ],
+    obs: { label: "What did you notice compared to last night?", hint: "For example: did the scatter change anything? Or did things follow the usual pattern?" },
+  },
+  evenings_dontknow_d3: {
+    title: "The towel roll dinner",
+    duration: "About 15 minutes",
+    intro: "Same timing as yesterday. Tonight the format changes: dinner in a tea towel.",
+    stages: [
+      { instruction: "Lay " + n() + "'s dinner along a tea towel and roll it loosely.", hint: "Not too tight. " + n() + " needs to work it open.", cta: "Done ✓" },
+      { instruction: "Put it on the floor at the same time as yesterday. Step back.", hint: "Don't help or encourage.", cta: "They're done →" },
+      { instruction: "Sit down once they've finished. First 10 minutes: no engagement.", hint: "Notice what " + n() + " does once the towel roll is done.", cta: "Done ✓" },
+    ],
+    obs: { label: "What did you notice when " + n() + " finished?", hint: "For example: did they settle, come to you, start pacing, or seem about the same as yesterday?" },
+  },
+  evenings_dontknow_d4: {
+    title: "The sniff hunt",
+    duration: "About 15 minutes",
+    intro: "Same timing as the last two nights. Tonight " + n() + " has to search for their treats.",
+    stages: [
+      { instruction: "Before " + n() + " comes in, hide 5 or 6 small treats around one room.", hint: "Some easy, a couple harder.", cta: "Done ✓" },
+      { instruction: "Let " + n() + " in at the usual time. Sit down and let them search.", hint: "Don't guide. They'll find them.", cta: "Searching →" },
+      { instruction: "Once they've found everything, first 10 minutes: stay settled, no engagement.", hint: "Notice what " + n() + " does when the search is over.", cta: "Done ✓" },
+    ],
+    obs: { label: "What did " + n() + " do when the sniff hunt was done?", hint: "For example: did they settle, look for more, come to you, or wander off?" },
+  },
+  evenings_dontknow_d5: {
+    title: "The long occupation",
+    duration: "About 15 minutes",
+    intro: "Same timing as this week. Tonight: something that lasts a while, with less setup.",
+    stages: [
+      { instruction: "At the usual time, give " + n() + " a long-lasting chew or something similar they already enjoy.", hint: "Use what you know works for them.", cta: "Done ✓" },
+      { instruction: "Sit down as normal.", hint: "Just put it down and settle.", cta: "They're working →" },
+      { instruction: "Once they finish, keep the first 10 minutes interaction-free.", hint: "Notice whether they settle into their own spot, or come straight to you.", cta: "Done ✓" },
+    ],
+    obs: { label: "How did " + n() + " settle once they'd finished?", hint: "For example: did they find their own spot, come to you, seem restless, or was it an easier evening?" },
+  },
+  evenings_dontknow_d6: {
+    title: "The reinforcement session",
+    duration: "About 15 minutes",
+    intro: "You gave this one the highest rating earlier this week, so we're bringing it back today.",
+    stages: [
+      { instruction: "Run the same session as your highest-rated day this week. Same format, same timing.", hint: "You've done this before.", cta: "Done ✓" },
+      { instruction: "Sit down once " + n() + " is working. First 10 minutes: stay settled, no engagement.", hint: "Notice what " + n() + " does.", cta: "Done ✓" },
+    ],
+    obs: { label: "How did tonight compare to earlier in the week?", hint: "For example: did things feel more settled, about the same, or did something feel off?" },
+  },
+  evenings_dontknow_d7: {
+    title: "The final session",
+    duration: "About 15 minutes",
+    intro: "Last session of the week. You gave this one the highest rating across all seven days, so we're finishing on it.",
+    stages: [
+      { instruction: "Run the highest-rated session from this week. Same format, same timing.", hint: "One more time.", cta: "Done ✓" },
+      { instruction: "Sit down once " + n() + " is working. First 10 minutes: stay settled, no engagement.", hint: "Notice how this evening feels compared to Day 1.", cta: "Done ✓" },
+    ],
+    obs: { label: "How did this evening feel compared to Day 1?", hint: "Easier, harder, about the same? Any moment that stood out?" },
+  },
+
   // ══════════════════════════════════════════════════════════════════════
   // WEEKS 2–4 PAID PROGRAMME SESSIONS
   // Alone route: stages with {duration} token, resolved at render time.
