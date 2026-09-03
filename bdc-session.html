@@ -337,6 +337,8 @@ const S = {
   dogId:     null,
   dayNumber: 1,
   week:      1,
+  resolvedSessionKey: null,
+  reinforcementKey:   null,
 };
 
 function n() { return S.name; }
@@ -430,7 +432,73 @@ const SESSIONS = {
       { instruction: "Sit down as normal once they're done. Don't engage with " + n() + " for the first 10 minutes.", hint: "This is the test. Notice when — or whether — the usual chaos starts.", cta: "Done ✓" },
     ],
     obs: { label: "What did you notice when " + n() + " finished?", hint: "For example: did they settle when you sat down, come to you for attention, start pacing, or take longer than usual to wind up?" },
-    day2: "Settle spot introduction",
+  },
+  evenings_relax_d2: {
+    title: "The towel roll dinner",
+    duration: "About 15 minutes",
+    intro: "Last night was the scatter. Tonight we slow things down a bit more and see if " + n() + " transfers.",
+    stages: [
+      { instruction: "Lay " + n() + "'s dinner along the length of a tea towel, spread evenly.", hint: "The whole length. You want this to take a while.", cta: "Done ✓" },
+      { instruction: "Roll the towel loosely, not too tight. " + n() + " needs to be able to work it open.", hint: "Think loose sausage roll. Not a tight scroll.", cta: "Done ✓" },
+      { instruction: "Put it on the floor, step back and sit down. Don't help or encourage.", hint: "Let them figure it out. Struggling a little is part of it.", cta: "They're done →" },
+      { instruction: "Once they finish, stay sitting. Don't reach for them for the first 10 minutes.", hint: "Notice how they settle compared to last night.", cta: "Done ✓" },
+    ],
+    obs: { label: "How did " + n() + " settle once the towel roll was done?", hint: "For example: did they find a spot and lie down, come to you, seem restless, or take longer to unwind than last night?" },
+  },
+  evenings_relax_d3: {
+    title: "The sniff hunt",
+    duration: "About 15 minutes",
+    intro: "Tonight " + n() + " has to work the whole room. You sit down while they search.",
+    stages: [
+      { instruction: "Before " + n() + " comes in, hide 6 small treats around one room — behind chair legs, under a cushion edge, near the skirting board.", hint: "Vary the difficulty. Some easy finds, one or two harder.", cta: "Done ✓" },
+      { instruction: "Let " + n() + " into the room and sit down as normal. Don't point, don't guide.", hint: "They'll figure it out. Your job is to stay settled.", cta: "Searching →" },
+      { instruction: "Once they've found everything, stay sitting. Don't initiate contact for the first 10 minutes.", hint: "Notice where " + n() + " goes when the search is over.", cta: "Done ✓" },
+    ],
+    obs: { label: "What did " + n() + " do when the sniff hunt was done?", hint: "For example: did they settle near you, look for more, come and pester you, or wander off on their own?" },
+  },
+  evenings_relax_d4: {
+    title: "The early start",
+    duration: "About 15 minutes",
+    intro: "Tonight we try something different. We start before " + n() + " has a chance to get wound up.",
+    stages: [
+      { instruction: "At 5:30, before the usual restlessness begins — hide 6 small treats around the room as before.", hint: "Earlier than feels necessary is the point. You're getting ahead of it.", cta: "Done ✓" },
+      { instruction: "Let " + n() + " in and sit down straight away. Same as last time, no guiding.", hint: "Notice whether starting earlier changes anything about how they approach it.", cta: "Searching →" },
+      { instruction: "Once they've found everything, stay settled. Keep the first 10 minutes low-key.", hint: "Compare this evening to the ones earlier in the week.", cta: "Done ✓" },
+    ],
+    obs: { label: "Did starting earlier make a difference to how the evening went?", hint: "For example: did things feel easier, about the same, or harder? Did " + n() + " seem calmer coming into it?" },
+  },
+  evenings_relax_d5: {
+    title: "The long occupation",
+    duration: "About 15 minutes",
+    intro: "Tonight needs almost no setup. We're testing whether " + n() + " can settle with something they can work through slowly.",
+    stages: [
+      { instruction: "Give " + n() + " a long-lasting chew or something similar they already enjoy: a filled Kong, a dental chew.", hint: "Avoid anything new or that might cause a stomach issue. Use what you know works for them.", cta: "Done ✓" },
+      { instruction: "Sit down as normal. Don't make it a moment — just put it down and go sit.", hint: "No fuss. The less event you make of it, the better.", cta: "They're working →" },
+      { instruction: "While they're occupied, stay settled. Once they finish, keep the first 10 minutes interaction-free.", hint: "Notice whether they take themselves off to a spot, or come straight to you when they're done.", cta: "Done ✓" },
+    ],
+    obs: { label: "How did " + n() + " settle once they'd finished?", hint: "For example: did they find their own spot, come and nudge you, seem restless, or was it a noticeably easier evening?" },
+  },
+  evenings_relax_d6: {
+    // D6 is system-selected — this entry is the fallback if selectReinforcement returns null
+    title: "The reinforcement session",
+    duration: "About 15 minutes",
+    intro: "Based on how the week has gone, tonight we repeat the session that seemed to work best for " + n() + ".",
+    stages: [
+      { instruction: "Run the same session as the one that went best this week — same format, same timing.", hint: "You've done this before. " + n() + " knows what this means now.", cta: "Done ✓" },
+      { instruction: "Sit down once they're working. Stay settled for the first 10 minutes after they finish.", hint: "This is consolidation. The routine is forming.", cta: "Done ✓" },
+    ],
+    obs: { label: "How did tonight compare to earlier in the week?", hint: "For example: did things feel more settled, about the same, or did something feel off?" },
+  },
+  evenings_relax_d7: {
+    // D7 is also system-selected — this entry is the fallback
+    title: "The final session",
+    duration: "About 15 minutes",
+    intro: "Last session of the week. Run the one that's worked best and notice how it feels compared to Day 1.",
+    stages: [
+      { instruction: "Run the session that's rated highest this week — same format, same timing as before.", hint: "You've built this routine over 6 days. Tonight is the proof.", cta: "Done ✓" },
+      { instruction: "Sit down once " + n() + " is working. First 10 minutes: stay settled, no engagement.", hint: "Notice the difference from where you started.", cta: "Done ✓" },
+    ],
+    obs: { label: "How did this evening feel compared to Day 1?", hint: "Easier, harder, about the same? Any moment that stood out?" },
   },
   evenings_varies_d1: {
     title: "The observation evening",
@@ -463,12 +531,58 @@ const DAY_NAMES = {
   evenings: ["Scatter feed at 6pm","Towel roll dinner","Sniff hunt","Settle spot training","Early intercept","Full routine practice","Week one — look back"],
 };
 
+// ── Adaptive reinforcement selector (D6 and D7) ──
+// Queries this dog's completed sessions, finds the highest-rated eligible day,
+// returns that day's activity_key to use as the D6/D7 prescription.
+// Eligibility: D1–D5 for D6; D1–D6 for D7.
+// Tie-break: most recent. Fallback: evenings_relax_d4 (the early-start session).
+
+async function selectReinforcement(dogId, currentDay) {
+  const maxEligibleDay = currentDay - 1; // D6 can use D1-D5, D7 can use D1-D6
+  const { data: pastSessions, error } = await sb
+    .from('sessions')
+    .select('day_number, week, activity_key, rating')
+    .eq('dog_id', dogId)
+    .eq('week', 1)
+    .lte('day_number', maxEligibleDay)
+    .not('rating', 'is', null)
+    .order('rating', { ascending: false })
+    .order('day_number', { ascending: false });
+
+  if (error || !pastSessions || pastSessions.length === 0) {
+    console.warn('selectReinforcement: no rated sessions found, using fallback');
+    return S.route + '_' + S.threshold + '_d4';
+  }
+
+  const best = pastSessions[0];
+  console.log('selectReinforcement: selected', best.activity_key, 'rating', best.rating);
+  return best.activity_key;
+}
+
+// ── Session key resolution ──
+// D1–D5: static key from route + threshold + day
+// D6–D7: adaptive, resolved from selectReinforcement
+// Returns null if prescription is missing — fails visibly, not silently.
+
+async function resolveSessionKey() {
+  const day = S.dayNumber;
+  if (day <= 5) {
+    return S.route + '_' + S.threshold + '_d' + day;
+  }
+  // D6 or D7 — look up best prior session
+  const bestKey = await selectReinforcement(S.dogId, day);
+  // Store which day this is reinforcing so the intro copy can reference it
+  S.reinforcementKey = bestKey;
+  return bestKey;
+}
+
 function sessionKey(dayNumber) {
+  // For static days only — use resolveSessionKey() for D6/D7
   return S.route + '_' + S.threshold + '_d' + dayNumber;
 }
 
 function session() {
-  const key = sessionKey(S.dayNumber);
+  const key = S.resolvedSessionKey || sessionKey(S.dayNumber);
   const prescription = SESSIONS[key];
   if (!prescription) {
     console.error('Missing prescription:', key, '— Day', S.dayNumber, 'content not yet in library.');
@@ -936,6 +1050,9 @@ async function loadDogFromAuth(userId, isAnonymous) {
   // Set S coordinates from resolver
   S.week      = pos.week;
   S.dayNumber = pos.day;
+
+  // Resolve the session key (adaptive for D6/D7, static for D1–D5)
+  S.resolvedSessionKey = await resolveSessionKey();
 
   // Route to correct screen based on resolver state object.
   if (pos.reflectionDue) {
