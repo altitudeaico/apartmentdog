@@ -219,7 +219,7 @@ body { font-family: 'Inter', sans-serif; background: var(--faint); color: var(--
   <h1 class="screen-title" id="s4title">Where should we send the plan?</h1>
   <p class="screen-sub">One short email a day for seven days. Just what you need for that day's session.</p>
   <input class="email-input" id="emailInput" type="email" placeholder="your@email.com" oninput="updateEmailCta()">
-  <p class="email-note">We'll send day two tomorrow. Nothing else.</p>
+  <p class="email-note">Day 2 will arrive tomorrow.</p>
 </div>
 
 <!-- STEP 5: Calculation + Full Reveal -->
@@ -599,7 +599,7 @@ function buildReveal() {
   document.getElementById('calcState').style.display = 'none';
   document.getElementById('planReveal').style.display = 'block';
   updateCta('step5');
-  // TODO: POST to GHL webhook { name: S.name, email: S.email, problem: route(), threshold: S.threshold }
+  // TODO: POST to GHL webhook { name: S.name, email: S.email, reported_problem: S.problem, primary_route: route(), threshold: S.threshold }
 }
 
 show('step1');
