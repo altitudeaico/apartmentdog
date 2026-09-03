@@ -343,7 +343,7 @@ function n() { return S.name; }
 
 // ── Session content library ──
 const SESSIONS = {
-  alone_under5: {
+  alone_under5_d1: {
     title: "The 90-second test",
     duration: "About 5 minutes",
     intro: "Because " + n() + " struggles almost straight away, we start with something so short it can't fail.",
@@ -356,7 +356,7 @@ const SESSIONS = {
     obs: { label: "What happened when you stepped away?", hint: "For example: did " + n() + " carry on sniffing, follow you, bark, or seem worried?" },
     day2: "Scatter feed — 2 minutes",
   },
-  alone_5to15: {
+  alone_5to15_d1: {
     title: "The scatter feed departure",
     duration: "About 15 minutes",
     intro: n() + " can hold it for a few minutes, so tonight we use that window.",
@@ -369,7 +369,7 @@ const SESSIONS = {
     obs: { label: "What happened when you stepped away?", hint: "For example: did " + n() + " notice you'd gone, carry on sniffing, look for you, or seem unsettled?" },
     day2: "5-minute departure",
   },
-  alone_15to30: {
+  alone_15to30_d1: {
     title: "The calm departure drill",
     duration: "About 20 minutes",
     intro: "The issue isn't how long " + n() + " can cope — it's what happens around the moment you leave.",
@@ -382,7 +382,7 @@ const SESSIONS = {
     obs: { label: "What happened when you stepped away?", hint: "For example: was " + n() + " calm when you got back, still working on the chew, or up and looking for you?" },
     day2: "15-minute departure",
   },
-  alone_dontknow: {
+  alone_dontknow_d1: {
     title: "Finding the baseline",
     duration: "About 10 minutes",
     intro: "We find " + n() + "'s starting point tonight. Two minutes. Safely.",
@@ -395,7 +395,7 @@ const SESSIONS = {
     obs: { label: "What happened when you stepped away?", hint: "For example: was " + n() + " calm, looking for you, or had they already stopped eating?" },
     day2: "Building on tonight",
   },
-  evenings_early: {
+  evenings_early_d1: {
     title: "Intercept the build-up",
     duration: "About 15 minutes",
     intro: n() + " starts ramping up before the chaos hits. Tonight we step in before that happens.",
@@ -407,7 +407,7 @@ const SESSIONS = {
     obs: { label: "What did you notice when " + n() + " finished?", hint: "For example: did they settle, start pacing again, look for you, or seem about the same as usual?" },
     day2: "Towel roll dinner",
   },
-  evenings_dinner: {
+  evenings_dinner_d1: {
     title: "The towel roll dinner",
     duration: "About 15 minutes",
     intro: "Dinner time is the trigger for " + n() + ". Tonight we slow it right down.",
@@ -420,7 +420,7 @@ const SESSIONS = {
     obs: { label: "What did you notice when " + n() + " finished?", hint: "For example: did they settle, start pacing again, get more excited, or seem about the same?" },
     day2: "Scatter feed + towel roll",
   },
-  evenings_relax: {
+  evenings_relax_d1: {
     title: "The pre-chaos scatter",
     duration: "About 15 minutes",
     intro: n() + " is fine until you try to sit down — then it kicks off. Tonight we get ahead of it.",
@@ -432,7 +432,7 @@ const SESSIONS = {
     obs: { label: "What did you notice when " + n() + " finished?", hint: "For example: did they settle when you sat down, come to you for attention, start pacing, or take longer than usual to wind up?" },
     day2: "Settle spot introduction",
   },
-  evenings_varies: {
+  evenings_varies_d1: {
     title: "The observation evening",
     duration: "About 15 minutes",
     intro: "Before we build anything for " + n() + ", we need to understand what their evenings actually look like.",
@@ -444,7 +444,7 @@ const SESSIONS = {
     obs: { label: "What did you notice tonight?", hint: "For example: when did things peak, what did it look like, and what happened just before it?" },
     day2: "Building on tonight",
   },
-  evenings_dontknow: {
+  evenings_dontknow_d1: {
     title: "The observation evening",
     duration: "About 15 minutes",
     intro: "Before we build anything for " + n() + ", we need to understand what their evenings actually look like.",
@@ -463,11 +463,17 @@ const DAY_NAMES = {
   evenings: ["Scatter feed at 6pm","Towel roll dinner","Sniff hunt","Settle spot training","Early intercept","Full routine practice","Week one — look back"],
 };
 
-function sessionKey() {
-  return S.route + '_' + S.threshold;
+function sessionKey(dayNumber) {
+  // Format: {route}_{threshold}_d{N}
+  // The activity library must export an entry for each day.
+  // Falls back to d1 if the day isn't in the library yet.
+  const key = S.route + '_' + S.threshold + '_d' + dayNumber;
+  return SESSIONS[key] ? key : S.route + '_' + S.threshold + '_d1';
 }
 
 function session() {
+  return SESSIONS[sessionKey(S.dayNumber)] || SESSIONS[S.route + '_' + S.threshold] || SESSIONS['evenings_relax_d1'];
+}
   return SESSIONS[sessionKey()] || SESSIONS['evenings_relax'];
 }
 
@@ -730,6 +736,102 @@ function handleCta() {
 // same path: auth session exists → dog resolved → session shown.
 // sessionStorage and URL params are NOT required for memory.
 
+// ── Programme-position resolver ───────────────────────────
+// Derives product state from persisted sessions + reflections.
+// Returns a state object — never embeds routing logic in the UI.
+//
+// State object shape:
+// {
+//   week: int,             — current week number
+//   dayNumber: int,        — next day to complete (1–7)
+//   lifecycle: string,     — 'do' | 'reflect' | 'remember' | 'compare'
+//   todayCompleted: bool,  — has today's session been written?
+//   weekReflectionDue: bool, — is the W1 (or W2) north-star question pending?
+//   comparisonEligible: bool  — two complete weeks + both reflections answered?
+// }
+
+async function resolvePosition(dogId) {
+  // Fetch all sessions ordered by week + day
+  const { data: sessions } = await sb
+    .from('sessions')
+    .select('week, day_number, rating, activity_key, completed_at')
+    .eq('dog_id', dogId)
+    .order('week', { ascending: true })
+    .order('day_number', { ascending: true });
+
+  // Fetch all weekly reflections
+  const { data: reflections } = await sb
+    .from('weekly_reflections')
+    .select('week_number, question_key, answer_text, answered_at')
+    .eq('dog_id', dogId)
+    .order('week_number', { ascending: true });
+
+  const completedSessions = sessions || [];
+  const answeredReflections = (reflections || []).filter(r => r.answered_at);
+
+  // If nothing completed — fresh start
+  if (completedSessions.length === 0) {
+    return {
+      week: 1, dayNumber: 1,
+      lifecycle: 'do',
+      todayCompleted: false,
+      weekReflectionDue: false,
+      comparisonEligible: false,
+      lastSession: null,
+    };
+  }
+
+  // Find the furthest completed coordinate
+  const last = completedSessions[completedSessions.length - 1];
+  const maxWeek = last.week;
+  const maxDay  = last.day_number;
+
+  // Has the week's reflection been answered?
+  const w1Reflected = answeredReflections.some(r => r.week_number === 1);
+  const w2Reflected = answeredReflections.some(r => r.week_number === 2);
+
+  // Comparison eligible: two full weeks of sessions + both reflections answered
+  const w1Complete = completedSessions.filter(s => s.week === 1).length === 7;
+  const w2Complete = completedSessions.filter(s => s.week === 2).length === 7;
+  const comparisonEligible = w1Complete && w2Complete && w1Reflected && w2Reflected;
+
+  // Determine next day
+  let nextWeek = maxWeek;
+  let nextDay  = maxDay + 1;
+  if (nextDay > 7) { nextWeek++; nextDay = 1; }
+
+  // Today's session: the session matching nextWeek/nextDay
+  const todayCompleted = completedSessions.some(
+    s => s.week === nextWeek && s.day_number === nextDay
+  );
+
+  // Day 7 completed but no reflection yet → reflect state
+  const weekReflectionDue = (
+    maxDay === 7 &&
+    ((maxWeek === 1 && !w1Reflected) || (maxWeek === 2 && !w2Reflected))
+  );
+
+  // Lifecycle state
+  let lifecycle = 'do';
+  if (weekReflectionDue) {
+    lifecycle = 'reflect';
+  } else if (maxWeek >= 2 && w1Reflected && !comparisonEligible) {
+    lifecycle = 'remember';
+  } else if (comparisonEligible) {
+    lifecycle = 'compare';
+  }
+
+  return {
+    week: nextWeek,
+    dayNumber: nextDay,
+    lifecycle,
+    todayCompleted,
+    weekReflectionDue,
+    comparisonEligible,
+    lastSession: last,
+  };
+}
+
 async function loadDogFromAuth(userId) {
   const { data: dog, error: dogErr } = await sb
     .from('dogs')
@@ -754,29 +856,34 @@ async function loadDogFromAuth(userId) {
     return;
   }
 
-  // Check if day 1 is already completed
-  const { data: existingSession } = await sb
-    .from('sessions')
-    .select('id, rating')
-    .eq('dog_id', dog.id)
-    .eq('week', 1)
-    .eq('day_number', 1)
-    .maybeSingle();
-
-  // Populate state from real data
+  // Populate identity state
   S.dogId     = dog.id;
   S.name      = dog.name;
   S.route     = onboarding.route;
   S.threshold = onboarding.threshold;
-  S.dayNumber = 1;
-  S.week      = 1;
 
-  if (existingSession) {
-    // Day 1 already done — go straight to home
-    S.rating = existingSession.rating;
+  // Resolve programme position from persisted evidence
+  const pos = await resolvePosition(dog.id);
+
+  // Log for acceptance test visibility
+  console.log('Programme position:', JSON.stringify(pos));
+
+  // Set S coordinates from resolver
+  S.week      = pos.week;
+  S.dayNumber = pos.dayNumber;
+
+  // Route to the correct screen based on lifecycle state
+  if (pos.weekReflectionDue) {
+    // Day 7 done — weekly reflection needed before proceeding
+    // TODO: build reflection screen (State 2)
+    buildHome();
+    show('screenHome');
+  } else if (pos.todayCompleted) {
+    // Today already done — show home
     buildHome();
     show('screenHome');
   } else {
+    // Today's session is due — show session intro for correct day
     buildIntro();
   }
 }
