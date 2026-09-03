@@ -198,6 +198,7 @@ body { font-family: 'Inter', sans-serif; background: var(--faint); color: var(--
   <div class="step-card">
     <div class="step-instruction" id="stepInstruction"></div>
     <div class="step-hint" id="stepHint"></div>
+    <img id="stepSettleImg" src="https://altitudeaico.github.io/apartmentdog/images/bdc/asset-6-settling.webp" alt="Scruffy settling" style="display:none;width:100%;border-radius:var(--radius-sm);object-fit:cover;max-height:180px;margin-top:16px;" loading="lazy">
   </div>
 </div>
 
@@ -539,6 +540,7 @@ function renderStep() {
   document.getElementById('stepLabel').textContent = 'Step ' + (i+1) + ' of ' + stages.length;
   document.getElementById('stepInstruction').textContent = stage.instruction;
   document.getElementById('stepHint').textContent = stage.hint || '';
+  document.getElementById('stepSettleImg').style.display = (i === stages.length - 1) ? 'block' : 'none';
 
   const btn = document.getElementById('mainCta');
   btn.textContent = stage.cta;
