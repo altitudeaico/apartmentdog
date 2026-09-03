@@ -508,7 +508,7 @@ function updateCta(screenId) {
   else if (screenId === 'step2b') { btn.textContent = 'Continue'; btn.disabled = !S.primaryProblem; }
   else if (screenId === 'step3') { btn.textContent = 'Continue'; btn.disabled = !S.threshold; }
   else if (screenId === 'step4') { btn.textContent = "Build " + n() + "'s plan"; btn.disabled = true; }
-  else { btn.textContent = 'Start day one tonight'; btn.disabled = false; }
+  else { btn.textContent = 'Check your email to start Day 1'; btn.disabled = false; }
 }
 
 function updateEmailCta() {
@@ -624,19 +624,49 @@ function buildReveal() {
   .then(r => r.json())
   .then(data => {
     if (data.success) {
-      // Store dog_id for the session page
       if (data.dog_id) sessionStorage.setItem('bdc_dog_id', data.dog_id);
-      const cta = document.getElementById('mainCta');
-      cta.textContent = data.magic_link_sent
-        ? 'Check your email for the link'
-        : "Start day one tonight";
-      cta.disabled = false;
+
+      // Show inbox confirmation — replaces the plan reveal CTA area
+      const ctaWrap = document.querySelector('.cta-wrap');
+      const maskedEmail = S.email.replace(/(.{2})(.*)(@.*)/, (_, a, b, c) => a + b.replace(/./g, '•') + c);
+      ctaWrap.innerHTML = `
+        <div style="background:var(--olive-light);border-radius:var(--radius);padding:20px 18px;margin-bottom:12px;text-align:center;">
+          <div style="font-size:15px;font-weight:600;color:var(--ink);margin-bottom:6px;">Check your inbox</div>
+          <div style="font-size:14px;color:var(--warm);line-height:1.6;">We've sent your secure sign-in link to <strong>${maskedEmail}</strong>. Open it to start ${n()}'s Day 1 session.</div>
+        </div>
+        <button class="btn btn-primary" onclick="resendLink()" id="resendBtn">Resend sign-in email</button>
+        <button class="btn btn-ghost" onclick="show('step4')" style="margin-top:8px;">Use a different email</button>
+      `;
     } else {
       console.error('Wizard submit error:', data.error);
     }
   })
   .catch(err => {
     console.error('Wizard submit failed:', err);
+  });
+}
+
+function resendLink() {
+  const btn = document.getElementById('resendBtn');
+  if (btn) { btn.textContent = 'Sending...'; btn.disabled = true; }
+  const payload = {
+    email: S.email,
+    dog_name: S.name,
+    route: route(),
+    reported_problem: S.problem,
+    threshold: thresh()
+  };
+  fetch('https://fpgecjgymgosfnkrvjue.supabase.co/functions/v1/wizard-complete', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  })
+  .then(r => r.json())
+  .then(() => {
+    if (btn) { btn.textContent = 'Email sent — check your inbox'; btn.disabled = true; }
+  })
+  .catch(() => {
+    if (btn) { btn.textContent = 'Resend sign-in email'; btn.disabled = false; }
   });
 }
 
