@@ -948,25 +948,33 @@ const authTimeout = setTimeout(() => {
 }, 4000);
 
 function showUnauthenticated() {
-  // Clear the loading/session placeholder — show a clean unauthenticated state
+  // Show a fully static screen — no dependency on S state whatsoever.
+  // S may contain stale values from a previous session or JS defaults.
+  // Nothing here should imply the owner has a dog, a programme, or any progress.
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById('screenHome').classList.add('active');
-  document.getElementById('headerMeta').textContent = 'Welcome back';
-  document.getElementById('homeDogName').textContent = 'Welcome back';
-  document.getElementById('homeSarahText').textContent = 'To pick up where you left off, tap below to get a new sign-in link.';
-  const grid = document.getElementById('homeWeekGrid');
-  if (grid) grid.innerHTML = '';
-  const sarah = document.querySelector('.home-sarah');
-  if (sarah) sarah.style.display = 'block';
-  const streakEl = document.querySelector('.home-streak');
-  if (streakEl) streakEl.style.display = 'none';
-  const nextEl = document.querySelector('.home-next');
-  if (nextEl) nextEl.style.display = 'none';
+
+  // Build a minimal static screen rather than reusing any home screen elements
+  const container = document.querySelector('.app-container') || document.body;
+  const existing = document.getElementById('screenUnauthenticated');
+  if (!existing) {
+    const div = document.createElement('div');
+    div.id = 'screenUnauthenticated';
+    div.className = 'screen active';
+    div.style.cssText = 'display:flex;flex-direction:column;align-items:center;padding:48px 24px;gap:16px;text-align:center;';
+    div.innerHTML = `
+      <div style="font-family:'Lora',serif;font-size:22px;color:var(--ink);margin-bottom:8px;">Welcome back</div>
+      <div style="font-size:15px;color:var(--warm);line-height:1.6;max-width:300px;">To pick up where you left off, get a new sign-in link from the wizard.</div>
+      <button id="unauthCta" style="margin-top:24px;background:var(--terra);color:#fff;border:none;border-radius:99px;padding:16px 32px;font-size:16px;font-weight:600;cursor:pointer;width:100%;max-width:360px;">Go to the wizard</button>
+    `;
+    container.appendChild(div);
+    document.getElementById('unauthCta').onclick = () => { window.location.href = '/bdc-wizard.html'; };
+  } else {
+    existing.classList.add('active');
+  }
+
+  // Hide the main CTA so it doesn't show through
   const cta = document.getElementById('mainCta');
-  cta.textContent = 'Go to the wizard to get your link';
-  cta.disabled = false;
-  cta.className = 'btn btn-primary';
-  cta.onclick = () => { window.location.href = '/bdc-wizard.html'; };
+  if (cta) cta.style.display = 'none';
 }
 </script>
 </body>
