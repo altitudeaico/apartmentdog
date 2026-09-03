@@ -401,6 +401,7 @@ const S = {
   week:      1,
   resolvedSessionKey: null,
   reinforcementKey:   null,
+  currentPrescription: null, // set by resolveSessionPrescription in loadDogFromAuth
 };
 
 function n() { return S.name; }
@@ -469,7 +470,7 @@ const SESSIONS = {
     // Fallback only — selectReinforcement() should return a prior key in normal use
     title: "Back to what worked",
     duration: "About 5 minutes",
-    intro: "You gave this session the best rating earlier this week, so we're bringing it back today.",
+    intro: "You gave this one the highest rating earlier this week, so we're bringing it back today.",
     stages: [
       { instruction: "Run the same session as your highest-rated day this week. Same format, same leaving routine.", hint: "You've done this before.", cta: "Done ✓" },
       { instruction: "Step out for the same duration as that session. Return calmly.", hint: "No new elements today.", cta: "Done ✓" },
@@ -547,7 +548,7 @@ const SESSIONS = {
   alone_5to15_d6: {
     title: "Back to what worked",
     duration: "About 10 minutes",
-    intro: "You gave this session the best rating earlier this week, so we're bringing it back today.",
+    intro: "You gave this one the highest rating earlier this week, so we're bringing it back today.",
     stages: [
       { instruction: "Run the same session as your highest-rated day. Same format, same leaving routine.", hint: "You've done this before.", cta: "Done ✓" },
       { instruction: "Step out for the same duration. Return calmly.", hint: "No new elements.", cta: "Done ✓" },
@@ -624,7 +625,7 @@ const SESSIONS = {
   alone_15to30_d6: {
     title: "Back to what worked",
     duration: "About 20 minutes",
-    intro: "You gave this session the best rating earlier this week, so we're bringing it back today.",
+    intro: "You gave this one the highest rating earlier this week, so we're bringing it back today.",
     stages: [
       { instruction: "Run the same session as your highest-rated day. Same format, same leaving routine, same duration.", hint: "You've done this before.", cta: "Done ✓" },
       { instruction: "Return calmly at the end.", hint: "No new elements today.", cta: "Done ✓" },
@@ -701,7 +702,7 @@ const SESSIONS = {
   alone_dontknow_d6: {
     title: "Back to what worked",
     duration: "About 10 minutes",
-    intro: "You gave this session the best rating earlier this week, so we're bringing it back today.",
+    intro: "You gave this one the highest rating earlier this week, so we're bringing it back today.",
     stages: [
       { instruction: "Run the same session as your highest-rated day. Same format, same leaving routine, same duration.", hint: "You've done this before.", cta: "Done ✓" },
       { instruction: "Return calmly at the end.", hint: "No new elements today.", cta: "Done ✓" },
@@ -852,66 +853,407 @@ const DAY_NAMES = {
   evenings: ["Scatter feed at 6pm","Towel roll dinner","Sniff hunt","Settle spot training","Early intercept","Full routine practice","Week one — look back"],
 };
 
-// ── Adaptive reinforcement selector (D6 and D7) ──
-// Queries this dog's completed sessions, finds the highest-rated eligible day,
-// returns that day's activity_key to use as the D6/D7 prescription.
-// Eligibility: D1–D5 for D6; D1–D6 for D7.
-// Tie-break: most recent. Fallback: evenings_relax_d4 (the early-start session).
+// ══════════════════════════════════════════════════════════════════════════
+// RESOLVER ENGINE — Pass 1
+// Replaces the old selectReinforcement / resolveSessionKey / session() trio.
+// Each function has exactly one responsibility. None does another's job.
+// ══════════════════════════════════════════════════════════════════════════
 
-async function selectReinforcement(dogId, currentDay) {
-  const maxEligibleDay = currentDay - 1; // D6 can use D1-D5, D7 can use D1-D6
+// ── Duration table (locked) ──────────────────────────────────────────────
+// Alone route only. Values in seconds.
+// dontknow: 90s maintain, no progress (never produces progress envelope).
+// over30: 20 min maintain, 30 min progress.
+const DURATION_TABLE = {
+  under5:   { maintain: 90,   progress: 180  },
+  '5to15':  { maintain: 180,  progress: 420  },
+  '15to30': { maintain: 600,  progress: 1200 },
+  over30:   { maintain: 1200, progress: 1800 },
+  dontknow: { maintain: 90,   progress: null }, // no progress for dontknow
+};
+
+// Threshold rank for envelope comparison (alone route)
+const THRESHOLD_RANK = { under5: 0, '5to15': 1, '15to30': 2, over30: 3 };
+
+// ── Declarative routing table ────────────────────────────────────────────
+// Encodes the full paid-programme routing for weeks 2–4, both routes.
+// Types: 'static' | 'anchor' | 'envelope' | 'repeat_day' | 'reinforcement'
+const PROGRAMME_ROUTES = {
+  evenings: {
+    2: {
+      1: { type: 'anchor' },
+      2: { type: 'static', key: 'evenings_w2_d2' },
+      3: { type: 'envelope', progress: 'evenings_w2_d3p', maintain: 'evenings_w2_d3m' },
+      4: { type: 'envelope', progress: 'evenings_w2_d4p', maintain: 'evenings_w2_d4m' },
+      5: { type: 'repeat_day', day: 4 },
+      6: { type: 'reinforcement' },
+      7: { type: 'reinforcement' },
+    },
+    3: {
+      1: { type: 'anchor' },
+      2: { type: 'static', key: 'evenings_w3_d2' },
+      3: { type: 'static', key: 'evenings_w3_d3' },
+      4: { type: 'envelope', progress: 'evenings_w3_d4p', maintain: 'evenings_w3_d4m' },
+      5: { type: 'static', key: 'evenings_w3_d5' },
+      6: { type: 'reinforcement' },
+      7: { type: 'reinforcement' },
+    },
+    4: {
+      1: { type: 'anchor' },
+      2: { type: 'static', key: 'evenings_w4_d2' },
+      3: { type: 'static', key: 'evenings_w4_d3' },
+      4: { type: 'static', key: 'evenings_w4_d4' },
+      5: { type: 'repeat_day', day: 4 },
+      6: { type: 'reinforcement' },
+      7: { type: 'reinforcement' },
+    },
+  },
+  alone: {
+    2: {
+      1: { type: 'anchor' },
+      2: { type: 'static', key: 'alone_w2_d2' },
+      3: { type: 'static', key: 'alone_w2_d3' },
+      4: { type: 'envelope', progress: 'alone_w2_d4p', maintain: 'alone_w2_d4m' },
+      5: { type: 'static', key: 'alone_w2_d5' },
+      6: { type: 'reinforcement' },
+      7: { type: 'reinforcement' },
+    },
+    3: {
+      1: { type: 'anchor' },
+      2: { type: 'static', key: 'alone_w3_d2' },
+      3: { type: 'static', key: 'alone_w3_d3' },
+      4: { type: 'envelope', progress: 'alone_w3_d4p', maintain: 'alone_w3_d4m' },
+      5: { type: 'static', key: 'alone_w3_d5' },
+      6: { type: 'reinforcement' },
+      7: { type: 'reinforcement' },
+    },
+    4: {
+      1: { type: 'anchor' },
+      2: { type: 'static', key: 'alone_w4_d2' },
+      3: { type: 'static', key: 'alone_w4_d3' },
+      4: { type: 'static', key: 'alone_w4_d4' },
+      5: { type: 'repeat_day', day: 4 },
+      6: { type: 'reinforcement' },
+      7: { type: 'reinforcement' },
+    },
+  },
+};
+
+// ── Contextual intro overrides (audited against final locked copy) ────────
+const WEEK_INTROS = {
+  evenings: {
+    2: {
+      d1: "Last week you gave this one the highest rating. Tonight we run it again, same setup, same timing. Week 2 starts from where Week 1 left off.",
+      d5: "Same one as yesterday tonight. Same order, same setup, same timing. Nothing new to remember.",
+      d6: "You gave this one the highest rating earlier this week, so we're bringing it back today.",
+      d7: "Last one for Week 2. This was your highest-rated session this week, so we're bringing it back once more.",
+    },
+    3: {
+      d1: "Last week you gave this one the highest rating. Week 3 starts here — same setup, same timing.",
+      d6: "You gave this one the highest rating earlier this week, so we're bringing it back today.",
+      d7: "Last one for Week 3. This was your highest-rated session this week, so we're bringing it back once more.",
+    },
+    4: {
+      d1: "Last week you gave this one the highest rating. Week 4 starts here — same setup, same timing.",
+      d5: "Same as yesterday. Use the setup you chose, and settle as you normally would.",
+      d6: "You gave this one the highest rating earlier this week, so we're bringing it back today.",
+      d7: "Last session of the programme. This was your highest-rated session this week, so we're finishing on it.",
+    },
+  },
+  alone: {
+    2: {
+      d1: "Last week you gave this one the highest rating. Week 2 starts here — same format, same leaving routine.",
+      d6: "You gave this one the highest rating earlier this week, so we're bringing it back today.",
+      d7: "Last one for Week 2. This was your highest-rated session this week, so we're bringing it back once more.",
+    },
+    3: {
+      d1: "Last week you gave this one the highest rating. Week 3 starts here — same format, same leaving routine.",
+      d6: "You gave this one the highest rating earlier this week, so we're bringing it back today.",
+      d7: "Last one for Week 3. This was your highest-rated session this week, so we're bringing it back once more.",
+    },
+    4: {
+      d1: "Last week you gave this one the highest rating. Week 4 starts here — same format, same leaving routine.",
+      d5: "Same as yesterday — set it up in the way that fitted your day, same departure length.",
+      d6: "You gave this one the highest rating earlier this week, so we're bringing it back today.",
+      d7: "Last session of the programme. This was your highest-rated session this week, so we're finishing on it.",
+    },
+  },
+};
+
+// ── resolveEffectiveThreshold(dogId, beforeWeek) ─────────────────────────
+// Alone route only. Considers only reflections where week_number < beforeWeek.
+// Returns the latest non-not_sure threshold answer, else onboarding threshold.
+// beforeWeek = 2 → considers only W1 reflection (same as "start of W2").
+
+async function resolveEffectiveThreshold(dogId, beforeWeek) {
+  const { data: reflections } = await sb
+    .from('weekly_reflections')
+    .select('week_number, answer')
+    .eq('dog_id', dogId)
+    .in('question_key', ['alone_w1_tolerance', 'alone_w2_tolerance', 'alone_w3_tolerance'])
+    .lt('week_number', beforeWeek)
+    .order('week_number', { ascending: false });
+
+  const latest = (reflections || []).find(r => r.answer !== 'not_sure');
+  if (latest) return latest.answer;
+
+  const { data: onboarding } = await sb
+    .from('onboarding_answers')
+    .select('threshold')
+    .eq('dog_id', dogId)
+    .maybeSingle();
+
+  return onboarding?.threshold || 'dontknow';
+}
+
+// ── resolveWeekEnvelope(dogId, route, week) ──────────────────────────────
+// Returns 'progress' or 'maintain'.
+// Evenings: reads previous week's reflection ease answer.
+// Alone: compares effectiveThreshold at start of current vs previous week.
+// dontknow threshold → always maintain.
+// Alone: progress only when both thresholds are ranked and current > previous.
+
+async function resolveWeekEnvelope(dogId, route, week) {
+  if (route === 'evenings') {
+    const { data } = await sb
+      .from('weekly_reflections')
+      .select('answer')
+      .eq('dog_id', dogId)
+      .eq('week_number', week - 1)
+      .in('question_key', ['evenings_w1_ease', 'evenings_w2_ease', 'evenings_w3_ease'])
+      .maybeSingle();
+    return (data?.answer === 'noticeably_easier') ? 'progress' : 'maintain';
+  }
+
+  // Alone: compare threshold ranks
+  const prevThreshold = await resolveEffectiveThreshold(dogId, week - 1);
+  const currThreshold = await resolveEffectiveThreshold(dogId, week);
+
+  if (currThreshold === 'dontknow' || prevThreshold === 'dontknow') return 'maintain';
+
+  const prevRank = THRESHOLD_RANK[prevThreshold] ?? -1;
+  const currRank = THRESHOLD_RANK[currThreshold] ?? -1;
+
+  return (currRank > prevRank) ? 'progress' : 'maintain';
+}
+
+// ── resolveAnchorActivity(dogId, previousWeek) ───────────────────────────
+// Returns the highest-rated activity_key from the previous week.
+// Tie-break: most recent day. Returns null if no rated sessions exist.
+// Null is a visible error — never silently falls back.
+
+async function resolveAnchorActivity(dogId, previousWeek) {
+  const { data: sessions, error } = await sb
+    .from('sessions')
+    .select('day_number, activity_key, rating')
+    .eq('dog_id', dogId)
+    .eq('week', previousWeek)
+    .not('rating', 'is', null)
+    .order('rating', { ascending: false })
+    .order('day_number', { ascending: false });
+
+  if (error || !sessions || sessions.length === 0) return null;
+  return sessions[0].activity_key;
+}
+
+// ── selectReinforcement(dogId, currentDay, currentWeek) ──────────────────
+// Returns the highest-rated activity_key from the current week so far.
+// Eligibility: D1–(currentDay-1). Tie-break: most recent.
+// Fallback (inside this function only): route+threshold+d4 of week 1.
+// Returns null only on data error — caller treats null as visible error.
+
+async function selectReinforcement(dogId, currentDay, currentWeek) {
+  const maxEligibleDay = currentDay - 1;
   const { data: pastSessions, error } = await sb
     .from('sessions')
-    .select('day_number, week, activity_key, rating')
+    .select('day_number, activity_key, rating')
     .eq('dog_id', dogId)
-    .eq('week', 1)
+    .eq('week', currentWeek)
     .lte('day_number', maxEligibleDay)
     .not('rating', 'is', null)
     .order('rating', { ascending: false })
     .order('day_number', { ascending: false });
 
-  if (error || !pastSessions || pastSessions.length === 0) {
-    console.warn('selectReinforcement: no rated sessions found, using fallback');
-    return S.route + '_' + S.threshold + '_d4';
-  }
-
-  const best = pastSessions[0];
-  console.log('selectReinforcement: selected', best.activity_key, 'rating', best.rating);
-  return best.activity_key;
-}
-
-// ── Session key resolution ──
-// D1–D5: static key from route + threshold + day
-// D6–D7: adaptive, resolved from selectReinforcement
-// Returns null if prescription is missing — fails visibly, not silently.
-
-async function resolveSessionKey() {
-  const day = S.dayNumber;
-  if (day <= 5) {
-    return S.route + '_' + S.threshold + '_d' + day;
-  }
-  // D6 or D7 — look up best prior session
-  const bestKey = await selectReinforcement(S.dogId, day);
-  // Store which day this is reinforcing so the intro copy can reference it
-  S.reinforcementKey = bestKey;
-  return bestKey;
-}
-
-function sessionKey(dayNumber) {
-  // For static days only — use resolveSessionKey() for D6/D7
-  return S.route + '_' + S.threshold + '_d' + dayNumber;
-}
-
-function session() {
-  const key = S.resolvedSessionKey || sessionKey(S.dayNumber);
-  const prescription = SESSIONS[key];
-  if (!prescription) {
-    console.error('Missing prescription:', key, '— Day', S.dayNumber, 'content not yet in library.');
+  if (error) {
+    console.error('selectReinforcement: query error', error);
     return null;
   }
-  return prescription;
+
+  if (!pastSessions || pastSessions.length === 0) {
+    // Legitimate fallback: use week's D1 anchor prescription (D4 for W1)
+    const fallback = currentWeek === 1
+      ? S.route + '_' + S.threshold + '_d4'
+      : S.route + '_' + S.threshold + '_d1';
+    console.warn('selectReinforcement: no rated sessions, using fallback', fallback);
+    return fallback;
+  }
+
+  return pastSessions[0].activity_key;
 }
 
+// ── resolveSessionPrescription(dogId, pos) ───────────────────────────────
+// The orchestration layer. Combines position, routing, envelope, threshold,
+// anchor and reinforcement into a single prescription object for the renderer.
+// Week 1: static lookup only. Weeks 2–4: PROGRAMME_ROUTES + adaptive logic.
+
+async function resolveSessionPrescription(dogId, pos) {
+  const { week, day } = pos;
+  const route = S.route;
+  const threshold = S.threshold; // onboarding threshold, always preserved
+
+  // ── Week 1: static lookup ─────────────────────────────────────────────
+  if (week === 1) {
+    const key = route + '_' + threshold + '_d' + day;
+    const prescription = SESSIONS[key] || null;
+    if (!prescription) {
+      console.error('Missing W1 prescription:', key);
+    }
+    return {
+      activityKey: key,
+      prescription,
+      introOverride: null,
+      durationSeconds: null, // embedded in W1 stage text
+      source: 'static_w1',
+      envelope: null,
+    };
+  }
+
+  // ── Weeks 2–4 ─────────────────────────────────────────────────────────
+  const routeMap = PROGRAMME_ROUTES[route]?.[week];
+  if (!routeMap) {
+    console.error('No route map for', route, 'week', week);
+    return { activityKey: null, prescription: null, introOverride: null, durationSeconds: null, source: 'error', envelope: null };
+  }
+
+  const dayEntry = routeMap[day];
+  if (!dayEntry) {
+    console.error('No day entry for', route, 'week', week, 'day', day);
+    return { activityKey: null, prescription: null, introOverride: null, durationSeconds: null, source: 'error', envelope: null };
+  }
+
+  // Resolve adaptive inputs
+  const envelope = await resolveWeekEnvelope(dogId, route, week);
+
+  // Duration (alone route only)
+  const effectiveThreshold = route === 'alone'
+    ? await resolveEffectiveThreshold(dogId, week)
+    : null;
+  const durRow = DURATION_TABLE[effectiveThreshold] || DURATION_TABLE.dontknow;
+
+  // Prevent dontknow from producing progress
+  const safeEnvelope = (effectiveThreshold === 'dontknow') ? 'maintain' : envelope;
+
+  const introKey = 'd' + day;
+  const introOverride = WEEK_INTROS[route]?.[week]?.[introKey] || null;
+
+  // ── Route type handlers ───────────────────────────────────────────────
+
+  if (dayEntry.type === 'static') {
+    const key = dayEntry.key;
+    return {
+      activityKey: key,
+      prescription: SESSIONS[key] || null,
+      introOverride,
+      durationSeconds: route === 'alone' ? durRow.maintain : null,
+      source: 'static',
+      envelope: safeEnvelope,
+    };
+  }
+
+  if (dayEntry.type === 'anchor') {
+    const anchor = await resolveAnchorActivity(dogId, week - 1);
+    if (!anchor) {
+      console.error('resolveSessionPrescription: missing anchor for week', week);
+      return { activityKey: null, prescription: null, introOverride, durationSeconds: null, source: 'error', envelope: safeEnvelope };
+    }
+    return {
+      activityKey: anchor,
+      prescription: SESSIONS[anchor] || null,
+      introOverride,
+      durationSeconds: route === 'alone' ? durRow.maintain : null,
+      source: 'anchor',
+      envelope: safeEnvelope,
+    };
+  }
+
+  if (dayEntry.type === 'envelope') {
+    const key = safeEnvelope === 'progress' ? dayEntry.progress : dayEntry.maintain;
+    const dur = route === 'alone'
+      ? (safeEnvelope === 'progress' ? durRow.progress : durRow.maintain)
+      : null;
+    return {
+      activityKey: key,
+      prescription: SESSIONS[key] || null,
+      introOverride,
+      durationSeconds: dur,
+      source: 'envelope_' + safeEnvelope,
+      envelope: safeEnvelope,
+    };
+  }
+
+  if (dayEntry.type === 'repeat_day') {
+    // Resolve the day being repeated through the same matrix
+    const targetDay = dayEntry.day;
+    const targetEntry = routeMap[targetDay];
+    let resolvedKey;
+    let resolvedDur = null;
+
+    if (targetEntry.type === 'envelope') {
+      resolvedKey = safeEnvelope === 'progress' ? targetEntry.progress : targetEntry.maintain;
+      resolvedDur = route === 'alone'
+        ? (safeEnvelope === 'progress' ? durRow.progress : durRow.maintain)
+        : null;
+    } else if (targetEntry.type === 'static') {
+      resolvedKey = targetEntry.key;
+      resolvedDur = route === 'alone' ? durRow.maintain : null;
+    } else {
+      resolvedKey = null;
+    }
+
+    return {
+      activityKey: resolvedKey,
+      prescription: SESSIONS[resolvedKey] || null,
+      introOverride,
+      durationSeconds: resolvedDur,
+      source: 'repeat_d' + targetDay,
+      envelope: safeEnvelope,
+    };
+  }
+
+  if (dayEntry.type === 'reinforcement') {
+    const reinforcementKey = await selectReinforcement(dogId, day, week);
+    if (!reinforcementKey) {
+      console.error('resolveSessionPrescription: selectReinforcement returned null');
+      return { activityKey: null, prescription: null, introOverride, durationSeconds: null, source: 'error', envelope: safeEnvelope };
+    }
+    return {
+      activityKey: reinforcementKey,
+      prescription: SESSIONS[reinforcementKey] || null,
+      introOverride,
+      durationSeconds: route === 'alone' ? durRow.maintain : null,
+      source: 'reinforcement_d' + day,
+      envelope: safeEnvelope,
+    };
+  }
+
+  // Unknown type — fail visibly
+  console.error('resolveSessionPrescription: unknown route type', dayEntry.type);
+  return { activityKey: null, prescription: null, introOverride: null, durationSeconds: null, source: 'error', envelope: safeEnvelope };
+}
+
+// ── session() — reads resolved prescription from S state ─────────────────
+// S.currentPrescription is populated by loadDogFromAuth via resolveSessionPrescription.
+// Fails visibly if prescription is missing. Never silently falls back.
+
+function session() {
+  const p = S.currentPrescription;
+  if (!p || !p.prescription) {
+    console.error('session(): no prescription in S.currentPrescription', p?.activityKey);
+    return null;
+  }
+  return p.prescription;
+}
+
+// ── showPrescriptionUnavailable() ────────────────────────────────────────
 function showPrescriptionUnavailable() {
   document.getElementById('headerMeta').textContent = 'Day ' + S.dayNumber;
   const card = document.querySelector('.step-card');
@@ -923,6 +1265,20 @@ function showPrescriptionUnavailable() {
   document.getElementById('mainCta').disabled = false;
   document.getElementById('mainCta').onclick = () => { buildHome(); show('screenHome'); };
 }
+
+// ── Deprecated: sessionKey / resolveSessionKey ────────────────────────────
+// These are replaced by resolveSessionPrescription(). Retained as stubs
+// during Pass 1 to avoid breaking any remaining callsites; will be removed
+// once the renderer is updated in Pass 2.
+function sessionKey(dayNumber) {
+  return S.route + '_' + S.threshold + '_d' + dayNumber;
+}
+async function resolveSessionKey() {
+  // Stub — replaced by resolveSessionPrescription in loadDogFromAuth
+  return sessionKey(S.dayNumber);
+}
+
+
 
 // ── Entitlement resolver ─────────────────────────────────────────────────
 // Separate from resolvePosition — commercial access is a different concern.
@@ -1663,8 +2019,11 @@ async function loadDogFromAuth(userId, isAnonymous) {
   S.week      = pos.week;
   S.dayNumber = pos.day;
 
-  // Resolve the session key (adaptive for D6/D7, static for D1–D5)
-  S.resolvedSessionKey = await resolveSessionKey();
+  // Resolve the session prescription (new engine — replaces resolveSessionKey)
+  const prescription = await resolveSessionPrescription(dog.id, pos);
+  S.currentPrescription = prescription;
+  // Keep resolvedSessionKey for any legacy callsites during Pass 1 transition
+  S.resolvedSessionKey = prescription.activityKey;
 
   // Route to correct screen based on resolver state object.
   if (pos.reflectionDue) {
