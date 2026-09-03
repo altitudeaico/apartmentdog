@@ -334,7 +334,7 @@ body { font-family: 'Inter', sans-serif; background: var(--faint); color: var(--
   </div>
 
   <div style="padding-bottom:140px;">
-    <div style="font-size:13px;color:var(--muted);line-height:1.5;text-align:center;margin-bottom:8px;">Payment coming soon — we'll let you know when it's ready.</div>
+
   </div>
 </div>
 
@@ -1926,10 +1926,10 @@ function buildContinuation() {
 
   const cta = document.getElementById('mainCta');
   cta.textContent = `Continue ${n()}'s plan — £47`;
-  cta.disabled = true; // Inactive until Weeks 2–4 are built
+  cta.disabled = false;
   cta.className = 'btn btn-primary';
-  cta.style.opacity = '0.4';
-  cta.onclick = null;
+  cta.style.opacity = '';
+  cta.onclick = initiateCheckout;
 
   // "Not yet" secondary link — returns to Home, keeps offer accessible
   const ctaWrap = document.querySelector('.cta-wrap');
@@ -1949,6 +1949,90 @@ function buildContinuation() {
   };
 
   show('screenContinuation');
+}
+
+
+// ── Stripe checkout ────────────────────────────────────────────────────────
+// Called by the continuation CTA. Creates a server-side Checkout Session
+// and redirects to Stripe. Stripe secret never touches the browser.
+
+const CHECKOUT_FN_URL = 'https://fpgecjgymgosfnkrvjue.supabase.co/functions/v1/create-checkout';
+
+async function initiateCheckout() {
+  const cta = document.getElementById('mainCta');
+  cta.disabled = true;
+  cta.textContent = 'Preparing checkout…';
+
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) {
+      cta.disabled = false;
+      cta.textContent = `Continue ${n()}'s plan — £47`;
+      alert('Please sign in before purchasing.');
+      return;
+    }
+
+    const res = await fetch(CHECKOUT_FN_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + session.access_token,
+      },
+      body: JSON.stringify({ dog_id: S.dogId }),
+    });
+
+    const data = await res.json();
+
+    if (data.already_purchased) {
+      // Edge case: they've already paid, skip straight to Week 2
+      await loadDogFromAuth(session.user.id, false);
+      return;
+    }
+
+    if (data.url) {
+      window.location.href = data.url;
+      return;
+    }
+
+    // Error path
+    console.error('Checkout error:', data);
+    cta.disabled = false;
+    cta.textContent = `Continue ${n()}'s plan — £47`;
+    alert('Something went wrong starting checkout. Please try again.');
+
+  } catch (err) {
+    console.error('initiateCheckout error:', err);
+    cta.disabled = false;
+    cta.textContent = `Continue ${n()}'s plan — £47`;
+    alert('Something went wrong. Please try again.');
+  }
+}
+
+// ── Stripe return URL handler ──────────────────────────────────────────────
+// Stripe success_url includes ?stripe=success — we poll entitlement briefly
+// before loading Week 2 to allow for webhook latency.
+
+async function handleStripeReturn(userId, dogId) {
+  const urlParams = new URLSearchParams(location.search);
+  const stripeParam = urlParams.get('stripe');
+
+  if (stripeParam !== 'success') return false;
+
+  // Poll resolveEntitlement for up to 8 seconds (webhook may lag)
+  let entitled = false;
+  for (let attempt = 0; attempt < 8; attempt++) {
+    entitled = await resolveEntitlement(dogId, 'week_2_4_plan');
+    if (entitled) break;
+    await new Promise(r => setTimeout(r, 1000));
+  }
+
+  if (!entitled) {
+    // Payment succeeded but webhook hasn't written yet — show a brief message
+    console.warn('Stripe success but entitlement not yet confirmed after 8s');
+    // Fall through to normal loadDogFromAuth; entitlement will appear on next load
+  }
+
+  return true; // Signal that we handled the stripe param
 }
 
 const REFLECT_CONFIG = {
@@ -2791,6 +2875,12 @@ async function loadDogFromAuth(userId, isAnonymous) {
   S.currentPrescription = prescription;
   // Keep resolvedSessionKey for any legacy callsites during Pass 1 transition
   S.resolvedSessionKey = prescription.activityKey;
+
+  // Handle Stripe return before normal routing
+  const stripeHandled = await handleStripeReturn(userId, dog.id);
+  if (stripeHandled) {
+    // Re-run normal routing (entitlement may now be present)
+  }
 
   // Route to correct screen based on resolver state object.
   if (pos.programmeComplete) {
