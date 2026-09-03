@@ -464,15 +464,29 @@ const DAY_NAMES = {
 };
 
 function sessionKey(dayNumber) {
-  // Format: {route}_{threshold}_d{N}
-  // The activity library must export an entry for each day.
-  // Falls back to d1 if the day isn't in the library yet.
-  const key = S.route + '_' + S.threshold + '_d' + dayNumber;
-  return SESSIONS[key] ? key : S.route + '_' + S.threshold + '_d1';
+  return S.route + '_' + S.threshold + '_d' + dayNumber;
 }
 
 function session() {
-  return SESSIONS[sessionKey(S.dayNumber)] || SESSIONS[S.route + '_' + S.threshold] || SESSIONS['evenings_relax_d1'];
+  const key = sessionKey(S.dayNumber);
+  const prescription = SESSIONS[key];
+  if (!prescription) {
+    console.error('Missing prescription:', key, '— Day', S.dayNumber, 'content not yet in library.');
+    return null;
+  }
+  return prescription;
+}
+
+function showPrescriptionUnavailable() {
+  document.getElementById('headerMeta').textContent = 'Day ' + S.dayNumber;
+  const card = document.querySelector('.step-card');
+  if (card) {
+    card.innerHTML = '<div class="step-instruction">Day ' + S.dayNumber + ' is on its way.</div>' +
+      '<div class="step-hint">We\'re still writing this one. Check back tomorrow.</div>';
+  }
+  document.getElementById('mainCta').textContent = 'Go back home';
+  document.getElementById('mainCta').disabled = false;
+  document.getElementById('mainCta').onclick = () => { buildHome(); show('screenHome'); };
 }
   return SESSIONS[sessionKey()] || SESSIONS['evenings_relax'];
 }
@@ -510,6 +524,7 @@ function updateHeader(id) {
 // ── Intro screen ──
 function buildIntro() {
   const sess = session();
+  if (!sess) { showPrescriptionUnavailable(); return; }
   document.getElementById('introTitle').textContent = sess.title;
   document.getElementById('introMeta').textContent = sess.duration + ' · Start tonight';
   document.getElementById('introDesc').textContent = sess.intro;
@@ -540,6 +555,7 @@ function buildStepScreen() {
 
 function renderStep() {
   const sess = session();
+  if (!sess) { showPrescriptionUnavailable(); return; }
   const stages = sess.stages;
   const i = S.currentStep;
   const stage = stages[i];
@@ -814,13 +830,15 @@ async function resolvePosition(dogId) {
   );
 
   // Next session coordinate.
-  // If reflection is due, we don't advance the week yet —
-  // the owner must answer the north-star question first.
+  // reflectionDue: D7 done but not reflected — stay on D7, don't advance.
+  // reflectionCompleted: D7 done and reflected — advance to next week.
+  // mid-week: advance day normally.
   let nextWeek = maxWeek;
   let nextDay  = maxDay;
 
-  if (!reflectionDue) {
-    // Safe to advance: either mid-week or reflection already answered
+  if (reflectionDue) {
+    // Hold position — reflection must be answered before advancing
+  } else {
     nextDay = maxDay + 1;
     if (nextDay > 7) { nextWeek++; nextDay = 1; }
   }
