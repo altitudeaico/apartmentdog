@@ -315,7 +315,7 @@ body { font-family: 'Inter', sans-serif; background: var(--faint); color: var(--
 
 <!-- CTA -->
 <div class="cta-wrap">
-  <button class="btn btn-primary" id="mainCta" onclick="handleCta()">Let's do this</button>
+  <button class="btn btn-primary" id="mainCta" onclick="handleCta()">Start today's session</button>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -533,7 +533,7 @@ function buildIntro() {
     wrap.innerHTML += '<div class="all-step-row"><div class="all-step-num">' + (i+1) + '</div><div class="all-step-text">' + st.instruction + '</div></div>';
   });
 
-  document.getElementById('mainCta').textContent = "Let's do this";
+  document.getElementById('mainCta').textContent = 'Start today's session';
   document.getElementById('mainCta').disabled = false;
   document.getElementById('mainCta').className = 'btn btn-primary';
 }
@@ -573,7 +573,7 @@ function renderStep() {
   document.getElementById('stepSettleImg').style.display = (i === stages.length - 1) ? 'block' : 'none';
 
   const btn = document.getElementById('mainCta');
-  btn.textContent = stage.cta;
+  btn.textContent = (i === stages.length - 1) ? 'Report how it went' : stage.cta;
   btn.disabled = false;
   btn.className = 'btn btn-primary';
 }
@@ -586,7 +586,7 @@ function buildCheckin() {
   document.getElementById('obsHint').textContent = session().obs.hint;
 
   const btn = document.getElementById('mainCta');
-  btn.textContent = 'Continue';
+  btn.textContent = 'Next step';
   btn.disabled = true;
   btn.className = 'btn btn-primary';
 }
@@ -604,7 +604,7 @@ function pickRating(el) {
   obs.classList.add('visible');
 
   const btn = document.getElementById('mainCta');
-  btn.textContent = 'Save and continue';
+  btn.textContent = 'Complete Day ' + S.dayNumber;
   btn.disabled = false;
 }
 
@@ -651,7 +651,7 @@ async function submitCheckin() {
 
   buildCelebration();
   show('screenCelebration');
-  document.getElementById('mainCta').textContent = 'See my progress';
+  document.getElementById('mainCta').textContent = 'Back to my plan';
   document.getElementById('mainCta').disabled = false;
   document.getElementById('mainCta').className = 'btn btn-olive';
 }
@@ -699,7 +699,7 @@ function buildHome() {
     grid.appendChild(row);
   });
 
-  document.getElementById('mainCta').textContent = 'See you tomorrow 🐾';
+  document.getElementById('mainCta').textContent = 'Back to my plan';
   document.getElementById('mainCta').disabled = false;
   document.getElementById('mainCta').className = 'btn btn-primary';
   document.getElementById('mainCta').onclick = null;
@@ -964,7 +964,7 @@ function showUnauthenticated() {
     div.innerHTML = `
       <div style="font-family:'Lora',serif;font-size:22px;color:var(--ink);margin-bottom:8px;">Welcome back</div>
       <div style="font-size:15px;color:var(--warm);line-height:1.6;max-width:300px;">To pick up where you left off, get a new sign-in link from the wizard.</div>
-      <button id="unauthCta" style="margin-top:24px;background:var(--terra);color:#fff;border:none;border-radius:99px;padding:16px 32px;font-size:16px;font-weight:600;cursor:pointer;width:100%;max-width:360px;">Go to the wizard</button>
+      <button id="unauthCta" style="margin-top:24px;background:var(--terra);color:#fff;border:none;border-radius:99px;padding:16px 32px;font-size:16px;font-weight:600;cursor:pointer;width:100%;max-width:360px;">Get a new sign-in link</button>
     `;
     container.appendChild(div);
     document.getElementById('unauthCta').onclick = () => { window.location.href = '/bdc-wizard.html'; };
