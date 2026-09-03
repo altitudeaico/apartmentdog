@@ -846,6 +846,318 @@ const SESSIONS = {
     obs: { label: "What did you notice tonight?", hint: "For example: when did things peak, what did it look like, and what happened just before it?" },
     day2: "Building on tonight",
   },
+  // ══════════════════════════════════════════════════════════════════════
+  // WEEKS 2–4 PAID PROGRAMME SESSIONS
+  // Alone route: stages with {duration} token, resolved at render time.
+  // Evenings route: no duration token needed (duration embedded or not used).
+  // ══════════════════════════════════════════════════════════════════════
+
+  // ── EVENINGS W2 ────────────────────────────────────────────────────────
+
+  evenings_w2_d2: {
+    title: "The same thing, somewhere different",
+    duration: "About 15 minutes",
+    intro: "Tonight is the same as yesterday — same format, same timing. One change: set it up in a different part of the room. If [dog name] usually works one side of the living room, try the other. If they usually sniff along the sofa, try near the window.",
+    stages: [
+      { instruction: "Set up [dog name]'s occupation in a different part of the room. Same format as yesterday.", hint: "A metre or two is plenty. No need to make it a big change.", cta: "Done ✓" },
+      { instruction: "Sit down as normal once [dog name] is working.", hint: "", cta: "They're working →" },
+      { instruction: "Stay settled for the first 10 minutes after [dog name] finishes.", hint: "Just notice what [dog name] does once they've finished.", cta: "Done ✓" },
+    ],
+    obs: { label: "What did you notice?", hint: "For example: did [dog name] stay with the occupation, come looking for you afterwards, or do much the same as yesterday?" },
+  },
+  evenings_w2_d3p: {
+    title: "A bit earlier tonight",
+    duration: "About 15 minutes",
+    intro: "Tonight, same setup — but 30 minutes earlier than you've been doing it. Keep everything else familiar. The timing is the only change.",
+    stages: [
+      { instruction: "Set up [dog name]'s occupation 30 minutes earlier than your usual time. Same format as the last two sessions.", hint: "Same occupation, same spot.", cta: "Done ✓" },
+      { instruction: "Sit down once [dog name] is working.", hint: "", cta: "They're working →" },
+      { instruction: "Stay settled for the first 10 minutes after [dog name] finishes.", hint: "Just notice what [dog name] does once they've finished.", cta: "Done ✓" },
+    ],
+    obs: { label: "What did you notice with the earlier start?", hint: "For example: what did [dog name] do once they'd finished? Anything different from the last two sessions?" },
+  },
+  evenings_w2_d3m: {
+    title: "The anchor, again",
+    duration: "About 15 minutes",
+    intro: "Tonight is the same occupation at the same timing you've been using for this setup. Nothing new to remember.",
+    stages: [
+      { instruction: "Set up [dog name]'s occupation at your usual time, in the same spot as yesterday.", hint: "Same format, same spot.", cta: "Done ✓" },
+      { instruction: "Sit down once [dog name] is working.", hint: "", cta: "They're working →" },
+      { instruction: "Stay settled for the first 10 minutes after [dog name] finishes.", hint: "Just notice what [dog name] does once they've finished.", cta: "Done ✓" },
+    ],
+    obs: { label: "What did you notice?", hint: "For example: what did [dog name] do once they'd finished? Anything to note?" },
+  },
+  evenings_w2_d4p: {
+    title: "Sit first",
+    duration: "About 15 minutes",
+    intro: "Tonight we switch the order. You sit down first, then give [dog name] the occupation. Same format as earlier this week — just the sequence is different.",
+    stages: [
+      { instruction: "At your usual time, sit down first. Don't give [dog name] anything yet.", hint: "If [dog name] comes over, you don't need to do anything differently. Just stay where you are.", cta: "Done ✓" },
+      { instruction: "Once you're settled, give [dog name] the occupation — same format as earlier this week.", hint: "No fuss. Put it down and let them get on with it.", cta: "They're working →" },
+      { instruction: "Stay settled for the first 10 minutes after [dog name] finishes.", hint: "Just notice what [dog name] does once they've finished.", cta: "Done ✓" },
+    ],
+    obs: { label: "What happened when you sat down before giving [dog name] the occupation?", hint: "For example: did [dog name] come straight to you, wait near where the occupation usually goes, or carry on as normal?" },
+  },
+  evenings_w2_d4m: {
+    title: "Occupation first, then sit",
+    duration: "About 15 minutes",
+    intro: "[dog name]'s occupation goes down first tonight, then you sit once they're getting on with it. Familiar order.",
+    stages: [
+      { instruction: "Set up [dog name]'s occupation at your usual time.", hint: "Same format as earlier this week.", cta: "Done ✓" },
+      { instruction: "Wait until [dog name] is properly engaged, then sit down.", hint: "Give them a moment to get settled before you do.", cta: "They're working →" },
+      { instruction: "Stay settled for the first 10 minutes after [dog name] finishes.", hint: "Just notice what [dog name] does once they've finished.", cta: "Done ✓" },
+    ],
+    obs: { label: "What did you notice once you sat down?", hint: "For example: what did [dog name] do once they'd finished with the occupation?" },
+  },
+
+  // ── EVENINGS W3 ────────────────────────────────────────────────────────
+
+  evenings_w3_d2: {
+    title: "Keep it simple tonight",
+    duration: "About 15 minutes",
+    intro: "Same occupation as yesterday. Tonight, keep the setup simple. No elaborate preparation. Get it ready, put it down and settle.",
+    stages: [
+      { instruction: "Set up [dog name]'s occupation simply. Same format as yesterday, without spending time making it neat or elaborate.", hint: "A scatter can be a quick handful. A towel roll doesn't need to be perfect.", cta: "Done ✓" },
+      { instruction: "Sit down straight away.", hint: "", cta: "They're working →" },
+      { instruction: "Stay settled for the first 10 minutes after [dog name] finishes.", hint: "Just notice what [dog name] does once they've finished.", cta: "Done ✓" },
+    ],
+    obs: { label: "What did you notice?", hint: "For example: did [dog name] get started as usual, hesitate before starting, or do much the same as yesterday?" },
+  },
+  evenings_w3_d3: {
+    title: "A slightly different evening",
+    duration: "About 15 minutes",
+    intro: "Same occupation as earlier this week — but if tonight's evening looks a little different from usual, use it as is. Maybe you're sitting somewhere different, or someone else is home, or the TV is off when it's usually on. If tonight is straightforward and nothing is different, just run it as normal and note that.",
+    stages: [
+      { instruction: "Set up [dog name]'s occupation as usual — same format, simple setup.", hint: "The occupation itself doesn't change. Whatever the evening looks like tonight is fine.", cta: "Done ✓" },
+      { instruction: "Sit down as you normally would.", hint: "", cta: "They're working →" },
+      { instruction: "Stay settled for the first 10 minutes after [dog name] finishes.", hint: "Just notice what [dog name] does once they've finished.", cta: "Done ✓" },
+    ],
+    obs: { label: "What did you notice?", hint: "For example: did [dog name] stay with the occupation, get distracted by something in the room, come over to you afterwards, or do much the same as usual?" },
+  },
+  evenings_w3_d4p: {
+    title: "Straight into it",
+    duration: "About 15 minutes",
+    intro: "Tonight: no particular lead-up. Whenever feels like the right point in your evening, give [dog name] the occupation and sit down.",
+    stages: [
+      { instruction: "Without any particular lead-up, give [dog name] the occupation and sit down. Same format as earlier this week.", hint: "If there's something you normally do just before this session, skip that bit tonight.", cta: "Done ✓" },
+      { instruction: "Stay settled once [dog name] is working.", hint: "", cta: "They're working →" },
+      { instruction: "Stay settled for the first 10 minutes after [dog name] finishes.", hint: "Just notice what [dog name] does once they've finished.", cta: "Done ✓" },
+    ],
+    obs: { label: "What did you notice?", hint: "For example: did [dog name] get started as usual, or was there any difference from earlier in the week?" },
+  },
+  evenings_w3_d4m: {
+    title: "Keep one familiar thing",
+    duration: "About 15 minutes",
+    intro: "Tonight, keep one brief thing you normally do before you sit down. Put the kettle on, take your shoes off, whatever naturally fits your evening. Then give [dog name] the occupation and settle.",
+    stages: [
+      { instruction: "Do one brief familiar thing — whatever fits your evening. Then give [dog name] the occupation.", hint: "Keep it short. The occupation follows straight after.", cta: "Done ✓" },
+      { instruction: "Sit down once [dog name] is working.", hint: "", cta: "They're working →" },
+      { instruction: "Stay settled for the first 10 minutes after [dog name] finishes.", hint: "Just notice what [dog name] does once they've finished.", cta: "Done ✓" },
+    ],
+    obs: { label: "What did you notice?", hint: "For example: what did [dog name] do once they'd finished? Anything different from earlier in the week?" },
+  },
+  evenings_w3_d5: {
+    title: "Without the occupation tonight",
+    duration: "About 10 minutes",
+    intro: "Tonight: no occupation. Same timing as the rest of the week, just no setup beforehand.",
+    stages: [
+      { instruction: "At your usual time, sit down without giving [dog name] anything.", hint: "No setup, no occupation. Just sit.", cta: "Done ✓" },
+      { instruction: "Stay settled as you normally would and see what [dog name] does next.", hint: "You don't need to wait out a difficult evening. If this clearly isn't going well, add the familiar occupation back in and note what happened beforehand.", cta: "Done ✓" },
+    ],
+    obs: { label: "What did you notice?", hint: "For example: what did [dog name] do once you sat down without the occupation? Anything different from earlier in the week?" },
+  },
+
+  // ── EVENINGS W4 ────────────────────────────────────────────────────────
+
+  evenings_w4_d2: {
+    title: "Whatever tonight looks like",
+    duration: "About 15 minutes",
+    intro: "Same occupation as yesterday. Tonight, use it however your evening actually falls — different starting point, different energy, whatever tonight is. If it's an ordinary evening, that's fine too.",
+    stages: [
+      { instruction: "Set up [dog name]'s occupation as usual — simple, same format as yesterday.", hint: "No need to stage anything. Whatever your evening looks like is the right setting.", cta: "Done ✓" },
+      { instruction: "Sit down as you normally would.", hint: "", cta: "They're working →" },
+      { instruction: "Stay settled for the first 10 minutes after [dog name] finishes.", hint: "Just notice what [dog name] does once they've finished.", cta: "Done ✓" },
+    ],
+    obs: { label: "What did you notice?", hint: "For example: did [dog name] settle in the same way as usual, or was there anything different about tonight?" },
+  },
+  evenings_w4_d3: {
+    title: "Your call tonight",
+    duration: "About 15 minutes",
+    intro: "Tonight, decide whether to give [dog name] an occupation based on how your evening is going. If it feels like it would help, use the familiar format. If tonight feels settled enough without it, sit down without one. Either way, settle as normal.",
+    stages: [
+      { instruction: "Look at how your evening is going. If you want to use the occupation, set it up simply and put it down. If not, just sit down.", hint: "There's no right answer tonight. Go with what fits.", cta: "Done ✓" },
+      { instruction: "Sit down and settle as normal.", hint: "If you chose no occupation and it clearly isn't going well, it's fine to add one back in and note what happened.", cta: "They're working →" },
+      { instruction: "Stay settled for the first 10 minutes after [dog name] finishes, or for the first 10 minutes if you didn't use one.", hint: "Just notice what [dog name] does.", cta: "Done ✓" },
+    ],
+    obs: { label: "What did you do, and what did you notice?", hint: "For example: did you use the occupation or not, and what did [dog name] do once you were settled?" },
+  },
+  evenings_w4_d4: {
+    title: "Set it up your way",
+    duration: "About 15 minutes",
+    intro: "You've done three weeks of this now. Set it up in whatever way fits your actual life — your timing, your occupation choice, your lead-up or not. The only instruction: sit down as you normally would once it's in place.",
+    stages: [
+      { instruction: "Set up tonight's session in the way that fits your evening. Occupation or not, your timing, your usual spot or wherever works.", hint: "There's no prescribed format tonight.", cta: "Done ✓" },
+      { instruction: "Sit down as you normally would.", hint: "", cta: "Done ✓" },
+      { instruction: "Stay settled for the first 10 minutes after [dog name] finishes, or for the first 10 minutes if you didn't use an occupation.", hint: "Just notice what [dog name] does.", cta: "Done ✓" },
+    ],
+    obs: { label: "What did you do, and what did you notice?", hint: "For example: what did you set up, and what did [dog name] do once you were settled?" },
+  },
+
+  // ── ALONE W2 ───────────────────────────────────────────────────────────
+  // Stages with {duration} token — resolved at render time from effectiveThreshold.
+
+  alone_w2_d2: {
+    title: "A different occupation today",
+    duration: null,
+    intro: "Same departure length, same leaving routine. Today, use a different occupation format from the one you used yesterday.",
+    stages: [
+      { instruction: "Set up a different occupation format from yesterday. If yesterday was a scatter, try a towel roll or a sniff hunt. If yesterday was a chew, try a scatter.", hint: "Use something [dog name] is already familiar with.", cta: "Done ✓" },
+      { instruction: "Once [dog name] is engaged, do your leaving routine as usual and step out.", hint: "Same calm exit as before.", cta: "Done ✓" },
+      { instruction: "Step out for your usual departure length. Return quietly.", hint: "", cta: "I'm back →" },
+      { instruction: "Walk back in quietly.", hint: "Just notice what [dog name] is doing when you come back.", cta: "Done ✓" },
+    ],
+    obs: { label: "What did you find when you came back?", hint: "For example: was [dog name] still with the occupation, by the door, elsewhere in the room, or doing something else?" },
+  },
+  alone_w2_d3: {
+    title: "One small change to the routine",
+    duration: null,
+    intro: "Same occupation format as Day 1 this week, same departure length. Tonight, do the normal things you need to do before leaving, but don't worry about doing them in exactly the same order as earlier this week.",
+    stages: [
+      { instruction: "Set up [dog name]'s occupation — same format as Day 1 this week.", hint: "", cta: "Done ✓" },
+      { instruction: "Do the things you normally do before leaving, in whatever order comes naturally tonight.", hint: "No need to change anything deliberately. Just don't be precise about the order.", cta: "Done ✓" },
+      { instruction: "Step out for your usual departure length. Return quietly.", hint: "", cta: "I'm back →" },
+      { instruction: "Walk back in quietly.", hint: "Just notice what [dog name] is doing when you come back.", cta: "Done ✓" },
+    ],
+    obs: { label: "What did you find when you came back?", hint: "For example: was [dog name] still with the occupation, by the door, elsewhere in the room, or doing something else?" },
+  },
+  alone_w2_d4p: {
+    title: "Today we're using the same setup for {duration}",
+    duration: null,
+    intro: "Same format and leaving routine as earlier this week. Today we're using the same setup for {duration}.",
+    stages: [
+      { instruction: "Set up [dog name]'s occupation as usual.", hint: "", cta: "Done ✓" },
+      { instruction: "Do your leaving routine and step out for {duration}. Set a timer.", hint: "Same calm exit as before.", cta: "I'm back →" },
+      { instruction: "Walk back in quietly.", hint: "Just notice what [dog name] is doing when you come back.", cta: "Done ✓" },
+    ],
+    obs: { label: "What did you find when you came back?", hint: "For example: what was [dog name] doing when you came back? Where were they and what were they up to?" },
+  },
+  alone_w2_d4m: {
+    title: "Same length as before",
+    duration: null,
+    intro: "Same occupation, same routine, same departure length as earlier this week.",
+    stages: [
+      { instruction: "Set up [dog name]'s occupation as usual.", hint: "", cta: "Done ✓" },
+      { instruction: "Do your leaving routine and step out for your usual departure length.", hint: "Same calm exit as before.", cta: "I'm back →" },
+      { instruction: "Walk back in quietly.", hint: "Just notice what [dog name] is doing when you come back.", cta: "Done ✓" },
+    ],
+    obs: { label: "What did you find when you came back?", hint: "For example: what was [dog name] doing when you came back? Where were they and what were they up to?" },
+  },
+  alone_w2_d5: {
+    title: "Without the occupation tonight",
+    duration: null,
+    intro: "Same leaving routine, same departure length — but no occupation beforehand. If [dog name] is already having a difficult time while you're getting ready to leave, there's no need to push through. The time is a guide, not a target.",
+    stages: [
+      { instruction: "Do your leaving routine as usual — no occupation this time.", hint: "If [dog name] is already having a difficult time while you're getting ready to leave, skip the departure and note what you saw.", cta: "Done ✓" },
+      { instruction: "Step out for the planned time. If you become aware [dog name] is struggling before then, come back.", hint: "", cta: "I'm back →" },
+      { instruction: "Walk back in quietly.", hint: "Just notice what [dog name] is doing when you come back.", cta: "Done ✓" },
+    ],
+    obs: { label: "What happened without the occupation?", hint: "What was [dog name] doing when you came back? Anything you want to remember from today?" },
+  },
+
+  // ── ALONE W3 ───────────────────────────────────────────────────────────
+
+  alone_w3_d2: {
+    title: "From wherever you are",
+    duration: null,
+    intro: "Same format as yesterday, same departure length. Today, start from wherever you happen to be in the house rather than going to your usual spot first. Whatever fits your actual day is fine.",
+    stages: [
+      { instruction: "Set up [dog name]'s occupation from wherever you are in the house rather than your usual starting spot.", hint: "Same format. No need to go to your usual spot first.", cta: "Done ✓" },
+      { instruction: "Do your leaving routine and step out for your usual departure length.", hint: "Same calm exit as before.", cta: "I'm back →" },
+      { instruction: "Walk back in quietly.", hint: "Just notice what [dog name] is doing when you come back.", cta: "Done ✓" },
+    ],
+    obs: { label: "What did you find when you came back?", hint: "For example: what was [dog name] doing when you came back? Where were they and what were they up to?" },
+  },
+  alone_w3_d3: {
+    title: "A different time today",
+    duration: null,
+    intro: "Same format as earlier this week, same departure length. Today, if your departure naturally falls at a different time from usual, use that time. There's no need to rearrange your day just for this.",
+    stages: [
+      { instruction: "Set up [dog name]'s occupation at a different realistic time from your usual slot.", hint: "Same format. The time is the only change.", cta: "Done ✓" },
+      { instruction: "Do your leaving routine and step out for your usual departure length.", hint: "Same calm exit as before.", cta: "I'm back →" },
+      { instruction: "Walk back in quietly.", hint: "Just notice what [dog name] is doing when you come back.", cta: "Done ✓" },
+    ],
+    obs: { label: "What did you find when you came back?", hint: "Anything you want to remember from today?" },
+  },
+  alone_w3_d4p: {
+    title: "Today we're using the same setup for {duration}",
+    duration: null,
+    intro: "Same format and leaving routine as earlier this week. Today we're using the same setup for {duration}.",
+    stages: [
+      { instruction: "Set up [dog name]'s occupation as usual.", hint: "", cta: "Done ✓" },
+      { instruction: "Do your leaving routine and step out for {duration}. Set a timer.", hint: "Same calm exit as before.", cta: "I'm back →" },
+      { instruction: "Walk back in quietly.", hint: "Just notice what [dog name] is doing when you come back.", cta: "Done ✓" },
+    ],
+    obs: { label: "What did you find when you came back?", hint: "For example: what was [dog name] doing when you came back? Where were they and what were they up to?" },
+  },
+  alone_w3_d4m: {
+    title: "Same length as before",
+    duration: null,
+    intro: "Same format, same leaving routine, same departure length as earlier this week.",
+    stages: [
+      { instruction: "Set up [dog name]'s occupation as usual.", hint: "", cta: "Done ✓" },
+      { instruction: "Do your leaving routine and step out for your usual departure length.", hint: "Same calm exit as before.", cta: "I'm back →" },
+      { instruction: "Walk back in quietly.", hint: "Just notice what [dog name] is doing when you come back.", cta: "Done ✓" },
+    ],
+    obs: { label: "What did you find when you came back?", hint: "For example: what was [dog name] doing when you came back? Where were they and what were they up to?" },
+  },
+  alone_w3_d5: {
+    title: "Without the occupation today",
+    duration: null,
+    intro: "Same leaving routine, same departure length — but no occupation beforehand. If [dog name] is already having a difficult time while you're getting ready to leave, there's no need to push through. The time is a guide, not a target.",
+    stages: [
+      { instruction: "Do your leaving routine as usual — no occupation this time.", hint: "If [dog name] is already having a difficult time while you're getting ready to leave, skip the departure and note what you saw.", cta: "Done ✓" },
+      { instruction: "Step out for the planned time. If you become aware [dog name] is struggling before then, come back.", hint: "", cta: "I'm back →" },
+      { instruction: "Walk back in quietly.", hint: "Just notice what [dog name] is doing when you come back.", cta: "Done ✓" },
+    ],
+    obs: { label: "What happened without the occupation?", hint: "What was [dog name] doing when you came back? Anything you want to remember from today?" },
+  },
+
+  // ── ALONE W4 ───────────────────────────────────────────────────────────
+
+  alone_w4_d2: {
+    title: "From wherever you are",
+    duration: null,
+    intro: "Same format as yesterday, same departure length. Today, start from wherever you happen to be in the house rather than going to your usual spot first. Whatever fits your actual day is fine.",
+    stages: [
+      { instruction: "Set up [dog name]'s occupation from wherever you are in the house.", hint: "Same format as yesterday. No need to go to your usual spot first.", cta: "Done ✓" },
+      { instruction: "Do your leaving routine and step out for your usual departure length.", hint: "Same calm exit as before.", cta: "I'm back →" },
+      { instruction: "Walk back in quietly.", hint: "Just notice what [dog name] is doing when you come back.", cta: "Done ✓" },
+    ],
+    obs: { label: "What did you find when you came back?", hint: "For example: what was [dog name] doing when you came back? Where were they and what were they up to?" },
+  },
+  alone_w4_d3: {
+    title: "Your call on the occupation",
+    duration: null,
+    intro: "Same departure length as earlier this week. Today, decide whether to give [dog name] an occupation based on how things are going. If it feels useful, use the familiar format. If not, leave it out. Either way, your leaving routine and departure length stay the same.",
+    stages: [
+      { instruction: "Decide whether to give [dog name] an occupation. If yes, set it up simply using the familiar format. If not, move straight to step 2.", hint: "There's no right answer. Go with what fits today.", cta: "Done ✓" },
+      { instruction: "Do your leaving routine and step out for your usual departure length.", hint: "Same calm exit as before. If [dog name] is already having a difficult time while you're getting ready to leave, there's no need to push through.", cta: "I'm back →" },
+      { instruction: "Walk back in quietly.", hint: "Just notice what [dog name] is doing when you come back.", cta: "Done ✓" },
+    ],
+    obs: { label: "What did you do, and what did you find when you came back?", hint: "For example: did you use the occupation or not, and what was [dog name] doing when you came back?" },
+  },
+  alone_w4_d4: {
+    title: "Set it up around your day",
+    duration: null,
+    intro: "You've done this plenty of times now. Set today's departure up in the way that fits your day. The departure length is the only fixed part.",
+    stages: [
+      { instruction: "Set up today's departure in whatever way fits your day. Occupation or not, wherever you are, whatever you're heading out for.", hint: "The only fixed part is the departure length.", cta: "Done ✓" },
+      { instruction: "Do your leaving routine and step out for your usual departure length.", hint: "If [dog name] is already having a difficult time while you're getting ready to leave, there's no need to push through. If you become aware they're struggling after you leave, come back. The planned time is a guide, not a target.", cta: "I'm back →" },
+      { instruction: "Walk back in quietly.", hint: "Just notice what [dog name] is doing when you come back.", cta: "Done ✓" },
+    ],
+    obs: { label: "What did you do, and what did you find when you came back?", hint: "For example: what did you set up, where did you leave from, and what was [dog name] doing when you came back?" },
+  },
+
 };
 
 const DAY_NAMES = {
@@ -1266,17 +1578,6 @@ function showPrescriptionUnavailable() {
   document.getElementById('mainCta').onclick = () => { buildHome(); show('screenHome'); };
 }
 
-// ── Deprecated: sessionKey / resolveSessionKey ────────────────────────────
-// These are replaced by resolveSessionPrescription(). Retained as stubs
-// during Pass 1 to avoid breaking any remaining callsites; will be removed
-// once the renderer is updated in Pass 2.
-function sessionKey(dayNumber) {
-  return S.route + '_' + S.threshold + '_d' + dayNumber;
-}
-async function resolveSessionKey() {
-  // Stub — replaced by resolveSessionPrescription in loadDogFromAuth
-  return sessionKey(S.dayNumber);
-}
 
 
 
@@ -1545,21 +1846,50 @@ function updateHeader(id) {
   document.getElementById('headerMeta').textContent = meta[id] || 'Day 1 of 7';
 }
 
+// ── Renderer helpers ─────────────────────────────────────────────────────
+
+function formatDuration(seconds) {
+  if (!seconds) return '';
+  if (seconds < 60) return seconds + ' seconds';
+  const mins = Math.round(seconds / 60);
+  return mins === 1 ? '1 minute' : mins + ' minutes';
+}
+
+// Resolve stage instruction: string or function form, {duration} and dog name.
+function resolveStageText(text, durSec) {
+  const base = typeof text === 'function' ? text(S.name) : text;
+  const withDog = base.replace(/\[dog name\]/gi, S.name);
+  if (!durSec) return withDog;
+  return withDog.replace(/\{duration\}/g, formatDuration(durSec));
+}
+
+// Resolve intro: apply WEEK_INTROS override if present, then tokens.
+function resolveIntro(prescription, durSec) {
+  const p = S.currentPrescription;
+  const rawIntro = (p && p.introOverride) ? p.introOverride : (prescription.intro || '');
+  const base = typeof rawIntro === 'function' ? rawIntro(S.name) : rawIntro;
+  const withDog = base.replace(/\[dog name\]/gi, S.name);
+  if (!durSec) return withDog;
+  return withDog.replace(/\{duration\}/g, formatDuration(durSec));
+}
+
 // ── Intro screen ──
 function buildIntro() {
   const sess = session();
   if (!sess) { showPrescriptionUnavailable(); return; }
+  const p = S.currentPrescription;
+  const durSec = p ? p.durationSeconds : null;
   document.getElementById('introTitle').textContent = sess.title;
-  document.getElementById('introMeta').textContent = sess.duration + ' · Start tonight';
-  document.getElementById('introDesc').textContent = sess.intro;
-
+  const durDisplay = durSec ? formatDuration(durSec) : (sess.duration || '');
+  document.getElementById('introMeta').textContent = (durDisplay ? durDisplay + ' · ' : '') + 'Start tonight';
+  document.getElementById('introDesc').textContent = resolveIntro(sess, durSec);
   const wrap = document.getElementById('allStepsWrap');
   wrap.innerHTML = '';
   sess.stages.forEach((st, i) => {
-    wrap.innerHTML += '<div class="all-step-row"><div class="all-step-num">' + (i+1) + '</div><div class="all-step-text">' + st.instruction + '</div></div>';
+    const text = resolveStageText(st.instruction, durSec);
+    wrap.innerHTML += '<div class="all-step-row"><div class="all-step-num">' + (i+1) + '</div><div class="all-step-text">' + text + '</div></div>';
   });
-
-  document.getElementById('mainCta').textContent = 'Start today's session';
+  document.getElementById('mainCta').textContent = "Start today's session";
   document.getElementById('mainCta').disabled = false;
   document.getElementById('mainCta').className = 'btn btn-primary';
 }
@@ -1594,7 +1924,8 @@ function renderStep() {
   });
 
   document.getElementById('stepLabel').textContent = 'Step ' + (i+1) + ' of ' + stages.length;
-  document.getElementById('stepInstruction').textContent = stage.instruction;
+  const durSec = S.currentPrescription ? S.currentPrescription.durationSeconds : null;
+  document.getElementById('stepInstruction').textContent = resolveStageText(stage.instruction, durSec);
   document.getElementById('stepHint').textContent = stage.hint || '';
   document.getElementById('stepSettleImg').style.display = (i === stages.length - 1) ? 'block' : 'none';
 
@@ -1608,8 +1939,9 @@ function renderStep() {
 function buildCheckin() {
   document.getElementById('checkinTitle').textContent = 'Nice. How did ' + n() + ' do?';
   document.getElementById('checkinSub').textContent = "Be honest — it helps us get tomorrow right.";
-  document.getElementById('obsLabel').textContent = session().obs.label;
-  document.getElementById('obsHint').textContent = session().obs.hint;
+  const _obs = session().obs;
+  document.getElementById('obsLabel').textContent = resolveStageText(_obs.label, null);
+  document.getElementById('obsHint').textContent = resolveStageText(_obs.hint, null);
 
   const btn = document.getElementById('mainCta');
   btn.textContent = 'Next step';
@@ -1656,7 +1988,7 @@ async function submitCheckin() {
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZwZ2Vjamd5bWdvc2Zua3J2anVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg0MTY4MTIsImV4cCI6MjEwMzk5MjgxMn0.5aPn9pcZI_lgUuTwGIZ_J8kepY1Pn_X-JWvX9IkJSMA'
       );
 
-      const activityKey = (S.route || 'evenings') + '_' + (S.threshold || 'relax') + '_d' + dayNum + '_v1';
+      const activityKey = (S.currentPrescription && S.currentPrescription.activityKey) || (S.route + '_' + S.threshold + '_d' + dayNum);
 
       const { error } = await sb.from('sessions').upsert({
         dog_id:       dogId,
