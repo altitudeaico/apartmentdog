@@ -606,7 +606,38 @@ function buildReveal() {
   document.getElementById('calcState').style.display = 'none';
   document.getElementById('planReveal').style.display = 'block';
   updateCta('step5');
-  // TODO: POST to GHL webhook { name: S.name, email: S.email, reported_problem: S.problem, primary_route: route(), threshold: S.threshold }
+
+  // POST to Supabase edge function — creates profile/dog/onboarding, sends magic link
+  const payload = {
+    email: S.email,
+    dog_name: S.name,
+    route: route(),
+    reported_problem: S.problem,
+    threshold: thresh()
+  };
+
+  fetch('https://fpgecjgymgosfnkrvjue.supabase.co/functions/v1/wizard-complete', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.success) {
+      // Store dog_id for the session page
+      if (data.dog_id) sessionStorage.setItem('bdc_dog_id', data.dog_id);
+      const cta = document.getElementById('mainCta');
+      cta.textContent = data.magic_link_sent
+        ? 'Check your email for the link'
+        : "Start day one tonight";
+      cta.disabled = false;
+    } else {
+      console.error('Wizard submit error:', data.error);
+    }
+  })
+  .catch(err => {
+    console.error('Wizard submit failed:', err);
+  });
 }
 
 show('step1');
