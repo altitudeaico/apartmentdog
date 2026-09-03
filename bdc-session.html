@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Bored Dog Club — Day 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #2C2417;
+  --warm: #6B5C45;
+  --faint: #F7F3EE;
+  --card: #FFFFFF;
+  --terra: #C8562A;
+  --terra-light: #F5EBE5;
+  --terra-dark: #9E3F1A;
+  --olive: #5E7A3A;
+  --olive-light: #EDF2E6;
+  --border: #E4DDD4;
+  --muted: #9C8E7E;
+  --radius: 18px;
+  --radius-sm: 12px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body { font-family: 'Inter', sans-serif; background: var(--faint); color: var(--ink); min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
+
+/* Header */
+.header { width: 100%; max-width: 480px; padding: 20px 24px 10px; display: flex; align-items: center; justify-content: space-between; }
+.logo { font-family: 'Lora', serif; font-size: 14px; color: var(--terra); }
+.header-meta { font-size: 12px; color: var(--muted); }
+
+/* Progress bar */
+.progress-wrap { width: 100%; max-width: 480px; padding: 0 24px 20px; }
+.progress-track { height: 3px; background: var(--border); border-radius: 99px; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--terra); border-radius: 99px; transition: width 0.5s cubic-bezier(.4,0,.2,1); }
+
+/* Screens */
+.screen { display: none; width: 100%; max-width: 480px; padding: 4px 24px 140px; flex-direction: column; animation: fadeUp 0.3s ease both; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+.screen.active { display: flex; }
+
+.eyebrow { font-size: 11px; font-weight: 600; color: var(--terra); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px; }
+.screen-title { font-family: 'Lora', serif; font-size: 26px; line-height: 1.22; color: var(--ink); margin-bottom: 8px; }
+.screen-sub { font-size: 15px; line-height: 1.65; color: var(--warm); margin-bottom: 24px; }
+
+/* ── Session intro screen ── */
+.session-intro-card { background: var(--terra); border-radius: var(--radius); padding: 28px 24px; margin-bottom: 20px; color: white; }
+.session-intro-tag { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; opacity: 0.7; text-transform: uppercase; margin-bottom: 10px; }
+.session-intro-title { font-family: 'Lora', serif; font-size: 24px; line-height: 1.2; margin-bottom: 8px; }
+.session-intro-meta { font-size: 13px; opacity: 0.85; }
+
+.session-intro-body { background: var(--card); border-radius: var(--radius); padding: 22px; margin-bottom: 16px; }
+.session-intro-desc { font-size: 15px; line-height: 1.7; color: var(--warm); margin-bottom: 16px; font-style: italic; }
+.see-all-btn { background: none; border: 1px solid var(--border); border-radius: 99px; padding: 8px 16px; font-size: 13px; color: var(--muted); cursor: pointer; font-family: 'Inter', sans-serif; transition: border-color 0.15s; }
+.see-all-btn:hover { border-color: var(--warm); color: var(--warm); }
+
+.all-steps-wrap { margin-top: 16px; display: none; flex-direction: column; gap: 10px; }
+.all-steps-wrap.open { display: flex; }
+.all-step-row { display: flex; gap: 10px; align-items: flex-start; }
+.all-step-num { width: 22px; height: 22px; border-radius: 50%; background: var(--faint); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: var(--muted); flex-shrink: 0; margin-top: 1px; }
+.all-step-text { font-size: 13px; color: var(--warm); line-height: 1.55; flex: 1; }
+
+/* ── Step mode ── */
+.step-counter-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.step-dots { display: flex; gap: 6px; }
+.step-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); transition: background 0.3s; }
+.step-dot.done { background: var(--olive); }
+.step-dot.active { background: var(--terra); }
+.step-label { font-size: 12px; color: var(--muted); }
+
+.step-card { background: var(--card); border-radius: var(--radius); padding: 28px 24px; margin-bottom: 16px; min-height: 160px; display: flex; flex-direction: column; justify-content: center; }
+.step-instruction { font-family: 'Lora', serif; font-size: 22px; line-height: 1.35; color: var(--ink); margin-bottom: 12px; }
+.step-hint { font-size: 14px; color: var(--muted); line-height: 1.6; }
+
+.step-nav-wrap { display: flex; gap: 10px; align-items: center; }
+
+/* ── Check-in screen ── */
+.checkin-intro { font-family: 'Lora', serif; font-size: 24px; line-height: 1.3; color: var(--ink); margin-bottom: 8px; }
+.checkin-sub { font-size: 15px; color: var(--warm); line-height: 1.6; margin-bottom: 28px; }
+
+.emoji-row { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
+.emoji-btn { flex: 1; background: var(--card); border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 14px 8px; cursor: pointer; text-align: center; transition: border-color 0.15s, background 0.15s, transform 0.1s; }
+.emoji-btn:active { transform: scale(0.93); }
+.emoji-btn.selected { border-color: var(--terra); background: var(--terra-light); }
+.emoji-btn .emoji { font-size: 26px; display: block; margin-bottom: 4px; }
+.emoji-btn .emoji-label { font-size: 10px; color: var(--muted); font-weight: 500; }
+.emoji-btn.selected .emoji-label { color: var(--terra-dark); }
+
+.checkin-ack { background: var(--olive-light); border-radius: var(--radius-sm); padding: 14px 16px; margin-bottom: 24px; font-size: 14px; color: var(--olive); line-height: 1.55; display: none; }
+.checkin-ack.visible { display: block; }
+
+/* Observation */
+.obs-wrap { display: none; flex-direction: column; gap: 10px; margin-bottom: 8px; }
+.obs-wrap.visible { display: flex; }
+.obs-label { font-size: 13px; font-weight: 600; color: var(--ink); }
+.obs-hint { font-size: 12px; color: var(--muted); line-height: 1.5; }
+.obs-input { width: 100%; padding: 14px 16px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-size: 14px; font-family: 'Inter', sans-serif; color: var(--ink); background: white; outline: none; resize: none; line-height: 1.55; transition: border-color 0.2s; }
+.obs-input:focus { border-color: var(--terra); }
+.obs-char { font-size: 11px; color: var(--muted); text-align: right; }
+.obs-skip { background: none; border: none; font-size: 13px; color: var(--muted); cursor: pointer; font-family: 'Inter', sans-serif; padding: 8px 0; text-align: center; width: 100%; }
+
+/* ── Celebration screen ── */
+.celebration-wrap { display: flex; flex-direction: column; align-items: center; padding: 32px 0 24px; gap: 4px; }
+.celebration-icon { font-size: 56px; margin-bottom: 8px; animation: popIn 0.5s cubic-bezier(.4,0,.2,1) both; }
+@keyframes popIn { 0%{transform:scale(0.5);opacity:0;} 70%{transform:scale(1.15);} 100%{transform:scale(1);opacity:1;} }
+.celebration-title { font-family: 'Lora', serif; font-size: 28px; color: var(--ink); text-align: center; margin-bottom: 6px; }
+.celebration-sub { font-size: 15px; color: var(--warm); text-align: center; line-height: 1.6; }
+
+.celebration-card { background: var(--card); border-radius: var(--radius); padding: 22px; margin-bottom: 16px; display: flex; flex-direction: column; gap: 16px; }
+.celebration-row { display: flex; align-items: center; gap: 14px; }
+.celebration-badge { width: 44px; height: 44px; border-radius: 50%; background: var(--terra-light); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+.celebration-badge.flame { background: #FFF3E0; }
+.celebration-info-title { font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
+.celebration-info-sub { font-size: 13px; color: var(--muted); }
+
+.streak-display { background: linear-gradient(135deg, var(--terra) 0%, var(--terra-dark) 100%); border-radius: var(--radius); padding: 24px; text-align: center; margin-bottom: 16px; color: white; }
+.streak-num { font-family: 'Lora', serif; font-size: 52px; line-height: 1; margin-bottom: 4px; }
+.streak-label { font-size: 13px; opacity: 0.85; letter-spacing: 0.04em; }
+
+/* ── Home screen ── */
+.home-dog-header { background: var(--ink); border-radius: var(--radius); padding: 24px 22px; margin-bottom: 16px; color: white; }
+.home-dog-name { font-family: 'Lora', serif; font-size: 26px; margin-bottom: 4px; }
+.home-dog-meta { font-size: 13px; opacity: 0.65; }
+
+.home-streak { display: flex; align-items: center; gap: 12px; background: var(--card); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 16px; border: 1.5px solid var(--border); }
+.home-streak-icon { font-size: 28px; }
+.home-streak-text { flex: 1; }
+.home-streak-num { font-size: 18px; font-weight: 700; color: var(--ink); }
+.home-streak-label { font-size: 12px; color: var(--muted); }
+
+.home-today { background: var(--terra); border-radius: var(--radius); padding: 22px; margin-bottom: 16px; color: white; }
+.home-today-tag { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; opacity: 0.7; text-transform: uppercase; margin-bottom: 8px; }
+.home-today-title { font-family: 'Lora', serif; font-size: 20px; margin-bottom: 6px; }
+.home-today-meta { font-size: 13px; opacity: 0.85; }
+
+.home-week { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+.home-week-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; color: var(--muted); text-transform: uppercase; margin-bottom: 4px; }
+.home-day-row { display: flex; align-items: center; gap: 12px; background: var(--card); border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 13px 16px; }
+.home-day-row.done-row { border-color: var(--olive); background: var(--olive-light); }
+.home-day-row.locked-row { opacity: 0.45; }
+.home-day-num { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; background: var(--faint); color: var(--muted); }
+.home-day-row.done-row .home-day-num { background: var(--olive); color: white; }
+.home-day-name { flex: 1; font-size: 14px; font-weight: 500; color: var(--warm); }
+.home-day-row.done-row .home-day-name { color: var(--olive); }
+.home-day-status { font-size: 14px; }
+
+.home-sarah { background: var(--faint); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 18px 20px; margin-bottom: 8px; }
+.home-sarah-from { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: var(--muted); text-transform: uppercase; margin-bottom: 6px; }
+.home-sarah-text { font-size: 14px; color: var(--warm); line-height: 1.65; }
+
+/* CTA */
+.cta-wrap { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; padding: 16px 24px 36px; background: linear-gradient(to top, var(--faint) 75%, transparent); }
+.btn { width: 100%; padding: 17px 24px; border-radius: 99px; border: none; font-size: 16px; font-weight: 600; cursor: pointer; transition: transform 0.1s, opacity 0.15s, background 0.3s; font-family: 'Inter', sans-serif; }
+.btn:active { transform: scale(0.97); }
+.btn-primary { background: var(--terra); color: white; }
+.btn-primary:disabled { opacity: 0.3; cursor: default; }
+.btn-primary:not(:disabled):hover { opacity: 0.9; }
+.btn-ghost { background: transparent; color: var(--muted); font-size: 14px; padding: 10px; margin-top: 4px; font-weight: 400; }
+.btn-olive { background: var(--olive); color: white; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">Bored Dog Club</div>
+  <div class="header-meta" id="headerMeta">Day 1 of 7</div>
+</div>
+<div class="progress-wrap">
+  <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:14%"></div></div>
+</div>
+
+<!-- ══════════════════════════════
+     SCREEN A: Session intro
+══════════════════════════════ -->
+<div class="screen active" id="screenIntro">
+  <div class="session-intro-card">
+    <div class="session-intro-tag" id="introTag">Day 1 of 7</div>
+    <div class="session-intro-title" id="introTitle">The pre-chaos scatter</div>
+    <div class="session-intro-meta" id="introMeta">About 15 minutes · Start tonight</div>
+  </div>
+
+  <div class="session-intro-body">
+    <div class="session-intro-desc" id="introDesc">Loading...</div>
+    <button class="see-all-btn" onclick="toggleAllSteps()">See all steps</button>
+    <div class="all-steps-wrap" id="allStepsWrap"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     SCREEN B: Step mode
+══════════════════════════════ -->
+<div class="screen" id="screenStep">
+  <div class="step-counter-row">
+    <div class="step-dots" id="stepDots"></div>
+    <div class="step-label" id="stepLabel">Step 1</div>
+  </div>
+  <div class="step-card">
+    <div class="step-instruction" id="stepInstruction"></div>
+    <div class="step-hint" id="stepHint"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     SCREEN C: Rating check-in
+══════════════════════════════ -->
+<div class="screen" id="screenCheckin">
+  <div class="checkin-intro" id="checkinTitle">Nice. How did it go?</div>
+  <div class="checkin-sub" id="checkinSub">Be honest — it helps us get tomorrow right.</div>
+
+  <div class="emoji-row">
+    <div class="emoji-btn" data-val="1" data-label="Really struggled" onclick="pickRating(this)">
+      <span class="emoji">😣</span>
+      <span class="emoji-label">Struggled</span>
+    </div>
+    <div class="emoji-btn" data-val="2" data-label="A bit difficult" onclick="pickRating(this)">
+      <span class="emoji">😕</span>
+      <span class="emoji-label">Difficult</span>
+    </div>
+    <div class="emoji-btn" data-val="3" data-label="About right" onclick="pickRating(this)">
+      <span class="emoji">🙂</span>
+      <span class="emoji-label">About right</span>
+    </div>
+    <div class="emoji-btn" data-val="4" data-label="Went well" onclick="pickRating(this)">
+      <span class="emoji">😊</span>
+      <span class="emoji-label">Went well</span>
+    </div>
+    <div class="emoji-btn" data-val="5" data-label="Smashed it" onclick="pickRating(this)">
+      <span class="emoji">🤩</span>
+      <span class="emoji-label">Smashed it</span>
+    </div>
+  </div>
+
+  <div class="checkin-ack" id="checkinAck"></div>
+
+  <div class="obs-wrap" id="obsWrap">
+    <div class="obs-label" id="obsLabel">What did you notice?</div>
+    <div class="obs-hint" id="obsHint"></div>
+    <textarea class="obs-input" id="obsInput" rows="3" maxlength="200" placeholder="Optional — anything you noticed..." oninput="onObsInput()"></textarea>
+    <div class="obs-char" id="obsChar">200 characters remaining</div>
+    <button class="obs-skip" onclick="submitCheckin()">Skip this and continue</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     SCREEN D: Day 1 celebration
+══════════════════════════════ -->
+<div class="screen" id="screenCelebration">
+  <div class="celebration-wrap">
+    <div class="celebration-icon">🐾</div>
+    <div class="celebration-title" id="celebTitle">Day 1 done.</div>
+    <div class="celebration-sub" id="celebSub">First session in the books.</div>
+  </div>
+
+  <div class="streak-display">
+    <div class="streak-num">1</div>
+    <div class="streak-label">DAY OF PRACTICE</div>
+  </div>
+
+  <div class="celebration-card">
+    <div class="celebration-row">
+      <div class="celebration-badge">✓</div>
+      <div>
+        <div class="celebration-info-title" id="celebSessionName"></div>
+        <div class="celebration-info-sub" id="celebRatingText"></div>
+      </div>
+    </div>
+    <div class="celebration-row">
+      <div class="celebration-badge flame">🔥</div>
+      <div>
+        <div class="celebration-info-title">1 day streak</div>
+        <div class="celebration-info-sub" id="celebNext"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     SCREEN E: Home
+══════════════════════════════ -->
+<div class="screen" id="screenHome">
+  <div class="home-dog-header">
+    <div class="home-dog-name" id="homeDogName"></div>
+    <div class="home-dog-meta" id="homeDogMeta">Day 1 complete · 7-day programme</div>
+  </div>
+
+  <div class="home-streak">
+    <div class="home-streak-icon">🔥</div>
+    <div class="home-streak-text">
+      <div class="home-streak-num">1 day</div>
+      <div class="home-streak-label">Keep it going — day 2 is tomorrow</div>
+    </div>
+  </div>
+
+  <div class="home-today">
+    <div class="home-today-tag">Tomorrow — Day 2</div>
+    <div class="home-today-title" id="homeDay2Title"></div>
+    <div class="home-today-meta">Session unlocks tomorrow morning</div>
+  </div>
+
+  <div class="home-week">
+    <div class="home-week-label">Your week</div>
+    <div id="homeWeekGrid"></div>
+  </div>
+
+  <div class="home-sarah">
+    <div class="home-sarah-from">Sarah 🐾</div>
+    <div class="home-sarah-text" id="homeSarahText"></div>
+  </div>
+</div>
+
+<!-- CTA -->
+<div class="cta-wrap">
+  <button class="btn btn-primary" id="mainCta" onclick="handleCta()">Let's do this</button>
+</div>
+
+<script>
+// ── State (in real app this comes from wizard handoff) ──
+const S = {
+  name: new URLSearchParams(location.search).get('name') || 'Scruffy',
+  route: new URLSearchParams(location.search).get('route') || 'evenings',
+  threshold: new URLSearchParams(location.search).get('threshold') || 'relax',
+  rating: null,
+  observation: '',
+  currentStep: 0,
+};
+
+function n() { return S.name; }
+
+// ── Session content library ──
+const SESSIONS = {
+  alone_under5: {
+    title: "The 90-second test",
+    duration: "About 5 minutes",
+    intro: "Because " + n() + " struggles almost straight away, we start with something so short it can't fail.",
+    stages: [
+      { instruction: "Scatter half of " + n() + "'s dinner across the kitchen floor, or fold it loosely into a tea towel.", hint: "It doesn't need to be neat. The messier, the better.", cta: "Done ✓" },
+      { instruction: "Step into the next room. Close the door gently if you can.", hint: "No fuss. No goodbye. Just walk out calmly.", cta: "Done ✓" },
+      { instruction: "Wait 90 seconds. Set a timer if it helps.", hint: "Don't peek. Don't call out. Just wait.", cta: "Time's up →" },
+      { instruction: "Walk back in calmly. No big hello — just go about your business.", hint: "How " + n() + " reacts tells us everything we need for tomorrow.", cta: "Done ✓" },
+    ],
+    obs: { label: "What happened when you stepped away?", hint: "For example: did " + n() + " carry on sniffing, follow you, bark, or seem worried?" },
+    day2: "Scatter feed — 2 minutes",
+  },
+  alone_5to15: {
+    title: "The scatter feed departure",
+    duration: "About 15 minutes",
+    intro: n() + " can hold it for a few minutes, so tonight we use that window.",
+    stages: [
+      { instruction: "Scatter " + n() + "'s dinner across the floor or loosely in a tea towel.", hint: "Give them a good amount — you want this to last a few minutes.", cta: "Done ✓" },
+      { instruction: "Wait until " + n() + "'s nose is fully down and they're working. Then pick up your keys, put your shoes on — calmly.", hint: "No announcement. No drama. Just your normal leaving routine.", cta: "Done ✓" },
+      { instruction: "Leave for 3 minutes. Go outside or into another room.", hint: "Come back before the scatter feed runs out if you can.", cta: "I'm back →" },
+      { instruction: "Walk back in quietly. Let " + n() + " finish what they're doing.", hint: "The calmer your return, the more useful the data.", cta: "Done ✓" },
+    ],
+    obs: { label: "What happened when you stepped away?", hint: "For example: did " + n() + " notice you'd gone, carry on sniffing, look for you, or seem unsettled?" },
+    day2: "5-minute departure",
+  },
+  alone_15to30: {
+    title: "The calm departure drill",
+    duration: "About 20 minutes",
+    intro: "The issue isn't how long " + n() + " can cope — it's what happens around the moment you leave.",
+    stages: [
+      { instruction: "Give " + n() + " a long-lasting chew or scatter their dinner in a tea towel.", hint: "Something that'll take at least 10 minutes. Start the clock now.", cta: "Done ✓" },
+      { instruction: "Go through your leaving routine — shoes, keys, coat — slowly and without any emotional loading.", hint: "No long goodbye. No guilty face. Just normal.", cta: "Done ✓" },
+      { instruction: "Leave for 10 minutes. Come back before the chew runs out if you can.", hint: "This is the practice. It doesn't have to be perfect.", cta: "I'm back →" },
+      { instruction: "Walk back in without making it a moment. Hang up your coat, put your keys down.", hint: "Boring return = good data.", cta: "Done ✓" },
+    ],
+    obs: { label: "What happened when you stepped away?", hint: "For example: was " + n() + " calm when you got back, still working on the chew, or up and looking for you?" },
+    day2: "15-minute departure",
+  },
+  alone_dontknow: {
+    title: "Finding the baseline",
+    duration: "About 10 minutes",
+    intro: "We find " + n() + "'s starting point tonight. Two minutes. Safely.",
+    stages: [
+      { instruction: "Scatter " + n() + "'s dinner across the floor or in a tea towel.", hint: "Give them a moment to get started before you move.", cta: "Done ✓" },
+      { instruction: "Once they're fully engaged, step out of the room — or out of the door if that's the concern.", hint: "No announcement. Just go.", cta: "Done ✓" },
+      { instruction: "Come back after exactly 2 minutes.", hint: "Set a timer. Note what you find when you walk back in.", cta: "I'm back →" },
+      { instruction: "Write down what you saw — even just a note in your phone.", hint: "Still sniffing calmly? Looking for you? Already anxious? All of these are useful.", cta: "Got it ✓" },
+    ],
+    obs: { label: "What happened when you stepped away?", hint: "For example: was " + n() + " calm, looking for you, or had they already stopped eating?" },
+    day2: "Building on tonight",
+  },
+  evenings_early: {
+    title: "Intercept the build-up",
+    duration: "About 15 minutes",
+    intro: n() + " starts ramping up before the chaos hits. Tonight we step in before that happens.",
+    stages: [
+      { instruction: "At 5:30pm — before anything has started — scatter " + n() + "'s dinner across the floor or in a loosely rolled tea towel.", hint: "Earlier than feels necessary is exactly right.", cta: "Done ✓" },
+      { instruction: "Let " + n() + " work through it at their own pace. Don't rush or encourage them.", hint: "Sit nearby if you like, but stay calm and don't interact.", cta: "They're done →" },
+      { instruction: "Once they've finished, sit down as normal. Don't initiate play or interaction.", hint: "Notice what happens in the next 30 minutes. That's the data.", cta: "Done ✓" },
+    ],
+    obs: { label: "What did you notice when " + n() + " finished?", hint: "For example: did they settle, start pacing again, look for you, or seem about the same as usual?" },
+    day2: "Towel roll dinner",
+  },
+  evenings_dinner: {
+    title: "The towel roll dinner",
+    duration: "About 15 minutes",
+    intro: "Dinner time is the trigger for " + n() + ". Tonight we slow it right down.",
+    stages: [
+      { instruction: "Lay " + n() + "'s dinner along the length of a tea towel.", hint: "Spread it evenly so there's food along the whole thing.", cta: "Done ✓" },
+      { instruction: "Roll the towel up loosely — not too tight. " + n() + " needs to be able to work it.", hint: "Think loose sausage roll, not tight scroll.", cta: "Done ✓" },
+      { instruction: "Put it on the floor and step back. Let " + n() + " sniff, nudge and unroll it at their own pace.", hint: "Don't help, don't encourage. Just watch.", cta: "They're done →" },
+      { instruction: "When they're finished, leave them to settle without engaging.", hint: "The next 10 minutes are the interesting part.", cta: "Done ✓" },
+    ],
+    obs: { label: "What did you notice when " + n() + " finished?", hint: "For example: did they settle, start pacing again, get more excited, or seem about the same?" },
+    day2: "Scatter feed + towel roll",
+  },
+  evenings_relax: {
+    title: "The pre-chaos scatter",
+    duration: "About 15 minutes",
+    intro: n() + " is fine until you try to sit down — then it kicks off. Tonight we get ahead of it.",
+    stages: [
+      { instruction: "At 6pm, scatter " + n() + "'s dinner across the floor — or hide small treats in 4 or 5 spots around one room.", hint: "The messier and more spread out, the longer it takes. That's the point.", cta: "Done ✓" },
+      { instruction: "Let " + n() + " sniff it all out at their own pace. Don't help or point things out.", hint: "Sit down nearby, stay quiet. You want them working independently.", cta: "They're done →" },
+      { instruction: "Sit down as normal once they're done. Don't engage with " + n() + " for the first 10 minutes.", hint: "This is the test. Notice when — or whether — the usual chaos starts.", cta: "Done ✓" },
+    ],
+    obs: { label: "What did you notice when " + n() + " finished?", hint: "For example: did they settle when you sat down, come to you for attention, start pacing, or take longer than usual to wind up?" },
+    day2: "Settle spot introduction",
+  },
+  evenings_varies: {
+    title: "The observation evening",
+    duration: "About 15 minutes",
+    intro: "Before we build anything for " + n() + ", we need to understand what their evenings actually look like.",
+    stages: [
+      { instruction: "At 6pm, give " + n() + " their dinner scattered across the floor or in a tea towel.", hint: "Note the time as you put it down.", cta: "Done ✓" },
+      { instruction: "After they finish, watch what they do — and notice what you do. Do you automatically engage with them?", hint: "Try not to change your normal behaviour tonight. We want a real baseline.", cta: "Watching →" },
+      { instruction: "Note when " + n() + "'s energy peaks — when they're at their most difficult or unsettled.", hint: "Even approximate is fine. 6:45ish. Around dinner. When we sat down.", cta: "Got it ✓" },
+    ],
+    obs: { label: "What did you notice tonight?", hint: "For example: when did things peak, what did it look like, and what happened just before it?" },
+    day2: "Building on tonight",
+  },
+  evenings_dontknow: {
+    title: "The observation evening",
+    duration: "About 15 minutes",
+    intro: "Before we build anything for " + n() + ", we need to understand what their evenings actually look like.",
+    stages: [
+      { instruction: "At 6pm, give " + n() + " their dinner scattered across the floor or in a tea towel.", hint: "Note the time as you put it down.", cta: "Done ✓" },
+      { instruction: "After they finish, watch what they do — and notice what you do. Do you automatically engage with them?", hint: "Try not to change your normal behaviour tonight. We want a real baseline.", cta: "Watching →" },
+      { instruction: "Note when " + n() + "'s energy peaks — when they're at their most difficult or unsettled.", hint: "Even approximate is fine.", cta: "Got it ✓" },
+    ],
+    obs: { label: "What did you notice tonight?", hint: "For example: when did things peak, what did it look like, and what happened just before it?" },
+    day2: "Building on tonight",
+  },
+};
+
+const DAY_NAMES = {
+  alone: ["The scatter feed","Departure practice","Extended solo time","Solo with a chew","Sniff walk + departure","Building the routine","Week one — look back"],
+  evenings: ["Scatter feed at 6pm","Towel roll dinner","Sniff hunt","Settle spot training","Early intercept","Full routine practice","Week one — look back"],
+};
+
+function sessionKey() {
+  return S.route + '_' + S.threshold;
+}
+
+function session() {
+  return SESSIONS[sessionKey()] || SESSIONS['evenings_relax'];
+}
+
+// ── Acknowledgement messages ──
+const ACKS = {
+  1: "Got it. We'll keep that in mind for tomorrow's session.",
+  2: "Noted. We'll adjust tomorrow so it's a better fit for " + S.name + ".",
+  3: "Good. We'll build on that tomorrow.",
+  4: "Lovely. We'll build on that tomorrow.",
+  5: "Look at " + S.name + " go. We'll build on that tomorrow.",
+};
+
+// ── Screen management ──
+const SCREENS = ['screenIntro','screenStep','screenCheckin','screenCelebration','screenHome'];
+
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  updateProgress(id);
+  updateHeader(id);
+  window.scrollTo(0,0);
+}
+
+function updateProgress(id) {
+  const pcts = { screenIntro:14, screenStep:35, screenCheckin:65, screenCelebration:85, screenHome:100 };
+  document.getElementById('progressFill').style.width = (pcts[id] || 14) + '%';
+}
+
+function updateHeader(id) {
+  const meta = { screenIntro:'Day 1 of 7', screenStep:'Day 1 of 7', screenCheckin:'Day 1 of 7', screenCelebration:'Day 1 complete', screenHome:n() + "'s progress" };
+  document.getElementById('headerMeta').textContent = meta[id] || 'Day 1 of 7';
+}
+
+// ── Intro screen ──
+function buildIntro() {
+  const sess = session();
+  document.getElementById('introTitle').textContent = sess.title;
+  document.getElementById('introMeta').textContent = sess.duration + ' · Start tonight';
+  document.getElementById('introDesc').textContent = sess.intro;
+
+  const wrap = document.getElementById('allStepsWrap');
+  wrap.innerHTML = '';
+  sess.stages.forEach((st, i) => {
+    wrap.innerHTML += '<div class="all-step-row"><div class="all-step-num">' + (i+1) + '</div><div class="all-step-text">' + st.instruction + '</div></div>';
+  });
+
+  document.getElementById('mainCta').textContent = "Let's do this";
+  document.getElementById('mainCta').disabled = false;
+  document.getElementById('mainCta').className = 'btn btn-primary';
+}
+
+function toggleAllSteps() {
+  const wrap = document.getElementById('allStepsWrap');
+  const btn = document.querySelector('.see-all-btn');
+  wrap.classList.toggle('open');
+  btn.textContent = wrap.classList.contains('open') ? 'Hide steps' : 'See all steps';
+}
+
+// ── Step mode ──
+function buildStepScreen() {
+  S.currentStep = 0;
+  renderStep();
+}
+
+function renderStep() {
+  const sess = session();
+  const stages = sess.stages;
+  const i = S.currentStep;
+  const stage = stages[i];
+
+  // Dots
+  const dotsEl = document.getElementById('stepDots');
+  dotsEl.innerHTML = '';
+  stages.forEach((_, idx) => {
+    const dot = document.createElement('div');
+    dot.className = 'step-dot ' + (idx < i ? 'done' : idx === i ? 'active' : '');
+    dotsEl.appendChild(dot);
+  });
+
+  document.getElementById('stepLabel').textContent = 'Step ' + (i+1) + ' of ' + stages.length;
+  document.getElementById('stepInstruction').textContent = stage.instruction;
+  document.getElementById('stepHint').textContent = stage.hint || '';
+
+  const btn = document.getElementById('mainCta');
+  btn.textContent = stage.cta;
+  btn.disabled = false;
+  btn.className = 'btn btn-primary';
+}
+
+// ── Check-in screen ──
+function buildCheckin() {
+  document.getElementById('checkinTitle').textContent = 'Nice. How did ' + n() + ' do?';
+  document.getElementById('checkinSub').textContent = "Be honest — it helps us get tomorrow right.";
+  document.getElementById('obsLabel').textContent = session().obs.label;
+  document.getElementById('obsHint').textContent = session().obs.hint;
+
+  const btn = document.getElementById('mainCta');
+  btn.textContent = 'Continue';
+  btn.disabled = true;
+  btn.className = 'btn btn-primary';
+}
+
+function pickRating(el) {
+  document.querySelectorAll('.emoji-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  S.rating = parseInt(el.dataset.val);
+
+  const ack = document.getElementById('checkinAck');
+  ack.textContent = ACKS[S.rating] || ACKS[3];
+  ack.classList.add('visible');
+
+  const obs = document.getElementById('obsWrap');
+  obs.classList.add('visible');
+
+  const btn = document.getElementById('mainCta');
+  btn.textContent = 'Save and continue';
+  btn.disabled = false;
+}
+
+function onObsInput() {
+  const v = document.getElementById('obsInput').value;
+  document.getElementById('obsChar').textContent = (200 - v.length) + ' characters remaining';
+  S.observation = v;
+}
+
+function submitCheckin() {
+  S.observation = document.getElementById('obsInput').value.trim();
+  buildCelebration();
+  show('screenCelebration');
+  document.getElementById('mainCta').textContent = 'See my progress';
+  document.getElementById('mainCta').disabled = false;
+  document.getElementById('mainCta').className = 'btn btn-olive';
+  // TODO: write session to Supabase { dog_name, route, day: 1, rating: S.rating, observation: S.observation }
+  // TODO: fire GHL activation event: day_1_session_completed + day_1_checkin_submitted
+}
+
+// ── Celebration screen ──
+function buildCelebration() {
+  document.getElementById('celebTitle').textContent = 'Day 1 done.';
+  document.getElementById('celebSub').textContent = n() + "'s first session is in the books.";
+  document.getElementById('celebSessionName').textContent = session().title;
+  const ratingLabels = ['','Really struggled','A bit difficult','About right','Went well','Smashed it'];
+  document.getElementById('celebRatingText').textContent = ratingLabels[S.rating] || 'Session logged';
+  document.getElementById('celebNext').textContent = "Day 2 arrives tomorrow morning.";
+}
+
+// ── Home screen ──
+function buildHome() {
+  const dayNames = DAY_NAMES[S.route] || DAY_NAMES.evenings;
+  document.getElementById('homeDogName').textContent = n();
+  document.getElementById('homeDay2Title').textContent = dayNames[1];
+
+  const sarahMessages = {
+    1: "That one was tough for " + n() + " today. That's completely normal for day one. Tomorrow is a shorter session — we're adjusting based on what you told us.",
+    2: "Day one done. It doesn't always go perfectly, and that's fine — we've got six more sessions to work with. See you tomorrow.",
+    3: "Solid start. " + n() + " is now one session in. Day 2 builds on what you did tonight — keep it up.",
+    4: "Good session tonight. " + n() + " is off to a good start. Day 2 arrives tomorrow morning.",
+    5: n() + " had a great first session. We'll build on that tomorrow. Well done.",
+  };
+
+  document.getElementById('homeSarahText').textContent = sarahMessages[S.rating] || sarahMessages[3];
+
+  const grid = document.getElementById('homeWeekGrid');
+  grid.innerHTML = '';
+  dayNames.forEach((name, i) => {
+    const done = i === 0;
+    const locked = i > 1;
+    const row = document.createElement('div');
+    row.className = 'home-day-row ' + (done ? 'done-row' : locked ? 'locked-row' : '');
+    row.innerHTML = '<div class="home-day-num">' + (i+1) + '</div>' +
+      '<div class="home-day-name">' + name + '</div>' +
+      '<div class="home-day-status">' + (done ? '✓' : i === 1 ? '→' : '🔒') + '</div>';
+    grid.appendChild(row);
+  });
+
+  document.getElementById('mainCta').textContent = 'See you tomorrow 🐾';
+  document.getElementById('mainCta').disabled = false;
+  document.getElementById('mainCta').className = 'btn btn-primary';
+  document.getElementById('mainCta').onclick = null;
+}
+
+// ── Main CTA handler ──
+function handleCta() {
+  const cur = document.querySelector('.screen.active').id;
+
+  if (cur === 'screenIntro') {
+    buildStepScreen();
+    show('screenStep');
+    return;
+  }
+
+  if (cur === 'screenStep') {
+    const stages = session().stages;
+    if (S.currentStep < stages.length - 1) {
+      S.currentStep++;
+      renderStep();
+    } else {
+      buildCheckin();
+      show('screenCheckin');
+    }
+    return;
+  }
+
+  if (cur === 'screenCheckin') {
+    submitCheckin();
+    return;
+  }
+
+  if (cur === 'screenCelebration') {
+    buildHome();
+    show('screenHome');
+    return;
+  }
+}
+
+// ── Init ──
+buildIntro();
+</script>
+</body>
+</html>
