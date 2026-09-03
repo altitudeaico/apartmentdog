@@ -614,46 +614,28 @@ function buildReveal() {
 
   (async () => {
     try {
-      // Step 1 — create anonymous session on the client
-      const { data: anonData, error: anonErr } = await sb.auth.signInAnonymously();
-      if (anonErr || !anonData.session) throw new Error('Anonymous sign-in failed: ' + anonErr?.message);
-
-      const anonUid = anonData.session.user.id;
-      const anonToken = anonData.session.access_token;
-
-      // Step 2 — POST to edge function: creates profile/dog/onboarding, sends return magic link
+      // POST to edge function — creates account, dog, onboarding, sends magic link
+      // No client-side anonymous auth needed; the function owns user creation.
       const payload = {
-        anon_uid:        anonUid,
-        email:           S.email,
-        dog_name:        S.name,
-        route:           route(),
+        email:            S.email,
+        dog_name:         S.name,
+        route:            route(),
         reported_problem: S.problem,
-        threshold:       thresh(),
+        threshold:        thresh(),
       };
 
       const resp = await fetch(SUPABASE_URL + '/functions/v1/wizard-complete', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + anonToken,
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
-      const data = await resp.json();
 
+      if (!resp.ok) throw new Error('Function returned ' + resp.status);
+      const data = await resp.json();
       if (!data.success) throw new Error(data.error || 'Edge function error');
 
-      const dogId = data.dog_id;
-
-      // Step 3 — redirect immediately to session page
-      // Anonymous session is active in this browser — no magic link needed to start
-      if (data.is_returning) {
-        // Existing confirmed account — show check-your-email state
-        showInboxConfirmation(false);
-      } else {
-        // New anonymous user — go straight to Day 1
-        window.location.href = '/bdc-session.html?dog_id=' + dogId + '&day=1&week=1';
-      }
+      // Magic link sent — show inbox confirmation (existing or new account)
+      showInboxConfirmation(false);
 
     } catch (e) {
       console.error('Wizard submit error:', e.message);
@@ -669,15 +651,15 @@ function showInboxConfirmation(isError) {
     ctaWrap.innerHTML = `
       <div style="background:#F5EBE5;border-radius:var(--radius);padding:20px 18px;margin-bottom:12px;text-align:center;">
         <div style="font-size:15px;font-weight:600;color:var(--ink);margin-bottom:6px;">Something went wrong</div>
-        <div style="font-size:14px;color:var(--warm);line-height:1.6;">We've emailed a sign-in link to <strong>${maskedEmail}</strong>. Use that to start ${n()}'s Day 1 session.</div>
+        <div style="font-size:14px;color:var(--warm);line-height:1.6;">We couldn't set up ${n()}'s plan just now. Hit the button below to try again, or check your connection and reload.</div>
       </div>
       <button class="btn btn-primary" onclick="resendLink()" id="resendBtn">Resend sign-in email</button>
     `;
   } else {
     ctaWrap.innerHTML = `
       <div style="background:var(--olive-light);border-radius:var(--radius);padding:20px 18px;margin-bottom:12px;text-align:center;">
-        <div style="font-size:15px;font-weight:600;color:var(--ink);margin-bottom:6px;">Welcome back</div>
-        <div style="font-size:14px;color:var(--warm);line-height:1.6;">We've sent a sign-in link to <strong>${maskedEmail}</strong>. Open it to continue ${n()}'s programme.</div>
+        <div style="font-size:15px;font-weight:600;color:var(--ink);margin-bottom:6px;">Check your email</div>
+        <div style="font-size:14px;color:var(--warm);line-height:1.6;">We've sent a sign-in link to <strong>${maskedEmail}</strong>. Open it to start ${n()}'s plan.</div>
       </div>
       <button class="btn btn-primary" onclick="resendLink()" id="resendBtn">Resend sign-in email</button>
       <button class="btn btn-ghost" onclick="show('step4')" style="margin-top:8px;">Use a different email</button>
