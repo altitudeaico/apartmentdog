@@ -318,6 +318,7 @@ body { font-family: 'Inter', sans-serif; background: var(--faint); color: var(--
   <button class="btn btn-primary" id="mainCta" onclick="handleCta()">Let's do this</button>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 // ── State (in real app this comes from wizard handoff) ──
 const S = {
@@ -584,15 +585,51 @@ function onObsInput() {
   S.observation = v;
 }
 
-function submitCheckin() {
+async function submitCheckin() {
   S.observation = document.getElementById('obsInput').value.trim();
+
+  // Write session to Supabase
+  // dog_id comes from URL param (magic link redirect) or sessionStorage (same-session flow)
+  const params = new URLSearchParams(location.search);
+  const dogId = params.get('dog_id') || sessionStorage.getItem('bdc_dog_id');
+  const dayNum = parseInt(params.get('day') || '1', 10);
+  const week   = parseInt(params.get('week') || '1', 10);
+
+  if (dogId) {
+    try {
+      const { createClient } = window.supabase;
+      const sb = createClient(
+        'https://fpgecjgymgosfnkrvjue.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZwZ2Vjamd5bWdvc2Zua3J2anVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg0MTY4MTIsImV4cCI6MjEwMzk5MjgxMn0.5aPn9pcZI_lgUuTwGIZ_J8kepY1Pn_X-JWvX9IkJSMA'
+      );
+
+      const activityKey = (S.route || 'evenings') + '_' + (S.threshold || 'relax') + '_d' + dayNum + '_v1';
+
+      const { error } = await sb.from('sessions').upsert({
+        dog_id:       dogId,
+        day_number:   dayNum,
+        week:         week,
+        activity_key: activityKey,
+        rating:       S.rating || null,
+        observation:  S.observation || null,
+      }, { onConflict: 'dog_id,week,day_number' });
+
+      if (error) {
+        console.error('Session write error:', error.message);
+      } else {
+        // Store confirmation so home screen knows day 1 is real
+        sessionStorage.setItem('bdc_day1_complete', '1');
+      }
+    } catch (e) {
+      console.error('Supabase init error:', e);
+    }
+  }
+
   buildCelebration();
   show('screenCelebration');
   document.getElementById('mainCta').textContent = 'See my progress';
   document.getElementById('mainCta').disabled = false;
   document.getElementById('mainCta').className = 'btn btn-olive';
-  // TODO: write session to Supabase { dog_name, route, day: 1, rating: S.rating, observation: S.observation }
-  // TODO: fire GHL activation event: day_1_session_completed + day_1_checkin_submitted
 }
 
 // ── Celebration screen ──
