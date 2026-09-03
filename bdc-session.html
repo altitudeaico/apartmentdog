@@ -488,8 +488,6 @@ function showPrescriptionUnavailable() {
   document.getElementById('mainCta').disabled = false;
   document.getElementById('mainCta').onclick = () => { buildHome(); show('screenHome'); };
 }
-  return SESSIONS[sessionKey()] || SESSIONS['evenings_relax'];
-}
 
 // ── Acknowledgement messages ──
 const ACKS = {
