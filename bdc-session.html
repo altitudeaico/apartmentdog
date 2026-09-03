@@ -320,6 +320,25 @@ body { font-family: 'Inter', sans-serif; background: var(--faint); color: var(--
 </div>
 
 <!-- ══════════════════════════════
+     SCREEN H: Continuation offer
+══════════════════════════════ -->
+<div class="screen" id="screenContinuation">
+  <div style="padding:32px 0 0;">
+    <div style="font-size:15px;color:var(--warm);line-height:1.7;margin-bottom:28px;" id="continuationBridge"></div>
+
+    <div style="background:var(--faint);border:2px solid var(--terra);border-radius:var(--radius);padding:22px 20px;margin-bottom:24px;">
+      <div style="font-family:'Lora',serif;font-size:17px;color:var(--ink);line-height:1.3;margin-bottom:10px;" id="continuationPlanTitle"></div>
+      <div style="font-size:14px;color:var(--warm);line-height:1.55;margin-bottom:16px;" id="continuationPlanDesc"></div>
+      <div style="font-size:22px;font-weight:700;color:var(--ink);">£47 <span style="font-size:14px;font-weight:400;color:var(--muted);">one payment</span></div>
+    </div>
+  </div>
+
+  <div style="padding-bottom:140px;">
+    <div style="font-size:13px;color:var(--muted);line-height:1.5;text-align:center;margin-bottom:8px;">Payment coming soon — we'll let you know when it's ready.</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
      SCREEN E: Home
 ══════════════════════════════ -->
 <div class="screen" id="screenHome">
@@ -905,7 +924,66 @@ function showPrescriptionUnavailable() {
   document.getElementById('mainCta').onclick = () => { buildHome(); show('screenHome'); };
 }
 
-// ── Weekly reflection ────────────────────────────────────────────────────
+// ── Entitlement resolver ─────────────────────────────────────────────────
+// Separate from resolvePosition — commercial access is a different concern.
+// Returns true if the dog has an active purchase for the given product key.
+
+async function resolveEntitlement(dogId, productKey) {
+  const { data, error } = await sb
+    .from('purchases')
+    .select('id')
+    .eq('dog_id', dogId)
+    .eq('product_key', productKey)
+    .eq('status', 'active')
+    .maybeSingle();
+  if (error) {
+    console.error('Entitlement check failed:', error);
+    return false;
+  }
+  return !!data;
+}
+
+// ── Continuation screen ──────────────────────────────────────────────────
+
+function buildContinuation() {
+  document.getElementById('headerMeta').textContent = 'Keep going';
+
+  document.getElementById('continuationBridge').innerHTML =
+    `<p style="margin:0 0 14px;">You've given us a week's worth of information about how ${n()}'s sessions went.</p>` +
+    `<p style="margin:0;">Instead of starting again, the rest of the plan builds from that. We'll keep giving you one thing to do at a time, use your check-ins to shape what comes next, and keep a record as you go.</p>`;
+
+  document.getElementById('continuationPlanTitle').textContent =
+    `${n()}'s Personalised 4-Week Plan`;
+
+  document.getElementById('continuationPlanDesc').textContent =
+    `Week 1 complete. Continue for another 3 weeks.`;
+
+  const cta = document.getElementById('mainCta');
+  cta.textContent = `Continue ${n()}'s plan — £47`;
+  cta.disabled = true; // Inactive until Weeks 2–4 are built
+  cta.className = 'btn btn-primary';
+  cta.style.opacity = '0.4';
+  cta.onclick = null;
+
+  // "Not yet" secondary link — returns to Home, keeps offer accessible
+  const ctaWrap = document.querySelector('.cta-wrap');
+  let notYetBtn = document.getElementById('notYetBtn');
+  if (!notYetBtn) {
+    notYetBtn = document.createElement('button');
+    notYetBtn.id = 'notYetBtn';
+    notYetBtn.className = 'btn btn-ghost';
+    notYetBtn.textContent = 'Not yet';
+    ctaWrap.appendChild(notYetBtn);
+  }
+  notYetBtn.style.display = 'block';
+  notYetBtn.onclick = () => {
+    notYetBtn.style.display = 'none';
+    buildHome(true); // true = week2Locked
+    show('screenHome');
+  };
+
+  show('screenContinuation');
+}
 
 const REFLECT_CONFIG = {
   evenings: {
@@ -1069,16 +1147,16 @@ async function buildSummary() {
   document.getElementById('summarySarahNote').textContent =
     `That's your Week 1. We've kept a record of all of it.`;
 
-  // CTA
+  // CTA — goes to continuation offer
   const cta = document.getElementById('mainCta');
   cta.textContent = 'See what\'s next';
   cta.disabled = false;
   cta.className = 'btn btn-primary';
-  cta.onclick = () => {
-    // Placeholder — continuation screen goes here
-    buildHome();
-    show('screenHome');
-  };
+  cta.style.opacity = '';
+  cta.onclick = () => buildContinuation();
+
+  // Add "Not yet" ghost button below main CTA on continuation screen
+  // (added dynamically when continuation renders — see buildContinuation)
 
   show('screenSummary');
 }
@@ -1091,7 +1169,7 @@ const ACKS = {
 };
 
 // ── Screen management ──
-const SCREENS = ['screenIntro','screenStep','screenCheckin','screenCelebration','screenReflect','screenSummary','screenHome'];
+const SCREENS = ['screenIntro','screenStep','screenCheckin','screenCelebration','screenReflect','screenSummary','screenContinuation','screenHome'];
 
 function show(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -1102,12 +1180,12 @@ function show(id) {
 }
 
 function updateProgress(id) {
-  const pcts = { screenIntro:14, screenStep:35, screenCheckin:65, screenCelebration:85, screenReflect:92, screenSummary:97, screenHome:100 };
+  const pcts = { screenIntro:14, screenStep:35, screenCheckin:65, screenCelebration:85, screenReflect:92, screenSummary:97, screenContinuation:98, screenHome:100 };
   document.getElementById('progressFill').style.width = (pcts[id] || 14) + '%';
 }
 
 function updateHeader(id) {
-  const meta = { screenIntro:'Day 1 of 7', screenStep:'Day 1 of 7', screenCheckin:'Day 1 of 7', screenCelebration:'Day 1 complete', screenReflect:'Week 1', screenSummary:'Week 1', screenHome:n() + "'s progress" };
+  const meta = { screenIntro:'Day 1 of 7', screenStep:'Day 1 of 7', screenCheckin:'Day 1 of 7', screenCelebration:'Day 1 complete', screenReflect:'Week 1', screenSummary:'Week 1', screenContinuation:'Keep going', screenHome:n() + "'s progress" };
   document.getElementById('headerMeta').textContent = meta[id] || 'Day 1 of 7';
 }
 
@@ -1263,38 +1341,89 @@ function buildCelebration() {
 }
 
 // ── Home screen ──
-function buildHome() {
+function buildHome(week2Locked) {
   const dayNames = DAY_NAMES[S.route] || DAY_NAMES.evenings;
   document.getElementById('homeDogName').textContent = n();
-  document.getElementById('homeDay2Title').textContent = dayNames[1];
 
-  const sarahMessages = {
-    1: "That one was tough for " + n() + " today. That's completely normal for day one. Tomorrow is a shorter session — we're adjusting based on what you told us.",
-    2: "Day one done. It doesn't always go perfectly, and that's fine — we've got six more sessions to work with. See you tomorrow.",
-    3: "Solid start. " + n() + " is now one session in. Day 2 builds on what you did tonight — keep it up.",
-    4: "Good session tonight. " + n() + " is off to a good start. Day 2 arrives tomorrow morning.",
-    5: n() + " had a great first session. We'll build on that tomorrow. Well done.",
-  };
+  // Hide Not yet button if visible from continuation
+  const notYetBtn = document.getElementById('notYetBtn');
+  if (notYetBtn) notYetBtn.style.display = 'none';
 
-  document.getElementById('homeSarahText').textContent = sarahMessages[S.rating] || sarahMessages[3];
+  if (week2Locked) {
+    // Week 1 complete, no entitlement yet — show locked Week 2 state
+    document.getElementById('homeDogMeta').textContent = 'Week 1 complete · 7-day programme done';
 
-  const grid = document.getElementById('homeWeekGrid');
-  grid.innerHTML = '';
-  dayNames.forEach((name, i) => {
-    const done = i === 0;
-    const locked = i > 1;
-    const row = document.createElement('div');
-    row.className = 'home-day-row ' + (done ? 'done-row' : locked ? 'locked-row' : '');
-    row.innerHTML = '<div class="home-day-num">' + (i+1) + '</div>' +
-      '<div class="home-day-name">' + name + '</div>' +
-      '<div class="home-day-status">' + (done ? '✓' : i === 1 ? '→' : '🔒') + '</div>';
-    grid.appendChild(row);
-  });
+    const streakEl = document.querySelector('.home-streak');
+    if (streakEl) streakEl.style.display = 'none';
 
-  document.getElementById('mainCta').textContent = 'Back to my plan';
-  document.getElementById('mainCta').disabled = false;
-  document.getElementById('mainCta').className = 'btn btn-primary';
-  document.getElementById('mainCta').onclick = null;
+    const todayEl = document.querySelector('.home-today');
+    if (todayEl) {
+      todayEl.querySelector('.home-today-tag').textContent = 'Week 2';
+      todayEl.querySelector('#homeDay2Title').textContent = 'Continue the plan';
+      todayEl.querySelector('.home-today-meta').textContent = 'Unlock Week 2 to continue.';
+    }
+
+    document.getElementById('homeSarahText').textContent =
+      `Week 1 is saved. Whenever you're ready to continue, ${n()}'s next plan picks up from here.`;
+
+    const cta = document.getElementById('mainCta');
+    cta.textContent = `Continue ${n()}'s plan — £47`;
+    cta.disabled = true;
+    cta.style.opacity = '0.4';
+    cta.className = 'btn btn-primary';
+    cta.onclick = null;
+
+    // Calm route back to continuation offer — secondary ghost link
+    const ctaWrap = document.querySelector('.cta-wrap');
+    let seeOfferBtn = document.getElementById('seeOfferBtn');
+    if (!seeOfferBtn) {
+      seeOfferBtn = document.createElement('button');
+      seeOfferBtn.id = 'seeOfferBtn';
+      seeOfferBtn.className = 'btn btn-ghost';
+      seeOfferBtn.textContent = 'See the offer again';
+      ctaWrap.appendChild(seeOfferBtn);
+    }
+    seeOfferBtn.style.display = 'block';
+    seeOfferBtn.onclick = () => {
+      seeOfferBtn.style.display = 'none';
+      buildContinuation();
+    };
+
+  } else {
+    // Normal mid-programme Home state
+    document.getElementById('homeDogMeta').textContent = 'Day ' + (S.dayNumber - 1) + ' complete · 7-day programme';
+    document.getElementById('homeDay2Title').textContent = dayNames[S.dayNumber - 1] || '';
+
+    const sarahMessages = {
+      1: "That one was tough for " + n() + " today. That's completely normal for day one. Tomorrow is a shorter session — we're adjusting based on what you told us.",
+      2: "Day one done. It doesn't always go perfectly, and that's fine — we've got six more sessions to work with. See you tomorrow.",
+      3: "Solid start. " + n() + " is now one session in. Day 2 builds on what you did tonight — keep it up.",
+      4: "Good session tonight. " + n() + " is off to a good start. Day 2 arrives tomorrow morning.",
+      5: n() + " had a great first session. We'll build on that tomorrow. Well done.",
+    };
+    document.getElementById('homeSarahText').textContent = sarahMessages[S.rating] || sarahMessages[3];
+
+    const grid = document.getElementById('homeWeekGrid');
+    grid.innerHTML = '';
+    dayNames.forEach((name, i) => {
+      const done = i < S.dayNumber - 1;
+      const current = i === S.dayNumber - 1;
+      const locked = i >= S.dayNumber;
+      const row = document.createElement('div');
+      row.className = 'home-day-row ' + (done ? 'done-row' : locked ? 'locked-row' : '');
+      row.innerHTML = '<div class="home-day-num">' + (i+1) + '</div>' +
+        '<div class="home-day-name">' + name + '</div>' +
+        '<div class="home-day-status">' + (done ? '✓' : current ? '→' : '🔒') + '</div>';
+      grid.appendChild(row);
+    });
+
+    const cta = document.getElementById('mainCta');
+    cta.textContent = 'Back to my plan';
+    cta.disabled = false;
+    cta.style.opacity = '';
+    cta.className = 'btn btn-primary';
+    cta.onclick = null;
+  }
 }
 
 // ── Main CTA handler ──
@@ -1541,6 +1670,17 @@ async function loadDogFromAuth(userId, isAnonymous) {
   if (pos.reflectionDue) {
     buildHome();
     show('screenHome');
+  } else if (pos.week > 1) {
+    // Week 1 complete — check entitlement before showing Week 2
+    const entitled = await resolveEntitlement(dog.id, 'week_2_4_plan');
+    if (entitled) {
+      // Week 2 accessible — build intro for next session
+      buildIntro();
+    } else {
+      // No entitlement — show Home with Week 2 locked
+      buildHome(true);
+      show('screenHome');
+    }
   } else if (pos.sessionCompleted) {
     buildHome();
     show('screenHome');
