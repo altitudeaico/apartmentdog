@@ -277,6 +277,49 @@ body { font-family: 'Inter', sans-serif; background: var(--faint); color: var(--
 </div>
 
 <!-- ══════════════════════════════
+     SCREEN F: Weekly reflection
+══════════════════════════════ -->
+<div class="screen" id="screenReflect">
+  <div style="padding:32px 0 16px;text-align:center;">
+    <div style="font-size:13px;font-weight:700;letter-spacing:0.07em;color:var(--muted);text-transform:uppercase;margin-bottom:20px;">Week 1 complete</div>
+    <div style="font-family:'Lora',serif;font-size:22px;color:var(--ink);line-height:1.35;max-width:320px;margin:0 auto 32px;" id="reflectQuestion"></div>
+  </div>
+
+  <div id="reflectOptions" style="display:flex;flex-direction:column;gap:10px;padding:0 4px 120px;"></div>
+</div>
+
+<!-- ══════════════════════════════
+     SCREEN G: Week 1 summary
+══════════════════════════════ -->
+<div class="screen" id="screenSummary">
+  <div style="padding:32px 0 8px;">
+    <div style="font-size:13px;font-weight:700;letter-spacing:0.07em;color:var(--muted);text-transform:uppercase;margin-bottom:12px;">Your week 1</div>
+    <div style="font-family:'Lora',serif;font-size:22px;color:var(--ink);line-height:1.3;margin-bottom:28px;" id="summaryHeadline"></div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:12px;padding-bottom:120px;">
+    <div style="background:var(--faint);border:1.5px solid var(--border);border-radius:var(--radius);padding:18px 20px;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:0.06em;color:var(--muted);text-transform:uppercase;margin-bottom:6px;">Sessions</div>
+      <div style="font-size:15px;color:var(--ink);line-height:1.55;" id="summaryConsistency"></div>
+    </div>
+
+    <div style="background:var(--faint);border:1.5px solid var(--border);border-radius:var(--radius);padding:18px 20px;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:0.06em;color:var(--muted);text-transform:uppercase;margin-bottom:6px;">What you reported</div>
+      <div style="font-size:15px;color:var(--ink);line-height:1.55;" id="summaryReflection"></div>
+    </div>
+
+    <div style="background:var(--faint);border:1.5px solid var(--border);border-radius:var(--radius);padding:18px 20px;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:0.06em;color:var(--muted);text-transform:uppercase;margin-bottom:6px;">Highest-rated session</div>
+      <div style="font-size:15px;color:var(--ink);line-height:1.55;" id="summaryBestSession"></div>
+    </div>
+
+    <div style="padding:8px 4px 0;">
+      <div style="font-size:14px;color:var(--warm);line-height:1.65;font-style:italic;" id="summarySarahNote"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
      SCREEN E: Home
 ══════════════════════════════ -->
 <div class="screen" id="screenHome">
@@ -862,7 +905,183 @@ function showPrescriptionUnavailable() {
   document.getElementById('mainCta').onclick = () => { buildHome(); show('screenHome'); };
 }
 
-// ── Acknowledgement messages ──
+// ── Weekly reflection ────────────────────────────────────────────────────
+
+const REFLECT_CONFIG = {
+  evenings: {
+    question: (dogName) => `Thinking about this week, have your evenings with ${dogName} felt any easier?`,
+    options: [
+      { slug: 'about_the_same',     label: 'About the same' },
+      { slug: 'a_little_easier',    label: 'A little easier' },
+      { slug: 'noticeably_easier',  label: 'Noticeably easier' },
+      { slug: 'not_sure',           label: 'Not sure' },
+    ],
+    summaryText: (slug, dogName) => ({
+      about_the_same:    `You said your evenings felt about the same as before.`,
+      a_little_easier:   `You said your evenings felt a little easier.`,
+      noticeably_easier: `You said your evenings felt noticeably easier.`,
+      not_sure:          `You weren't sure whether your evenings had changed.`,
+    }[slug] || ''),
+  },
+  alone: {
+    question: (dogName) => `How long can ${dogName} manage on their own now?`,
+    options: [
+      { slug: 'under5',    label: 'Under 5 minutes' },
+      { slug: '5to15',     label: '5 to 15 minutes' },
+      { slug: '15to30',    label: '15 to 30 minutes' },
+      { slug: 'over30',    label: 'Over 30 minutes' },
+      { slug: 'not_sure',  label: 'Not sure' },
+    ],
+    summaryText: (slug, dogName) => ({
+      under5:   `You said ${dogName} manages under 5 minutes on their own.`,
+      '5to15':  `You said ${dogName} manages 5 to 15 minutes on their own.`,
+      '15to30': `You said ${dogName} manages 15 to 30 minutes on their own.`,
+      over30:   `You said ${dogName} manages over 30 minutes on their own.`,
+      not_sure: `You weren't sure how long ${dogName} can manage on their own.`,
+    }[slug] || ''),
+  },
+};
+
+let reflectAnswer = null;
+
+function buildReflect() {
+  const config = REFLECT_CONFIG[S.route] || REFLECT_CONFIG.evenings;
+  document.getElementById('reflectQuestion').textContent = config.question(S.name);
+  document.getElementById('headerMeta').textContent = 'Week 1';
+
+  const container = document.getElementById('reflectOptions');
+  container.innerHTML = '';
+  config.options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'reflect-option';
+    btn.textContent = opt.label;
+    btn.dataset.slug = opt.slug;
+    btn.style.cssText = 'width:100%;padding:16px 20px;border-radius:var(--radius);border:1.5px solid var(--border);background:var(--faint);font-size:15px;font-weight:500;color:var(--ink);text-align:left;cursor:pointer;transition:border-color 0.15s,background 0.15s;';
+    btn.onclick = () => {
+      document.querySelectorAll('.reflect-option').forEach(b => {
+        b.style.borderColor = 'var(--border)';
+        b.style.background = 'var(--faint)';
+        b.style.color = 'var(--ink)';
+      });
+      btn.style.borderColor = 'var(--terra)';
+      btn.style.background = '#FDF0EA';
+      btn.style.color = 'var(--terra)';
+      reflectAnswer = opt.slug;
+      const cta = document.getElementById('mainCta');
+      cta.textContent = 'Save my answer';
+      cta.disabled = false;
+    };
+    container.appendChild(btn);
+  });
+
+  const cta = document.getElementById('mainCta');
+  cta.textContent = 'Save my answer';
+  cta.disabled = true;
+  cta.className = 'btn btn-primary';
+  cta.onclick = submitReflection;
+
+  show('screenReflect');
+}
+
+async function submitReflection() {
+  if (!reflectAnswer) return;
+  const cta = document.getElementById('mainCta');
+  cta.disabled = true;
+  cta.textContent = 'Saving...';
+
+  const config = REFLECT_CONFIG[S.route] || REFLECT_CONFIG.evenings;
+  const questionKey = S.route === 'alone' ? 'alone_w1_tolerance' : 'evenings_w1_ease';
+
+  const { error } = await sb
+    .from('weekly_reflections')
+    .upsert({
+      dog_id:      S.dogId,
+      week_number: 1,
+      question_key: questionKey,
+      answer:       reflectAnswer,
+    }, { onConflict: 'dog_id,week_number' });
+
+  if (error) {
+    console.error('Reflection save failed:', error);
+    cta.disabled = false;
+    cta.textContent = 'Save my answer';
+    return;
+  }
+
+  await buildSummary();
+}
+
+// ── Week 1 summary ───────────────────────────────────────────────────────
+
+async function buildSummary() {
+  document.getElementById('headerMeta').textContent = 'Week 1';
+
+  // Fetch all sessions for this dog, week 1
+  const { data: sessions } = await sb
+    .from('sessions')
+    .select('day_number, week, activity_key, rating')
+    .eq('dog_id', S.dogId)
+    .eq('week', 1)
+    .order('day_number');
+
+  const completed = sessions ? sessions.length : 0;
+  const outOf = 7;
+
+  // Consistency
+  const consistencyEl = document.getElementById('summaryConsistency');
+  if (completed === outOf) {
+    consistencyEl.textContent = `${S.name} completed all 7 sessions this week.`;
+  } else {
+    consistencyEl.textContent = `You completed ${completed} of 7 sessions this week.`;
+  }
+
+  // Best session — find the highest-rated row, tie-break to most recent day
+  const rated = sessions ? sessions.filter(s => s.rating !== null) : [];
+  rated.sort((a, b) => b.rating - a.rating || b.day_number - a.day_number);
+  const best = rated[0];
+
+  const bestEl = document.getElementById('summaryBestSession');
+  if (best) {
+    const prescription = SESSIONS[best.activity_key];
+    const title = prescription ? prescription.title : best.activity_key;
+    const wasReinforcement = best.day_number >= 6;
+    let bestText = `Your highest-rated session was Day ${best.day_number}: ${title}.`;
+    if (wasReinforcement) {
+      bestText += ' It was one we brought back from earlier in the week.';
+    }
+    bestEl.textContent = bestText;
+  } else {
+    bestEl.textContent = 'No rated sessions recorded this week.';
+  }
+
+  // Reflection answer
+  const config = REFLECT_CONFIG[S.route] || REFLECT_CONFIG.evenings;
+  const reflectionEl = document.getElementById('summaryReflection');
+  reflectionEl.textContent = config.summaryText(reflectAnswer, S.name);
+
+  // Headline — references dog name and completion
+  const headlineEl = document.getElementById('summaryHeadline');
+  headlineEl.textContent = completed === outOf
+    ? `${S.name} made it through the week.`
+    : `Week 1 is done.`;
+
+  // Sarah note
+  document.getElementById('summarySarahNote').textContent =
+    `That's your Week 1. We've kept a record of all of it.`;
+
+  // CTA
+  const cta = document.getElementById('mainCta');
+  cta.textContent = 'See what\'s next';
+  cta.disabled = false;
+  cta.className = 'btn btn-primary';
+  cta.onclick = () => {
+    // Placeholder — continuation screen goes here
+    buildHome();
+    show('screenHome');
+  };
+
+  show('screenSummary');
+}
 const ACKS = {
   1: "Got it. We'll keep that in mind for tomorrow's session.",
   2: "Noted. We'll adjust tomorrow so it's a better fit for " + S.name + ".",
@@ -872,7 +1091,7 @@ const ACKS = {
 };
 
 // ── Screen management ──
-const SCREENS = ['screenIntro','screenStep','screenCheckin','screenCelebration','screenHome'];
+const SCREENS = ['screenIntro','screenStep','screenCheckin','screenCelebration','screenReflect','screenSummary','screenHome'];
 
 function show(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -883,12 +1102,12 @@ function show(id) {
 }
 
 function updateProgress(id) {
-  const pcts = { screenIntro:14, screenStep:35, screenCheckin:65, screenCelebration:85, screenHome:100 };
+  const pcts = { screenIntro:14, screenStep:35, screenCheckin:65, screenCelebration:85, screenReflect:92, screenSummary:97, screenHome:100 };
   document.getElementById('progressFill').style.width = (pcts[id] || 14) + '%';
 }
 
 function updateHeader(id) {
-  const meta = { screenIntro:'Day 1 of 7', screenStep:'Day 1 of 7', screenCheckin:'Day 1 of 7', screenCelebration:'Day 1 complete', screenHome:n() + "'s progress" };
+  const meta = { screenIntro:'Day 1 of 7', screenStep:'Day 1 of 7', screenCheckin:'Day 1 of 7', screenCelebration:'Day 1 complete', screenReflect:'Week 1', screenSummary:'Week 1', screenHome:n() + "'s progress" };
   document.getElementById('headerMeta').textContent = meta[id] || 'Day 1 of 7';
 }
 
@@ -1106,8 +1325,13 @@ function handleCta() {
   }
 
   if (cur === 'screenCelebration') {
-    buildHome();
-    show('screenHome');
+    if (S.dayNumber === 7) {
+      // Day 7 complete — go to weekly reflection
+      buildReflect();
+    } else {
+      buildHome();
+      show('screenHome');
+    }
     return;
   }
 }
