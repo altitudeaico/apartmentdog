@@ -345,57 +345,316 @@ function n() { return S.name; }
 
 // ── Session content library ──
 const SESSIONS = {
+
+  // ── ALONE / UNDER5 ──────────────────────────────────────────────────────
   alone_under5_d1: {
-    title: "The 90-second test",
+    title: "The 90-second departure",
     duration: "About 5 minutes",
-    intro: "Because " + n() + " struggles almost straight away, we start with something so short it can't fail.",
+    intro: n() + " finds those first moments the hardest. Tonight we keep it very short and low-key.",
     stages: [
-      { instruction: "Scatter half of " + n() + "'s dinner across the kitchen floor, or fold it loosely into a tea towel.", hint: "It doesn't need to be neat. The messier, the better.", cta: "Done ✓" },
-      { instruction: "Step into the next room. Close the door gently if you can.", hint: "No fuss. No goodbye. Just walk out calmly.", cta: "Done ✓" },
-      { instruction: "Wait 90 seconds. Set a timer if it helps.", hint: "Don't peek. Don't call out. Just wait.", cta: "Time's up →" },
-      { instruction: "Walk back in calmly. No big hello — just go about your business.", hint: "How " + n() + " reacts tells us everything we need for tomorrow.", cta: "Done ✓" },
+      { instruction: "Scatter " + n() + "'s dinner across the floor, or fold it loosely into a tea towel.", hint: "Spread it out so there's plenty to sniff around. No need to be tidy.", cta: "Done ✓" },
+      { instruction: "Once " + n() + "'s nose is down and they're working, step out of the room. Close the door gently if you can.", hint: "No announcement. No goodbye. Just leave calmly.", cta: "Done ✓" },
+      { instruction: "Stay out for 90 seconds. Set a timer so you're not guessing.", hint: "Don't call out or peek. Just wait.", cta: "Time's up →" },
+      { instruction: "Walk back in calmly. No big hello.", hint: "Go about your business as if nothing happened.", cta: "Done ✓" },
     ],
-    obs: { label: "What happened when you stepped away?", hint: "For example: did " + n() + " carry on sniffing, follow you, bark, or seem worried?" },
-    day2: "Scatter feed — 2 minutes",
+    obs: { label: "What did you find when you came back?", hint: "For example: was " + n() + " still sniffing, at the door, or somewhere in between?" },
   },
+  alone_under5_d2: {
+    title: "The towel roll departure",
+    duration: "About 5 minutes",
+    intro: "Same length as last time, different format. We're seeing how " + n() + " responds when the setup changes.",
+    stages: [
+      { instruction: "Lay " + n() + "'s dinner along a tea towel and roll it loosely.", hint: "Not too tight. " + n() + " needs to be able to work it open.", cta: "Done ✓" },
+      { instruction: "Put it on the floor, wait until " + n() + " is working on it, then step out for 90 seconds.", hint: "Same calm exit as yesterday. No fuss.", cta: "Done ✓" },
+      { instruction: "Come back after 90 seconds. Quiet return.", hint: "Notice whether the towel roll held their attention differently to the scatter.", cta: "Done ✓" },
+    ],
+    obs: { label: "What did you find when you came back?", hint: "For example: was " + n() + " still working the towel, at the door, or had they given up on it?" },
+  },
+  alone_under5_d3: {
+    title: "The leaving routine",
+    duration: "About 5 minutes",
+    intro: "Tonight we add something before the departure: your normal leaving routine.",
+    stages: [
+      { instruction: "Scatter " + n() + "'s dinner as on Day 1.", hint: "Give them a moment to get started.", cta: "Done ✓" },
+      { instruction: "While " + n() + " is eating, slowly put on your shoes and pick up your keys. No announcement.", hint: "Go at normal speed. Don't make it a moment.", cta: "Done ✓" },
+      { instruction: "Step out for 90 seconds, then return calmly.", hint: "Same exit and return as before.", cta: "Done ✓" },
+    ],
+    obs: { label: "Did " + n() + " react to the leaving routine, or stay focused on the food?", hint: "For example: did they look up, follow you, or carry on eating?" },
+  },
+  alone_under5_d4: {
+    title: "A little longer",
+    duration: "About 5 minutes",
+    intro: "Same setup as yesterday. One change: today you stay out for 3 minutes instead of 90 seconds.",
+    stages: [
+      { instruction: "Scatter " + n() + "'s dinner. Do your leaving routine as before: shoes, keys, no announcement.", hint: "Keep everything else exactly the same.", cta: "Done ✓" },
+      { instruction: "Step out for 3 minutes.", hint: "Set a timer. Come back calmly when it goes off.", cta: "Time's up →" },
+      { instruction: "Walk back in quietly. No big greeting.", hint: "Notice what " + n() + " is doing when you return.", cta: "Done ✓" },
+    ],
+    obs: { label: "What did you find when you came back?", hint: "For example: was " + n() + " settled, at the door, or somewhere in between? Any difference from yesterday?" },
+  },
+  alone_under5_d5: {
+    title: "Without the food",
+    duration: "About 5 minutes",
+    intro: "Tonight you'll do the same leaving routine, but without setting up a food activity first.",
+    stages: [
+      { instruction: "Do your leaving routine as normal: shoes, keys. If " + n() + " seems unsettled before you leave, there's no need to push through.", hint: "If it's clearly not going well as you prepare to go, it's fine to skip the departure tonight and just note what you saw.", cta: "Done ✓" },
+      { instruction: "If you do step out, stay out for 60 seconds. Return calmly.", hint: "The time is a guide, not a target. If you become aware " + n() + " is struggling after you leave, come back.", cta: "Time's up →" },
+      { instruction: "Walk back in quietly.", hint: "Notice what was different about this departure compared to the ones earlier in the week.", cta: "Done ✓" },
+    ],
+    obs: { label: "How did tonight's departure go without the food setup?", hint: "For example: any difference in how " + n() + " responded compared to earlier sessions?" },
+  },
+  alone_under5_d6: {
+    // Fallback only — selectReinforcement() should return a prior key in normal use
+    title: "Back to what worked",
+    duration: "About 5 minutes",
+    intro: "You gave this session the best rating earlier this week, so we're bringing it back today.",
+    stages: [
+      { instruction: "Run the same session as your highest-rated day this week. Same format, same leaving routine.", hint: "You've done this before.", cta: "Done ✓" },
+      { instruction: "Step out for the same duration as that session. Return calmly.", hint: "No new elements today.", cta: "Done ✓" },
+    ],
+    obs: { label: "How did tonight feel?", hint: "For example: similar to last time, easier, or different in any way?" },
+  },
+  alone_under5_d7: {
+    // Fallback only
+    title: "The final session",
+    duration: "About 5 minutes",
+    intro: "Last session of the week. We're repeating the one that rated highest across all seven days.",
+    stages: [
+      { instruction: "Run the highest-rated session from this week. Same format, same routine.", hint: "One more time.", cta: "Done ✓" },
+      { instruction: "Step out for the same duration. Return calmly.", hint: "After the check-in, you'll get a few questions about the week.", cta: "Done ✓" },
+    ],
+    obs: { label: "How did the final session go?", hint: "Anything you noticed that's worth recording before you answer this week's questions?" },
+  },
+
+  // ── ALONE / 5TO15 ───────────────────────────────────────────────────────
   alone_5to15_d1: {
     title: "The scatter feed departure",
-    duration: "About 15 minutes",
-    intro: n() + " can hold it for a few minutes, so tonight we use that window.",
-    stages: [
-      { instruction: "Scatter " + n() + "'s dinner across the floor or loosely in a tea towel.", hint: "Give them a good amount — you want this to last a few minutes.", cta: "Done ✓" },
-      { instruction: "Wait until " + n() + "'s nose is fully down and they're working. Then pick up your keys, put your shoes on — calmly.", hint: "No announcement. No drama. Just your normal leaving routine.", cta: "Done ✓" },
-      { instruction: "Leave for 3 minutes. Go outside or into another room.", hint: "Come back before the scatter feed runs out if you can.", cta: "I'm back →" },
-      { instruction: "Walk back in quietly. Let " + n() + " finish what they're doing.", hint: "The calmer your return, the more useful the data.", cta: "Done ✓" },
-    ],
-    obs: { label: "What happened when you stepped away?", hint: "For example: did " + n() + " notice you'd gone, carry on sniffing, look for you, or seem unsettled?" },
-    day2: "5-minute departure",
-  },
-  alone_15to30_d1: {
-    title: "The calm departure drill",
-    duration: "About 20 minutes",
-    intro: "The issue isn't how long " + n() + " can cope — it's what happens around the moment you leave.",
-    stages: [
-      { instruction: "Give " + n() + " a long-lasting chew or scatter their dinner in a tea towel.", hint: "Something that'll take at least 10 minutes. Start the clock now.", cta: "Done ✓" },
-      { instruction: "Go through your leaving routine — shoes, keys, coat — slowly and without any emotional loading.", hint: "No long goodbye. No guilty face. Just normal.", cta: "Done ✓" },
-      { instruction: "Leave for 10 minutes. Come back before the chew runs out if you can.", hint: "This is the practice. It doesn't have to be perfect.", cta: "I'm back →" },
-      { instruction: "Walk back in without making it a moment. Hang up your coat, put your keys down.", hint: "Boring return = good data.", cta: "Done ✓" },
-    ],
-    obs: { label: "What happened when you stepped away?", hint: "For example: was " + n() + " calm when you got back, still working on the chew, or up and looking for you?" },
-    day2: "15-minute departure",
-  },
-  alone_dontknow_d1: {
-    title: "Finding the baseline",
     duration: "About 10 minutes",
-    intro: "We find " + n() + "'s starting point tonight. Two minutes. Safely.",
+    intro: n() + " can manage a few minutes. Tonight we use that window for the first recorded session.",
     stages: [
-      { instruction: "Scatter " + n() + "'s dinner across the floor or in a tea towel.", hint: "Give them a moment to get started before you move.", cta: "Done ✓" },
-      { instruction: "Once they're fully engaged, step out of the room — or out of the door if that's the concern.", hint: "No announcement. Just go.", cta: "Done ✓" },
-      { instruction: "Come back after exactly 2 minutes.", hint: "Set a timer. Note what you find when you walk back in.", cta: "I'm back →" },
-      { instruction: "Write down what you saw — even just a note in your phone.", hint: "Still sniffing calmly? Looking for you? Already anxious? All of these are useful.", cta: "Got it ✓" },
+      { instruction: "Scatter " + n() + "'s dinner across the floor or loosely in a tea towel.", hint: "Give them a good amount to work through.", cta: "Done ✓" },
+      { instruction: "Wait until " + n() + " is fully engaged, then leave for 3 minutes.", hint: "No announcement. Calm exit.", cta: "Done ✓" },
+      { instruction: "Return quietly after 3 minutes.", hint: "Go about your business when you come back.", cta: "Done ✓" },
     ],
-    obs: { label: "What happened when you stepped away?", hint: "For example: was " + n() + " calm, looking for you, or had they already stopped eating?" },
-    day2: "Building on tonight",
+    obs: { label: "What did you find when you came back?", hint: "For example: was " + n() + " still eating, at the door, or settled somewhere?" },
+  },
+  alone_5to15_d2: {
+    title: "The sniff hunt",
+    duration: "About 10 minutes",
+    intro: "Different format today. " + n() + " has to work the room rather than a fixed spot.",
+    stages: [
+      { instruction: "Before " + n() + " comes in, hide 5 or 6 small treats around one room. Vary where you put them.", hint: "Some easy, some a bit harder to find.", cta: "Done ✓" },
+      { instruction: "Let " + n() + " in and step out for 3 minutes while they search.", hint: "No guiding. Let them figure it out.", cta: "Done ✓" },
+      { instruction: "Return quietly after 3 minutes.", hint: "Notice whether they'd found everything or were still searching.", cta: "Done ✓" },
+    ],
+    obs: { label: "What did you find when you came back?", hint: "For example: still searching, finished and settled, or at the door?" },
+  },
+  alone_5to15_d3: {
+    title: "Adding the leaving routine",
+    duration: "About 10 minutes",
+    intro: "Tonight we add your leaving routine before the departure.",
+    stages: [
+      { instruction: "Scatter " + n() + "'s dinner. While they're eating, put on your shoes and pick up your keys. No announcement.", hint: "Normal pace. Don't slow it down or speed it up.", cta: "Done ✓" },
+      { instruction: "Step out for 3 minutes. Same calm exit as before.", hint: "The routine is the new element. Everything else stays the same.", cta: "Done ✓" },
+      { instruction: "Return quietly.", hint: "Notice what " + n() + " was doing when you came in.", cta: "Done ✓" },
+    ],
+    obs: { label: "Did " + n() + " react to the leaving routine, or stay on the food?", hint: "For example: looked up, followed you to the door, or carried on eating?" },
+  },
+  alone_5to15_d4: {
+    title: "A longer departure",
+    duration: "About 15 minutes",
+    intro: "Same setup as yesterday. Today you stay out for 7 minutes instead of 3.",
+    stages: [
+      { instruction: "Scatter " + n() + "'s dinner. Leaving routine as before: shoes, keys.", hint: "Keep everything the same except the time.", cta: "Done ✓" },
+      { instruction: "Step out for 7 minutes. Set a timer.", hint: "Calm return when it goes off.", cta: "Time's up →" },
+      { instruction: "Walk back in quietly.", hint: "Notice what " + n() + " is doing when you return.", cta: "Done ✓" },
+    ],
+    obs: { label: "What did you find when you came back?", hint: "Any difference from the 3-minute departures?" },
+  },
+  alone_5to15_d5: {
+    title: "Without the food",
+    duration: "About 10 minutes",
+    intro: "Tonight: same leaving routine, no food setup beforehand.",
+    stages: [
+      { instruction: "Do your leaving routine as normal: shoes, keys. If " + n() + " seems unsettled before you leave, there's no need to push through.", hint: "If it's clearly not going well as you prepare, it's fine to skip the departure and just note what you saw.", cta: "Done ✓" },
+      { instruction: "If you do step out, stay for 3 minutes. Return calmly.", hint: "If you become aware " + n() + " is struggling after you leave, come back. The time isn't a target.", cta: "Time's up →" },
+      { instruction: "Return quietly. Notice what was different.", hint: "No food, same routine.", cta: "Done ✓" },
+    ],
+    obs: { label: "How did tonight go without the food setup?", hint: "Any difference in how " + n() + " responded compared to the earlier sessions?" },
+  },
+  alone_5to15_d6: {
+    title: "Back to what worked",
+    duration: "About 10 minutes",
+    intro: "You gave this session the best rating earlier this week, so we're bringing it back today.",
+    stages: [
+      { instruction: "Run the same session as your highest-rated day. Same format, same leaving routine.", hint: "You've done this before.", cta: "Done ✓" },
+      { instruction: "Step out for the same duration. Return calmly.", hint: "No new elements.", cta: "Done ✓" },
+    ],
+    obs: { label: "How did tonight feel?", hint: "Similar to last time, easier, or different in any way?" },
+  },
+  alone_5to15_d7: {
+    title: "The final session",
+    duration: "About 10 minutes",
+    intro: "Last session of the week. Repeating the highest-rated session from the whole week.",
+    stages: [
+      { instruction: "Run the highest-rated session from this week. Same format, same routine.", hint: "One more time.", cta: "Done ✓" },
+      { instruction: "Step out for the same duration. Return calmly.", hint: "After the check-in, you'll get a few questions about the week.", cta: "Done ✓" },
+    ],
+    obs: { label: "How did the final session go?", hint: "Anything worth noting before the weekly questions?" },
+  },
+
+  // ── ALONE / 15TO30 ──────────────────────────────────────────────────────
+  alone_15to30_d1: {
+    title: "The first recorded departure",
+    duration: "About 20 minutes",
+    intro: n() + " manages a good stretch on their own. Tonight we run the first session and record what you find.",
+    stages: [
+      { instruction: "Give " + n() + " a longer occupation: a towel roll with their dinner, or a chew they already enjoy.", hint: "Something that takes a while. Use whatever you know works for them.", cta: "Done ✓" },
+      { instruction: "Do your leaving routine: shoes, coat, keys. Then step out for 10 minutes.", hint: "Calm exit. No fuss.", cta: "Done ✓" },
+      { instruction: "Return quietly after 10 minutes.", hint: "Notice what " + n() + " is doing when you come in.", cta: "Done ✓" },
+    ],
+    obs: { label: "What did you find when you came back?", hint: "For example: settled, at the door, still occupied, or somewhere in between?" },
+  },
+  alone_15to30_d2: {
+    title: "A different occupation",
+    duration: "About 20 minutes",
+    intro: "Same departure length. Different format for the occupation.",
+    stages: [
+      { instruction: "If Day 1 used a chew, try a sniff hunt today: hide 6 small treats around one room before " + n() + " comes in. If Day 1 used a scatter or towel roll, use a chew today.", hint: "One change. Everything else the same.", cta: "Done ✓" },
+      { instruction: "Let " + n() + " get started, then do your leaving routine and step out for 10 minutes.", hint: "Calm exit.", cta: "Done ✓" },
+      { instruction: "Return quietly.", hint: "Notice whether the different format changed anything about what you found on return.", cta: "Done ✓" },
+    ],
+    obs: { label: "What did you find when you came back?", hint: "Any difference from yesterday?" },
+  },
+  alone_15to30_d3: {
+    title: "Making the routine consistent",
+    duration: "About 20 minutes",
+    intro: "Tonight the focus is on making your leaving routine deliberate and the same every time.",
+    stages: [
+      { instruction: "Use whichever occupation was easiest to set up. While " + n() + " is working, slowly put on shoes, coat, and pick up keys.", hint: "Normal pace. No announcement.", cta: "Done ✓" },
+      { instruction: "Step out for 10 minutes. Same calm exit.", hint: "The routine is now a fixed part of the session.", cta: "Done ✓" },
+      { instruction: "Return quietly.", hint: "What did you notice?", cta: "Done ✓" },
+    ],
+    obs: { label: "Did anything change with a more deliberate leaving routine?", hint: "For example: did " + n() + " react to it, ignore it, or seem to settle into it?" },
+  },
+  alone_15to30_d4: {
+    title: "A longer gap",
+    duration: "About 30 minutes",
+    intro: "Same setup as yesterday. Today the departure is 20 minutes instead of 10.",
+    stages: [
+      { instruction: "Set up the occupation as before. Leaving routine: shoes, coat, keys.", hint: "Keep everything the same except the time.", cta: "Done ✓" },
+      { instruction: "Step out for 20 minutes. Set a timer.", hint: "Calm return when it goes off.", cta: "Time's up →" },
+      { instruction: "Walk back in quietly.", hint: "Notice what " + n() + " is doing when you return.", cta: "Done ✓" },
+    ],
+    obs: { label: "What did you find after 20 minutes?", hint: "Any difference from the 10-minute departures?" },
+  },
+  alone_15to30_d5: {
+    title: "Without the food",
+    duration: "About 20 minutes",
+    intro: "Tonight: same leaving routine, no occupation beforehand.",
+    stages: [
+      { instruction: "Do your leaving routine as normal: shoes, coat, keys. If " + n() + " seems unsettled before you leave, there's no need to push through.", hint: "If it's clearly not going well as you prepare, it's fine to skip the departure and note what you saw.", cta: "Done ✓" },
+      { instruction: "If you do step out, stay for 10 minutes. Return calmly.", hint: "If you become aware " + n() + " is struggling after you leave, come back. The time is a guide, not a target.", cta: "Time's up →" },
+      { instruction: "Return quietly.", hint: "Notice what was different without the food.", cta: "Done ✓" },
+    ],
+    obs: { label: "How did tonight go without the occupation?", hint: "Any difference compared to the earlier sessions this week?" },
+  },
+  alone_15to30_d6: {
+    title: "Back to what worked",
+    duration: "About 20 minutes",
+    intro: "You gave this session the best rating earlier this week, so we're bringing it back today.",
+    stages: [
+      { instruction: "Run the same session as your highest-rated day. Same format, same leaving routine, same duration.", hint: "You've done this before.", cta: "Done ✓" },
+      { instruction: "Return calmly at the end.", hint: "No new elements today.", cta: "Done ✓" },
+    ],
+    obs: { label: "How did tonight feel?", hint: "Similar to last time, easier, or different in any way?" },
+  },
+  alone_15to30_d7: {
+    title: "The final session",
+    duration: "About 20 minutes",
+    intro: "Last session of the week. Repeating the highest-rated session across all seven days.",
+    stages: [
+      { instruction: "Run the highest-rated session from this week. Same format, same routine.", hint: "One more time.", cta: "Done ✓" },
+      { instruction: "Step out for the same duration. Return calmly.", hint: "After the check-in, you'll get a few questions about the week.", cta: "Done ✓" },
+    ],
+    obs: { label: "How did the final session go?", hint: "Anything worth noting before the weekly questions?" },
+  },
+
+  // ── ALONE / DONTKNOW ────────────────────────────────────────────────────
+  alone_dontknow_d1: {
+    title: "The first departure",
+    duration: "About 10 minutes",
+    intro: "We start simple: one short departure, and we record what you find.",
+    stages: [
+      { instruction: "Scatter " + n() + "'s dinner across the floor or fold it into a tea towel.", hint: "Give them a moment to get started.", cta: "Done ✓" },
+      { instruction: "Once " + n() + " is working, step out for 2 minutes.", hint: "No announcement. Calm exit.", cta: "Done ✓" },
+      { instruction: "Return after 2 minutes. Walk back in quietly.", hint: "Note what you find.", cta: "Done ✓" },
+    ],
+    obs: { label: "What did you find when you came back?", hint: "For example: was " + n() + " still eating, at the door, settled, or unsettled?" },
+  },
+  alone_dontknow_d2: {
+    title: "A different format",
+    duration: "About 10 minutes",
+    intro: "Same departure length. Different setup today.",
+    stages: [
+      { instruction: "Roll " + n() + "'s dinner loosely in a tea towel.", hint: "Spread it along the length so there's food throughout.", cta: "Done ✓" },
+      { instruction: "Put it on the floor, let " + n() + " start working on it, then step out for 2 minutes.", hint: "Same calm exit.", cta: "Done ✓" },
+      { instruction: "Return quietly after 2 minutes.", hint: "Notice whether the towel roll felt any different from the scatter.", cta: "Done ✓" },
+    ],
+    obs: { label: "What did you find this time?", hint: "Any difference from yesterday's session?" },
+  },
+  alone_dontknow_d3: {
+    title: "Adding the leaving routine",
+    duration: "About 10 minutes",
+    intro: "Tonight we add your leaving routine before the departure.",
+    stages: [
+      { instruction: "Scatter " + n() + "'s dinner. While they're eating, put on your shoes and pick up your keys.", hint: "Normal pace. No announcement.", cta: "Done ✓" },
+      { instruction: "Step out for 2 minutes. Calm exit.", hint: "The routine is the new element today.", cta: "Done ✓" },
+      { instruction: "Return quietly.", hint: "Did anything feel different with the routine added?", cta: "Done ✓" },
+    ],
+    obs: { label: "Did " + n() + " react to the leaving routine, or stay on the food?", hint: "For example: looked up, followed you, or carried on eating?" },
+  },
+  alone_dontknow_d4: {
+    title: "A slightly longer departure",
+    duration: "About 10 minutes",
+    intro: "Today is slightly longer than the first three sessions. Same setup, 5 minutes instead of 2.",
+    stages: [
+      { instruction: "Scatter " + n() + "'s dinner. Leaving routine as before: shoes, keys.", hint: "Keep everything the same except the time.", cta: "Done ✓" },
+      { instruction: "Step out for 5 minutes. Set a timer.", hint: "Calm return when it goes off.", cta: "Time's up →" },
+      { instruction: "Walk back in quietly.", hint: "Notice what " + n() + " is doing when you return.", cta: "Done ✓" },
+    ],
+    obs: { label: "What did you find after 5 minutes?", hint: "Notice whether what you found looks different from the shorter sessions." },
+  },
+  alone_dontknow_d5: {
+    title: "Without the food",
+    duration: "About 10 minutes",
+    intro: "Tonight: same leaving routine, no food setup first.",
+    stages: [
+      { instruction: "Do your leaving routine: shoes, keys. If " + n() + " seems unsettled before you leave, there's no need to push through.", hint: "If it's clearly not going well as you prepare, it's fine to skip the departure and note what you saw.", cta: "Done ✓" },
+      { instruction: "If you do step out, stay for 2 minutes. Return calmly.", hint: "If you become aware " + n() + " is struggling after you leave, come back. The time is a guide, not a target.", cta: "Time's up →" },
+      { instruction: "Return quietly.", hint: "Notice what was different without the food.", cta: "Done ✓" },
+    ],
+    obs: { label: "How did tonight go without the food setup?", hint: "Any difference compared to the earlier sessions?" },
+  },
+  alone_dontknow_d6: {
+    title: "Back to what worked",
+    duration: "About 10 minutes",
+    intro: "You gave this session the best rating earlier this week, so we're bringing it back today.",
+    stages: [
+      { instruction: "Run the same session as your highest-rated day. Same format, same leaving routine, same duration.", hint: "You've done this before.", cta: "Done ✓" },
+      { instruction: "Return calmly at the end.", hint: "No new elements today.", cta: "Done ✓" },
+    ],
+    obs: { label: "How did tonight feel?", hint: "Similar to last time, easier, or different in any way?" },
+  },
+  alone_dontknow_d7: {
+    title: "The final session",
+    duration: "About 10 minutes",
+    intro: "Last session of the week. Repeating the highest-rated session from the whole week.",
+    stages: [
+      { instruction: "Run the highest-rated session from this week. Same format, same routine.", hint: "One more time.", cta: "Done ✓" },
+      { instruction: "Step out for the same duration. Return calmly.", hint: "After the check-in, you'll get a few questions about the week.", cta: "Done ✓" },
+    ],
+    obs: { label: "How did the final session go?", hint: "Anything worth noting before the weekly questions?" },
   },
   evenings_early_d1: {
     title: "Intercept the build-up",
