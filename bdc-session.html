@@ -904,7 +904,8 @@ async function loadDogFromAuth(userId) {
   // Resolve programme position from persisted evidence
   const pos = await resolvePosition(dog.id);
 
-  // Log for acceptance test visibility
+  // Expose for inspection — remove before production
+  window._bdcPos = pos;
   console.log('Programme position:', JSON.stringify(pos));
 
   // Set S coordinates from resolver
