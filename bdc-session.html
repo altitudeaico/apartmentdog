@@ -759,61 +759,81 @@ async function resolvePosition(dogId) {
     .order('week', { ascending: true })
     .order('day_number', { ascending: true });
 
-  // Fetch all weekly reflections
+  // Fetch all weekly reflections (answered and pending)
   const { data: reflections } = await sb
     .from('weekly_reflections')
     .select('week_number, question_key, answer_text, answered_at')
     .eq('dog_id', dogId)
     .order('week_number', { ascending: true });
 
-  const completedSessions = sessions || [];
-  const answeredReflections = (reflections || []).filter(r => r.answered_at);
+  const allSessions    = sessions    || [];
+  const allReflections = reflections || [];
 
-  // If nothing completed — fresh start
-  if (completedSessions.length === 0) {
+  // Fresh start — nothing in the database yet
+  if (allSessions.length === 0) {
     return {
-      week: 1, dayNumber: 1,
+      week: 1, day: 1,
       lifecycle: 'do',
-      todayCompleted: false,
-      weekReflectionDue: false,
+      sessionCompleted: false,
+      reflectionDue: false,
+      reflectionCompleted: false,
       comparisonEligible: false,
       lastSession: null,
     };
   }
 
-  // Find the furthest completed coordinate
-  const last = completedSessions[completedSessions.length - 1];
+  // Furthest completed session coordinate
+  const last    = allSessions[allSessions.length - 1];
   const maxWeek = last.week;
   const maxDay  = last.day_number;
 
-  // Has the week's reflection been answered?
-  const w1Reflected = answeredReflections.some(r => r.week_number === 1);
-  const w2Reflected = answeredReflections.some(r => r.week_number === 2);
+  // Reflection state per week
+  const w1Reflection = allReflections.find(r => r.week_number === 1);
+  const w2Reflection = allReflections.find(r => r.week_number === 2);
+  const w1Reflected  = !!(w1Reflection && w1Reflection.answered_at);
+  const w2Reflected  = !!(w2Reflection && w2Reflection.answered_at);
 
-  // Comparison eligible: two full weeks of sessions + both reflections answered
-  const w1Complete = completedSessions.filter(s => s.week === 1).length === 7;
-  const w2Complete = completedSessions.filter(s => s.week === 2).length === 7;
+  // Week completeness (7 sessions in that week)
+  const w1Complete = allSessions.filter(s => s.week === 1).length === 7;
+  const w2Complete = allSessions.filter(s => s.week === 2).length === 7;
+
+  // Comparison requires two complete weeks + both reflections answered
   const comparisonEligible = w1Complete && w2Complete && w1Reflected && w2Reflected;
 
-  // Determine next day
-  let nextWeek = maxWeek;
-  let nextDay  = maxDay + 1;
-  if (nextDay > 7) { nextWeek++; nextDay = 1; }
+  // Is the current week's Day 7 done but reflection not yet answered?
+  // This is the key gate: D7 complete → reflection must happen before W(N+1)D1.
+  const reflectionDue = (
+    maxDay === 7 &&
+    ((maxWeek === 1 && !w1Reflected) ||
+     (maxWeek === 2 && !w2Reflected))
+  );
+  const reflectionCompleted = (
+    maxDay === 7 &&
+    ((maxWeek === 1 && w1Reflected) ||
+     (maxWeek === 2 && w2Reflected))
+  );
 
-  // Today's session: the session matching nextWeek/nextDay
-  const todayCompleted = completedSessions.some(
+  // Next session coordinate.
+  // If reflection is due, we don't advance the week yet —
+  // the owner must answer the north-star question first.
+  let nextWeek = maxWeek;
+  let nextDay  = maxDay;
+
+  if (!reflectionDue) {
+    // Safe to advance: either mid-week or reflection already answered
+    nextDay = maxDay + 1;
+    if (nextDay > 7) { nextWeek++; nextDay = 1; }
+  }
+
+  // Has the resolved next session already been completed?
+  // (Handles the case where the owner submits twice in a session.)
+  const sessionCompleted = allSessions.some(
     s => s.week === nextWeek && s.day_number === nextDay
   );
 
-  // Day 7 completed but no reflection yet → reflect state
-  const weekReflectionDue = (
-    maxDay === 7 &&
-    ((maxWeek === 1 && !w1Reflected) || (maxWeek === 2 && !w2Reflected))
-  );
-
-  // Lifecycle state
+  // Lifecycle state — derived purely from evidence, not stored
   let lifecycle = 'do';
-  if (weekReflectionDue) {
+  if (reflectionDue) {
     lifecycle = 'reflect';
   } else if (maxWeek >= 2 && w1Reflected && !comparisonEligible) {
     lifecycle = 'remember';
@@ -822,11 +842,12 @@ async function resolvePosition(dogId) {
   }
 
   return {
-    week: nextWeek,
-    dayNumber: nextDay,
+    week:    nextWeek,
+    day:     nextDay,
     lifecycle,
-    todayCompleted,
-    weekReflectionDue,
+    sessionCompleted,
+    reflectionDue,
+    reflectionCompleted,
     comparisonEligible,
     lastSession: last,
   };
@@ -870,20 +891,23 @@ async function loadDogFromAuth(userId) {
 
   // Set S coordinates from resolver
   S.week      = pos.week;
-  S.dayNumber = pos.dayNumber;
+  S.dayNumber = pos.day;
 
-  // Route to the correct screen based on lifecycle state
-  if (pos.weekReflectionDue) {
-    // Day 7 done — weekly reflection needed before proceeding
+  // Route to correct screen based on resolver state object.
+  // The resolver answers what is due. This block decides which screen.
+  // No programme logic lives here — only screen routing.
+  if (pos.reflectionDue) {
+    // D7 complete, north-star question not yet answered
     // TODO: build reflection screen (State 2)
+    // For now: fall through to Home so the app doesn't break
     buildHome();
     show('screenHome');
-  } else if (pos.todayCompleted) {
-    // Today already done — show home
+  } else if (pos.sessionCompleted) {
+    // Today's session already done — show Home
     buildHome();
     show('screenHome');
   } else {
-    // Today's session is due — show session intro for correct day
+    // Today's session is due
     buildIntro();
   }
 }
