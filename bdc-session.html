@@ -321,13 +321,22 @@ body { font-family: 'Inter', sans-serif; background: var(--faint); color: var(--
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 // ── State (in real app this comes from wizard handoff) ──
+const SUPABASE_URL = 'https://fpgecjgymgosfnkrvjue.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZwZ2Vjamd5bWdvc2Zua3J2anVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg0MTY4MTIsImV4cCI6MjEwMzk5MjgxMn0.5aPn9pcZI_lgUuTwGIZ_J8kepY1Pn_X-JWvX9IkJSMA';
+
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// App state — populated from Supabase, not URL params
 const S = {
-  name: new URLSearchParams(location.search).get('name') || 'Scruffy',
-  route: new URLSearchParams(location.search).get('route') || 'evenings',
-  threshold: new URLSearchParams(location.search).get('threshold') || 'relax',
-  rating: null,
+  name:      'your dog',
+  route:     'evenings',
+  threshold: 'relax',
+  rating:    null,
   observation: '',
   currentStep: 0,
+  dogId:     null,
+  dayNumber: 1,
+  week:      1,
 };
 
 function n() { return S.name; }
@@ -589,11 +598,9 @@ async function submitCheckin() {
   S.observation = document.getElementById('obsInput').value.trim();
 
   // Write session to Supabase
-  // dog_id comes from URL param (magic link redirect) or sessionStorage (same-session flow)
-  const params = new URLSearchParams(location.search);
-  const dogId = params.get('dog_id') || sessionStorage.getItem('bdc_dog_id');
-  const dayNum = parseInt(params.get('day') || '1', 10);
-  const week   = parseInt(params.get('week') || '1', 10);
+  const dogId = S.dogId;
+  const dayNum = S.dayNumber;
+  const week   = S.week;
 
   if (dogId) {
     try {
@@ -616,9 +623,6 @@ async function submitCheckin() {
 
       if (error) {
         console.error('Session write error:', error.message);
-      } else {
-        // Store confirmation so home screen knows day 1 is real
-        sessionStorage.setItem('bdc_day1_complete', '1');
       }
     } catch (e) {
       console.error('Supabase init error:', e);
@@ -715,8 +719,78 @@ function handleCta() {
   }
 }
 
-// ── Init ──
-buildIntro();
+// ── Auth-driven init ──────────────────────────────────────
+// Load order:
+// 1. Supabase handles the magic link hash fragment automatically
+//    on page load via onAuthStateChange.
+// 2. Once authenticated, fetch dog + onboarding from DB.
+// 3. Populate S from real data, then show the session.
+//
+// A returning authenticated owner (no URL hash) follows the
+// same path: auth session exists → dog resolved → session shown.
+// sessionStorage and URL params are NOT required for memory.
+
+async function loadDogFromAuth(userId) {
+  const { data: dog, error: dogErr } = await sb
+    .from('dogs')
+    .select('id, name')
+    .eq('owner_id', userId)
+    .maybeSingle();
+
+  if (dogErr || !dog) {
+    console.error('Dog not found for user:', dogErr);
+    document.getElementById('headerMeta').textContent = 'Something went wrong';
+    return;
+  }
+
+  const { data: onboarding, error: obErr } = await sb
+    .from('onboarding_answers')
+    .select('route, threshold')
+    .eq('dog_id', dog.id)
+    .maybeSingle();
+
+  if (obErr || !onboarding) {
+    console.error('Onboarding not found:', obErr);
+    return;
+  }
+
+  // Check if day 1 is already completed
+  const { data: existingSession } = await sb
+    .from('sessions')
+    .select('id, rating')
+    .eq('dog_id', dog.id)
+    .eq('week', 1)
+    .eq('day_number', 1)
+    .maybeSingle();
+
+  // Populate state from real data
+  S.dogId     = dog.id;
+  S.name      = dog.name;
+  S.route     = onboarding.route;
+  S.threshold = onboarding.threshold;
+  S.dayNumber = 1;
+  S.week      = 1;
+
+  if (existingSession) {
+    // Day 1 already done — go straight to home
+    S.rating = existingSession.rating;
+    buildHome();
+    show('screenHome');
+  } else {
+    buildIntro();
+  }
+}
+
+sb.auth.onAuthStateChange(async (event, session) => {
+  if (session && session.user) {
+    await loadDogFromAuth(session.user.id);
+  } else if (event === 'SIGNED_OUT' || !session) {
+    // Not authenticated — show a holding state
+    document.getElementById('headerMeta').textContent = 'Check your email';
+    document.getElementById('mainCta').textContent = 'Open your magic link to continue';
+    document.getElementById('mainCta').disabled = true;
+  }
+});
 </script>
 </body>
 </html>
