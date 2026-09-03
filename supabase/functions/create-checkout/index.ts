@@ -5,7 +5,7 @@
 // Required env vars (Supabase Edge Function secrets):
 //   STRIPE_SECRET_KEY   — test key: sk_test_...
 //   BDC_APP_URL         — https://boreddogclub.com/bdc-session.html
-//   STRIPE_PRICE_ID     — price_... (GBP £47 one-time, created in Stripe dashboard)
+//   STRIPE_FOUR_WEEK_PRICE_ID     — price_... (GBP £47 one-time, created in Stripe dashboard)
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
@@ -13,7 +13,7 @@ const SUPABASE_URL = 'https://fpgecjgymgosfnkrvjue.supabase.co';
 const SUPABASE_SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
 const STRIPE_SECRET_KEY = Deno.env.get('STRIPE_SECRET_KEY') ?? '';
 const BDC_APP_URL = Deno.env.get('BDC_APP_URL') ?? 'https://boreddogclub.com/bdc-session.html';
-const STRIPE_PRICE_ID = Deno.env.get('STRIPE_PRICE_ID') ?? '';
+const STRIPE_FOUR_WEEK_PRICE_ID = Deno.env.get('STRIPE_FOUR_WEEK_PRICE_ID') ?? '';
 
 Deno.serve(async (req) => {
   // CORS preflight
@@ -73,13 +73,13 @@ Deno.serve(async (req) => {
     }
 
     // ── 4. Create Stripe Checkout Session ─────────────────────────────────
-    if (!STRIPE_SECRET_KEY || !STRIPE_PRICE_ID) {
+    if (!STRIPE_SECRET_KEY || !STRIPE_FOUR_WEEK_PRICE_ID) {
       return json({ error: 'Stripe not configured' }, 503);
     }
 
     const params = new URLSearchParams({
       'mode': 'payment',
-      'line_items[0][price]': STRIPE_PRICE_ID,
+      'line_items[0][price]': STRIPE_FOUR_WEEK_PRICE_ID,
       'line_items[0][quantity]': '1',
       // Pass dog_id and user_id in metadata for webhook fulfilment
       'metadata[dog_id]': dogId,
