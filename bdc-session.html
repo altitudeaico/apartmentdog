@@ -593,7 +593,11 @@ function submitCheckin() {
 // ── Celebration screen ──
 function buildCelebration() {
   document.getElementById('celebTitle').textContent = 'Day 1 done.';
-  document.getElementById('celebSub').textContent = n() + "'s first session is in the books.";
+  const celebSubs = {
+    alone: "That's today's bit done. Small sessions, repeated consistently.",
+    evenings: "That's today's bit done. Now go enjoy your evening."
+  };
+  document.getElementById('celebSub').textContent = celebSubs[S.route] || celebSubs.evenings;
   document.getElementById('celebSessionName').textContent = session().title;
   const ratingLabels = ['','Really struggled','A bit difficult','About right','Went well','Smashed it'];
   document.getElementById('celebRatingText').textContent = ratingLabels[S.rating] || 'Session logged';
