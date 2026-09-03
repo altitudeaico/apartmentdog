@@ -339,6 +339,46 @@ body { font-family: 'Inter', sans-serif; background: var(--faint); color: var(--
 </div>
 
 <!-- ══════════════════════════════
+     SCREEN I: Programme complete
+══════════════════════════════ -->
+<div class="screen" id="screenProgComplete">
+  <div style="padding:32px 0 8px;">
+    <div style="font-size:13px;font-weight:700;letter-spacing:0.07em;color:var(--muted);text-transform:uppercase;margin-bottom:12px;" id="progCompleteWeeks"></div>
+    <div style="font-family:'Lora',serif;font-size:22px;color:var(--ink);line-height:1.3;margin-bottom:28px;" id="progCompleteHeadline"></div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:12px;padding-bottom:120px;">
+    <div style="background:var(--faint);border:1.5px solid var(--border);border-radius:var(--radius);padding:18px 20px;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:0.06em;color:var(--muted);text-transform:uppercase;margin-bottom:6px;">Sessions completed</div>
+      <div style="font-size:15px;color:var(--ink);line-height:1.55;" id="progCompleteCount"></div>
+    </div>
+
+    <div style="background:var(--faint);border:1.5px solid var(--border);border-radius:var(--radius);padding:18px 20px;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:0.06em;color:var(--muted);text-transform:uppercase;margin-bottom:10px;">What you told us</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div>
+          <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:4px;">Week 1</div>
+          <div style="font-size:14px;color:var(--ink);line-height:1.5;" id="progCompleteW1Answer"></div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:4px;">Week 4</div>
+          <div style="font-size:14px;color:var(--ink);line-height:1.5;" id="progCompleteW4Answer"></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:var(--faint);border:1.5px solid var(--border);border-radius:var(--radius);padding:18px 20px;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:0.06em;color:var(--muted);text-transform:uppercase;margin-bottom:10px;">Your four weeks</div>
+      <div id="progCompleteWeekGrid" style="display:flex;flex-direction:column;gap:6px;"></div>
+    </div>
+
+    <div style="padding:8px 4px 0;">
+      <div style="font-size:14px;color:var(--warm);line-height:1.65;font-style:italic;">Here's what you did, and here's what you told us.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
      SCREEN E: Home
 ══════════════════════════════ -->
 <div class="screen" id="screenHome">
@@ -1301,7 +1341,7 @@ async function resolveEffectiveThreshold(dogId, beforeWeek) {
     .from('weekly_reflections')
     .select('week_number, answer')
     .eq('dog_id', dogId)
-    .in('question_key', ['alone_w1_tolerance', 'alone_w2_tolerance', 'alone_w3_tolerance'])
+    .in('question_key', ['alone_w1_tolerance', 'alone_w2_tolerance', 'alone_w3_tolerance', 'alone_w4_tolerance'])
     .lt('week_number', beforeWeek)
     .order('week_number', { ascending: false });
 
@@ -1331,7 +1371,7 @@ async function resolveWeekEnvelope(dogId, route, week) {
       .select('answer')
       .eq('dog_id', dogId)
       .eq('week_number', week - 1)
-      .in('question_key', ['evenings_w1_ease', 'evenings_w2_ease', 'evenings_w3_ease'])
+      .in('question_key', ['evenings_w1_ease', 'evenings_w2_ease', 'evenings_w3_ease', 'evenings_w4_ease'])
       .maybeSingle();
     return (data?.answer === 'noticeably_easier') ? 'progress' : 'maintain';
   }
@@ -1682,7 +1722,7 @@ let reflectAnswer = null;
 function buildReflect() {
   const config = REFLECT_CONFIG[S.route] || REFLECT_CONFIG.evenings;
   document.getElementById('reflectQuestion').textContent = config.question(S.name);
-  document.getElementById('headerMeta').textContent = 'Week 1';
+  document.getElementById('headerMeta').textContent = 'Week ' + (S.week || 1);
 
   const container = document.getElementById('reflectOptions');
   container.innerHTML = '';
@@ -1725,13 +1765,17 @@ async function submitReflection() {
   cta.textContent = 'Saving...';
 
   const config = REFLECT_CONFIG[S.route] || REFLECT_CONFIG.evenings;
-  const questionKey = S.route === 'alone' ? 'alone_w1_tolerance' : 'evenings_w1_ease';
+  // Question key is week-specific
+  const weekNum = S.week || 1;
+  const questionKey = S.route === 'alone'
+    ? 'alone_w' + weekNum + '_tolerance'
+    : 'evenings_w' + weekNum + '_ease';
 
   const { error } = await sb
     .from('weekly_reflections')
     .upsert({
-      dog_id:      S.dogId,
-      week_number: 1,
+      dog_id:       S.dogId,
+      week_number:  weekNum,
       question_key: questionKey,
       answer:       reflectAnswer,
     }, { onConflict: 'dog_id,week_number' });
@@ -1743,7 +1787,12 @@ async function submitReflection() {
     return;
   }
 
-  await buildSummary();
+  // Week 4 reflection complete = programme complete
+  if (weekNum === 4) {
+    await buildProgComplete();
+  } else {
+    await buildSummary();
+  }
 }
 
 // ── Week 1 summary ───────────────────────────────────────────────────────
@@ -1817,6 +1866,94 @@ async function buildSummary() {
 
   show('screenSummary');
 }
+
+// ── Programme-complete answer display maps ────────────────────────────────
+const ANSWER_DISPLAY = {
+  evenings: {
+    about_the_same:    'About the same',
+    a_little_easier:   'A little easier',
+    noticeably_easier: 'Noticeably easier',
+    not_sure:          'Not sure',
+  },
+  alone: {
+    under5:   'Under 5 minutes',
+    '5to15':  '5 to 15 minutes',
+    '15to30': '15 to 30 minutes',
+    over30:   'Over 30 minutes',
+    not_sure: 'Not sure',
+  },
+};
+
+// ── buildProgComplete() ───────────────────────────────────────────────────
+// Builds the end-of-programme summary from Supabase state.
+// Called after W4 reflection is saved, and on return visits when
+// resolvePosition() returns programmeComplete: true.
+
+async function buildProgComplete() {
+  document.getElementById('headerMeta').textContent = 'Four weeks done';
+
+  // Fetch all sessions across W1–W4
+  const { data: allSessions } = await sb
+    .from('sessions')
+    .select('week, day_number, rating')
+    .eq('dog_id', S.dogId)
+    .order('week')
+    .order('day_number');
+
+  // Fetch W1 and W4 reflections
+  const { data: reflections } = await sb
+    .from('weekly_reflections')
+    .select('week_number, answer')
+    .eq('dog_id', S.dogId)
+    .in('week_number', [1, 4]);
+
+  const w1Ref = (reflections || []).find(r => r.week_number === 1);
+  const w4Ref = (reflections || []).find(r => r.week_number === 4);
+
+  const sessions = allSessions || [];
+  const totalCompleted = sessions.length;
+  const answerMap = ANSWER_DISPLAY[S.route] || ANSWER_DISPLAY.evenings;
+
+  // Headline
+  document.getElementById('progCompleteWeeks').textContent = S.name + "'s four weeks";
+  document.getElementById('progCompleteHeadline').textContent =
+    totalCompleted === 28
+      ? 'All 28 sessions done.'
+      : totalCompleted + ' of 28 sessions completed.';
+
+  // Session count
+  document.getElementById('progCompleteCount').textContent =
+    totalCompleted + ' of 28 sessions completed across the programme.';
+
+  // W1 and W4 answers — side by side, no arrow, no interpretation
+  document.getElementById('progCompleteW1Answer').textContent =
+    w1Ref ? (answerMap[w1Ref.answer] || w1Ref.answer) : 'No Week 1 answer recorded.';
+  document.getElementById('progCompleteW4Answer').textContent =
+    w4Ref ? (answerMap[w4Ref.answer] || w4Ref.answer) : 'No Week 4 answer recorded.';
+
+  // Per-week completion grid
+  const grid = document.getElementById('progCompleteWeekGrid');
+  grid.innerHTML = '';
+  for (let w = 1; w <= 4; w++) {
+    const wCount = sessions.filter(s => s.week === w).length;
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;justify-content:space-between;align-items:center;font-size:14px;padding:4px 0;border-bottom:1px solid var(--border);';
+    row.innerHTML = '<span style="color:var(--warm);">Week ' + w + '</span>' +
+                    '<span style="color:var(--ink);font-weight:600;">' + wCount + '/7</span>';
+    grid.appendChild(row);
+  }
+
+  // CTA — nothing more to do in V1, just confirm
+  const cta = document.getElementById('mainCta');
+  cta.textContent = 'Back to my record';
+  cta.disabled = false;
+  cta.style.opacity = '';
+  cta.className = 'btn btn-primary';
+  cta.onclick = () => show('screenProgComplete'); // stays on this screen
+
+  show('screenProgComplete');
+}
+
 const ACKS = {
   1: "Got it. We'll keep that in mind for tomorrow's session.",
   2: "Noted. We'll adjust tomorrow so it's a better fit for " + S.name + ".",
@@ -1826,7 +1963,7 @@ const ACKS = {
 };
 
 // ── Screen management ──
-const SCREENS = ['screenIntro','screenStep','screenCheckin','screenCelebration','screenReflect','screenSummary','screenContinuation','screenHome'];
+const SCREENS = ['screenIntro','screenStep','screenCheckin','screenCelebration','screenReflect','screenSummary','screenContinuation','screenProgComplete','screenHome'];
 
 function show(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -1837,12 +1974,12 @@ function show(id) {
 }
 
 function updateProgress(id) {
-  const pcts = { screenIntro:14, screenStep:35, screenCheckin:65, screenCelebration:85, screenReflect:92, screenSummary:97, screenContinuation:98, screenHome:100 };
+  const pcts = { screenIntro:14, screenStep:35, screenCheckin:65, screenCelebration:85, screenReflect:92, screenSummary:97, screenContinuation:98, screenProgComplete:100, screenHome:100 };
   document.getElementById('progressFill').style.width = (pcts[id] || 14) + '%';
 }
 
 function updateHeader(id) {
-  const meta = { screenIntro:'Day 1 of 7', screenStep:'Day 1 of 7', screenCheckin:'Day 1 of 7', screenCelebration:'Day 1 complete', screenReflect:'Week 1', screenSummary:'Week 1', screenContinuation:'Keep going', screenHome:n() + "'s progress" };
+  const meta = { screenIntro:'Day 1 of 7', screenStep:'Day 1 of 7', screenCheckin:'Day 1 of 7', screenCelebration:'Day 1 complete', screenReflect:'Week 1', screenSummary:'Week 1', screenContinuation:'Keep going', screenProgComplete:'Four weeks', screenHome:n() + "'s progress" };
   document.getElementById('headerMeta').textContent = meta[id] || 'Day 1 of 7';
 }
 
@@ -2215,53 +2352,81 @@ async function resolvePosition(dogId) {
   const maxWeek = last.week;
   const maxDay  = last.day_number;
 
-  // Reflection state per week
-  const w1Reflection = allReflections.find(r => r.week_number === 1);
-  const w2Reflection = allReflections.find(r => r.week_number === 2);
-  const w1Reflected  = !!(w1Reflection && w1Reflection.answered_at);
-  const w2Reflected  = !!(w2Reflection && w2Reflection.answered_at);
+  // Reflection state per week (W1–W4)
+  const reflectionByWeek = {};
+  for (let w = 1; w <= 4; w++) {
+    const r = allReflections.find(r => r.week_number === w);
+    reflectionByWeek[w] = !!(r && r.answered_at);
+  }
+  const w1Reflected = reflectionByWeek[1];
+  const w2Reflected = reflectionByWeek[2];
+  const w3Reflected = reflectionByWeek[3];
+  const w4Reflected = reflectionByWeek[4];
 
   // Week completeness (7 sessions in that week)
-  const w1Complete = allSessions.filter(s => s.week === 1).length === 7;
-  const w2Complete = allSessions.filter(s => s.week === 2).length === 7;
+  const weekComplete = {};
+  for (let w = 1; w <= 4; w++) {
+    weekComplete[w] = allSessions.filter(s => s.week === w).length === 7;
+  }
 
-  // Comparison requires two complete weeks + both reflections answered
-  const comparisonEligible = w1Complete && w2Complete && w1Reflected && w2Reflected;
+  // Programme complete: W4 D7 done + W4 reflection answered
+  const programmeComplete = weekComplete[4] && w4Reflected;
 
-  // Is the current week's Day 7 done but reflection not yet answered?
-  // This is the key gate: D7 complete → reflection must happen before W(N+1)D1.
+  // Comparison requires W1+W2 complete + both reflections answered
+  const comparisonEligible = weekComplete[1] && weekComplete[2] && w1Reflected && w2Reflected;
+
+  // Is the current week's D7 done but reflection not yet answered?
+  // Gate: D7 complete → reflection required before advancing.
+  // Applies to W1–W4. W4 D7 + no reflection → reflectionDue (not programme-complete yet).
   const reflectionDue = (
     maxDay === 7 &&
-    ((maxWeek === 1 && !w1Reflected) ||
-     (maxWeek === 2 && !w2Reflected))
+    !reflectionByWeek[maxWeek]
   );
   const reflectionCompleted = (
     maxDay === 7 &&
-    ((maxWeek === 1 && w1Reflected) ||
-     (maxWeek === 2 && w2Reflected))
+    reflectionByWeek[maxWeek]
   );
 
+  // Programme-complete state: return a special position that prevents Week 5.
+  if (programmeComplete) {
+    return {
+      week:             4,
+      day:              7,
+      lifecycle:        'complete',
+      sessionCompleted: true,
+      reflectionDue:    false,
+      reflectionCompleted: true,
+      comparisonEligible,
+      programmeComplete: true,
+      lastSession:      last,
+    };
+  }
+
   // Next session coordinate.
-  // reflectionDue: D7 done but not reflected — stay on D7, don't advance.
-  // reflectionCompleted: D7 done and reflected — advance to next week.
-  // mid-week: advance day normally.
+  // reflectionDue: hold position until reflection answered.
+  // reflectionCompleted: advance (capped at W4 D7 if W4 complete).
   let nextWeek = maxWeek;
   let nextDay  = maxDay;
 
   if (reflectionDue) {
-    // Hold position — reflection must be answered before advancing
+    // Hold — reflection must be answered before advancing
   } else {
     nextDay = maxDay + 1;
-    if (nextDay > 7) { nextWeek++; nextDay = 1; }
+    if (nextDay > 7) {
+      nextWeek++;
+      nextDay = 1;
+      // Hard cap: never advance beyond W4 D1 without entitlement (handled by entitlement check)
+      // Hard cap: never advance beyond W4 D7 (programme boundary)
+      if (nextWeek > 4) { nextWeek = 4; nextDay = 7; }
+    }
   }
 
   // Has the resolved next session already been completed?
-  // (Handles the case where the owner submits twice in a session.)
   const sessionCompleted = allSessions.some(
     s => s.week === nextWeek && s.day_number === nextDay
   );
 
-  // Lifecycle state — derived purely from evidence, not stored
+  // Lifecycle state — derived purely from evidence
   let lifecycle = 'do';
   if (reflectionDue) {
     lifecycle = 'reflect';
@@ -2279,6 +2444,7 @@ async function resolvePosition(dogId) {
     reflectionDue,
     reflectionCompleted,
     comparisonEligible,
+    programmeComplete: false,
     lastSession: last,
   };
 }
@@ -2358,15 +2524,22 @@ async function loadDogFromAuth(userId, isAnonymous) {
   S.resolvedSessionKey = prescription.activityKey;
 
   // Route to correct screen based on resolver state object.
-  if (pos.reflectionDue) {
+  if (pos.programmeComplete) {
+    // W4 D7 + W4 reflection = programme done. Show programme-complete summary.
+    await buildProgComplete();
+  } else if (pos.reflectionDue) {
     buildHome();
     show('screenHome');
   } else if (pos.week > 1) {
-    // Week 1 complete — check entitlement before showing Week 2
+    // Week 1 complete — check entitlement before showing Week 2+
     const entitled = await resolveEntitlement(dog.id, 'week_2_4_plan');
     if (entitled) {
-      // Week 2 accessible — build intro for next session
-      buildIntro();
+      if (pos.sessionCompleted) {
+        buildHome();
+        show('screenHome');
+      } else {
+        buildIntro();
+      }
     } else {
       // No entitlement — show Home with Week 2 locked
       buildHome(true);
