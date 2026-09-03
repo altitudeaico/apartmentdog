@@ -932,14 +932,29 @@ async function loadDogFromAuth(userId) {
 
 sb.auth.onAuthStateChange(async (event, session) => {
   if (session && session.user) {
+    clearTimeout(authTimeout);
     await loadDogFromAuth(session.user.id);
   } else if (event === 'SIGNED_OUT' || !session) {
-    // Not authenticated — show a holding state
-    document.getElementById('headerMeta').textContent = 'Check your email';
-    document.getElementById('mainCta').textContent = 'Open your magic link to continue';
-    document.getElementById('mainCta').disabled = true;
+    clearTimeout(authTimeout);
+    showUnauthenticated();
   }
 });
+
+// If onAuthStateChange doesn't fire within 4 seconds, show sign-in prompt.
+// Handles the case where the session has expired and no event fires at all.
+const authTimeout = setTimeout(() => {
+  sb.auth.getSession().then(({ data: { session } }) => {
+    if (!session) showUnauthenticated();
+  });
+}, 4000);
+
+function showUnauthenticated() {
+  document.getElementById('headerMeta').textContent = 'Welcome back';
+  const cta = document.getElementById('mainCta');
+  cta.textContent = 'Go to the wizard to get your link';
+  cta.disabled = false;
+  cta.onclick = () => { window.location.href = '/bdc-wizard.html'; };
+}
 </script>
 </body>
 </html>
