@@ -869,7 +869,34 @@ async function resolvePosition(dogId) {
   };
 }
 
-async function loadDogFromAuth(userId) {
+async function loadDogFromAuth(userId, isAnonymous) {
+  // If the user is confirmed (not anonymous) and has a dog_id in the URL,
+  // check if ownership needs to be claimed from an anonymous account.
+  const urlDogId = new URLSearchParams(location.search).get('dog_id');
+
+  if (!isAnonymous && urlDogId) {
+    try {
+      const { data: { session } } = await sb.auth.getSession();
+      const claimResp = await fetch(
+        'https://fpgecjgymgosfnkrvjue.supabase.co/functions/v1/claim-dog',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + session.access_token,
+          },
+          body: JSON.stringify({ dog_id: urlDogId }),
+        }
+      );
+      const claimData = await claimResp.json();
+      if (!claimData.success) {
+        console.warn('Claim dog result:', claimData.error);
+      }
+    } catch (e) {
+      console.error('Claim dog failed:', e.message);
+    }
+  }
+
   const { data: dog, error: dogErr } = await sb
     .from('dogs')
     .select('id, name')
@@ -911,20 +938,13 @@ async function loadDogFromAuth(userId) {
   S.dayNumber = pos.day;
 
   // Route to correct screen based on resolver state object.
-  // The resolver answers what is due. This block decides which screen.
-  // No programme logic lives here — only screen routing.
   if (pos.reflectionDue) {
-    // D7 complete, north-star question not yet answered
-    // TODO: build reflection screen (State 2)
-    // For now: fall through to Home so the app doesn't break
     buildHome();
     show('screenHome');
   } else if (pos.sessionCompleted) {
-    // Today's session already done — show Home
     buildHome();
     show('screenHome');
   } else {
-    // Today's session is due
     buildIntro();
   }
 }
@@ -932,7 +952,7 @@ async function loadDogFromAuth(userId) {
 sb.auth.onAuthStateChange(async (event, session) => {
   if (session && session.user) {
     clearTimeout(authTimeout);
-    await loadDogFromAuth(session.user.id);
+    await loadDogFromAuth(session.user.id, session.user.is_anonymous);
   } else if (event === 'SIGNED_OUT' || !session) {
     clearTimeout(authTimeout);
     showUnauthenticated();
