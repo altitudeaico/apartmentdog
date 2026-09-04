@@ -596,21 +596,13 @@ function buildReveal() {
   const rt = route();
 
   document.getElementById('planTitle').textContent = n() + "'s plan starts here \uD83D\uDC3E";
-  document.getElementById('planSub').textContent = f('Seven sessions, one a day. Built around what you told us about {n}. Start tonight.');
+  document.getElementById('planSub').textContent = f("Open your sign-in link when you're ready to do {n}'s first session.");
   document.getElementById('d1title').textContent = d.title;
   document.getElementById('d1duration').textContent = d.duration;
   document.getElementById('d1intro').textContent = f(d.intro);
-  document.getElementById('d1watch').textContent = f(d.watch);
-  document.getElementById('d1why').textContent = f(d.why);
-  document.getElementById('d1tomorrow').textContent = f(d.tomorrow);
   document.getElementById('instructImg').src = A.planReady;
   document.getElementById('instructImg').alt = 'Sarah and Scruffy getting ready to start a session';
 
-  const stepsEl = document.getElementById('d1steps');
-  stepsEl.innerHTML = '';
-  d.steps.forEach((s,i) => {
-    stepsEl.innerHTML += '<div class="step"><div class="step-num">' + (i+1) + '</div><div class="step-text">' + f(s) + '</div></div>';
-  });
 
   const tease = document.getElementById('daysTease');
   tease.innerHTML = '';
