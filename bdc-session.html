@@ -2543,6 +2543,11 @@ async function submitCheckin() {
 
       if (error) {
         console.error('Session write error:', error.message);
+      } else {
+        // Advance S.dayNumber so buildHome sees the correct completed state
+        // resolvePosition would return dayNumber+1 — mirror that here for
+        // the in-memory state so Home renders correctly before any page reload
+        S.dayNumber = dayNum + 1;
       }
 
       // Fire Resend lifecycle event after D1 to trigger the Day 2–7 return email sequence.
