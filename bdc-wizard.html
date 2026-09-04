@@ -309,12 +309,13 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const ASSETS = 'https://altitudeaico.github.io/apartmentdog/images/bdc/';
 const A = {
-  hero:    ASSETS + 'asset-1-welcome-hero.png',
-  evening: ASSETS + 'asset-2-evening-problem.png',
-  alone:   ASSETS + 'asset-3-alone-problem.png',
-  curious: ASSETS + 'asset-4-curious.png',
-  sniff:   ASSETS + 'asset-5-sniff.png',
-  settle:  ASSETS + 'asset-6-settling.webp',
+  hero:     ASSETS + 'asset-1-welcome-hero.png',
+  evening:  ASSETS + 'asset-2-evening-problem.png',
+  alone:    ASSETS + 'asset-3-alone-problem.png',
+  curious:  ASSETS + 'asset-4-curious.png',
+  sniff:    ASSETS + 'asset-5-sniff.png',
+  settle:   ASSETS + 'asset-6-settling.webp',
+  building: ASSETS + 'asset-17-wizard-building-plan.png',
 };
 function n() { return S.name || 'your dog'; }
 function route() { return (S.primaryProblem || S.problem) === 'evenings' ? 'evenings' : 'alone'; }
@@ -583,7 +584,7 @@ function buildStep3() {
 }
 
 function runCalc() {
-  document.getElementById('calcImg').src = A.curious;
+  document.getElementById('calcImg').src = A.building;
   const lines = calcLines();
   const ids = ['cl1','cl2','cl3'];
   let i = 0;
