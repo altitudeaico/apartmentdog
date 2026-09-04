@@ -457,10 +457,10 @@ const SESSIONS = {
     duration: "About 5 minutes",
     intro: "[dog name] finds those first moments the hardest. Tonight we keep it very short and low-key.",
     stages: [
-      { instruction: "Scatter " + "[dog name]'s dinner across the floor, or fold it loosely into a tea towel.", hint: "Spread it out so there's plenty to sniff around. No need to be tidy.", cta: "Done ✓" },
-      { instruction: "Once " + "[dog name]'s nose is down and they're working, step out of the room. Close the door gently if you can.", hint: "No announcement. No goodbye. Just leave calmly.", cta: "Done ✓" },
-      { instruction: "Stay out for 90 seconds. Set a timer so you're not guessing.", hint: "Don't call out or peek. Just wait.", cta: "Time's up →" },
-      { instruction: "Walk back in calmly. No big hello.", hint: "Go about your business as if nothing happened.", cta: "Done ✓" },
+      { instruction: "Scatter " + "[dog name]'s dinner across the floor, or fold it loosely into a tea towel.", hint: "Spread it out so there's plenty to sniff around. No need to be tidy.", img: 'scatter', imgAlt: 'Sarah scattering pieces of food for Scruffy to find', cta: "Done ✓" },
+      { instruction: "Once " + "[dog name]'s nose is down and they're working, step out of the room. Close the door gently if you can.", hint: "No announcement. No goodbye. Just leave calmly.", img: 'departure', imgAlt: 'Sarah calmly stepping outside while Scruffy stays occupied', cta: "Done ✓" },
+      { instruction: "Stay out for 90 seconds. Set a timer so you're not guessing.", hint: "Don't call out or peek. Just wait.", img: 'departure', imgAlt: 'Sarah calmly stepping outside while Scruffy stays occupied', cta: "Time's up →" },
+      { instruction: "Walk back in calmly. No big hello.", hint: "Go about your business as if nothing happened.", img: 'return', imgAlt: 'Sarah returning quietly while Scruffy notices her come back', cta: "Done ✓" },
     ],
     obs: { label: "What did you find when you came back?", hint: "For example: was " + "[dog name] still sniffing, at the door, or somewhere in between?" },
   },
@@ -469,8 +469,8 @@ const SESSIONS = {
     duration: "About 5 minutes",
     intro: "Same length as last time, different format. We're seeing how " + "[dog name] responds when the setup changes.",
     stages: [
-      { instruction: "Lay " + "[dog name]'s dinner along a tea towel and roll it loosely.", hint: "Not too tight. " + "[dog name] needs to be able to work it open.", cta: "Done ✓" },
-      { instruction: "Put it on the floor, wait until " + "[dog name] is working on it, then step out for 90 seconds.", hint: "Same calm exit as yesterday. No fuss.", cta: "Done ✓" },
+      { instruction: "Lay " + "[dog name]'s dinner along a tea towel and roll it loosely.", hint: "Not too tight. " + "[dog name] needs to be able to work it open.", img: 'towel_roll', imgAlt: 'Sarah loosely rolling kibble inside a tea towel for Scruffy', cta: "Done ✓" },
+      { instruction: "Put it on the floor, wait until " + "[dog name] is working on it, then step out for 90 seconds.", hint: "Same calm exit as yesterday. No fuss.", img: 'departure', imgAlt: 'Sarah calmly stepping outside while Scruffy stays occupied', cta: "Done ✓" },
       { instruction: "Come back after 90 seconds. Quiet return.", hint: "Notice whether the towel roll held their attention differently to the scatter.", cta: "Done ✓" },
     ],
     obs: { label: "What did you find when you came back?", hint: "For example: was " + "[dog name] still working the towel, at the door, or had they given up on it?" },
@@ -703,7 +703,7 @@ const SESSIONS = {
     intro: "Same departure length. Different setup today.",
     stages: [
       { instruction: "Roll " + "[dog name]'s dinner loosely in a tea towel.", hint: "Spread it along the length so there's food throughout.", cta: "Done ✓" },
-      { instruction: "Put it on the floor, let " + "[dog name] start working on it, then step out for 2 minutes.", hint: "Same calm exit.", cta: "Done ✓" },
+      { instruction: "Put it on the floor, let " + "[dog name] start working on it, then step out for 2 minutes.", hint: "Same calm exit.", img: 'departure', imgAlt: 'Sarah calmly stepping outside while Scruffy stays occupied', cta: "Done ✓" },
       { instruction: "Return quietly after 2 minutes.", hint: "Notice whether the towel roll felt any different from the scatter.", cta: "Done ✓" },
     ],
     obs: { label: "What did you find this time?", hint: "Any difference from yesterday's session?" },
@@ -766,7 +766,7 @@ const SESSIONS = {
     duration: "About 15 minutes",
     intro: "[dog name] starts ramping up before the chaos hits. Tonight we step in before that happens.",
     stages: [
-      { instruction: "At 5:30pm — before anything has started — scatter " + "[dog name]'s dinner across the floor or in a loosely rolled tea towel.", hint: "Earlier than feels necessary is exactly right.", cta: "Done ✓" },
+      { instruction: "At 5:30pm — before anything has started — scatter " + "[dog name]'s dinner across the floor or in a loosely rolled tea towel.", hint: "Earlier than feels necessary is exactly right.", img: 'scatter', imgAlt: 'Sarah scattering pieces of food for Scruffy to find', cta: "Done ✓" },
       { instruction: "Let " + "[dog name] work through it at their own pace. Don't rush or encourage them.", hint: "Sit nearby if you like, but stay calm and don't interact.", cta: "They're done →" },
       { instruction: "Once they've finished, sit down as normal. Don't initiate play or interaction.", hint: "Notice what happens in the next 30 minutes. That's the data.", cta: "Done ✓" },
     ],
@@ -791,7 +791,7 @@ const SESSIONS = {
     duration: "About 15 minutes",
     intro: "[dog name] is fine until you try to sit down — then it kicks off. Tonight we get ahead of it.",
     stages: [
-      { instruction: "At 6pm, scatter " + "[dog name]'s dinner across the floor — or hide small treats in 4 or 5 spots around one room.", hint: "The messier and more spread out, the longer it takes. That's the point.", cta: "Done ✓" },
+      { instruction: "At 6pm, scatter " + "[dog name]'s dinner across the floor — or hide small treats in 4 or 5 spots around one room.", hint: "The messier and more spread out, the longer it takes. That's the point.", img: 'scatter', imgAlt: 'Sarah scattering pieces of food for Scruffy to find', cta: "Done ✓" },
       { instruction: "Let " + "[dog name] sniff it all out at their own pace. Don't help or point things out.", hint: "Sit down nearby, stay quiet. You want them working independently.", cta: "They're done →" },
       { instruction: "Sit down as normal once they're done. Don't engage with " + "[dog name] for the first 10 minutes.", hint: "This is the test. Notice when — or whether — the usual chaos starts.", cta: "Done ✓" },
     ],
@@ -896,7 +896,7 @@ const SESSIONS = {
     duration: "About 15 minutes",
     intro: "Same timing as last night. Tonight the format changes: dinner in a tea towel instead of scattered.",
     stages: [
-      { instruction: "Lay " + "[dog name]'s dinner along a tea towel and roll it loosely.", hint: "Not too tight. " + "[dog name] needs to be able to work it open.", cta: "Done ✓" },
+      { instruction: "Lay " + "[dog name]'s dinner along a tea towel and roll it loosely.", hint: "Not too tight. " + "[dog name] needs to be able to work it open.", img: 'towel_roll', imgAlt: 'Sarah loosely rolling kibble inside a tea towel for Scruffy', cta: "Done ✓" },
       { instruction: "Put it on the floor at your usual early time and step back. Don't help or encourage.", hint: "Let them figure it out at their own pace.", cta: "They're done →" },
       { instruction: "Once they've finished, sit down. Don't initiate interaction for the first 10 minutes.", hint: "Notice what " + "[dog name] does once they're done.", cta: "Done ✓" },
     ],
@@ -963,7 +963,7 @@ const SESSIONS = {
     duration: "About 15 minutes",
     intro: "Last night was the towel roll. Tonight we try the scatter instead — same dinner time trigger, different format.",
     stages: [
-      { instruction: "At dinner time, scatter " + "[dog name]'s dinner across the floor or in several small piles.", hint: "Spread it out so there's plenty to sniff through.", cta: "Done ✓" },
+      { instruction: "At dinner time, scatter " + "[dog name]'s dinner across the floor or in several small piles.", hint: "Spread it out so there's plenty to sniff through.", img: 'scatter', imgAlt: 'Sarah scattering pieces of food for Scruffy to find', cta: "Done ✓" },
       { instruction: "Let " + "[dog name] work through it. Don't help or point things out.", hint: "Sit down nearby and stay quiet.", cta: "They're done →" },
       { instruction: "Once they've finished, don't initiate interaction for the first 10 minutes.", hint: "Notice what " + "[dog name] does when the scatter is done.", cta: "Done ✓" },
     ],
@@ -1204,7 +1204,7 @@ const SESSIONS = {
     intro: "Tonight we switch the order. You sit down first, then give [dog name] the occupation. Same format as earlier this week, just the sequence is different.",
     stages: [
       { instruction: "At your usual time, sit down first. Don't give [dog name] anything yet.", hint: "If [dog name] comes over, you don't need to do anything differently. Just stay where you are.", cta: "Done ✓" },
-      { instruction: "Once you're settled, give [dog name] the occupation, same format as earlier this week.", hint: "No fuss. Put it down and let them get on with it.", cta: "They're working →" },
+      { instruction: "Once you're settled, give [dog name] the occupation, same format as earlier this week.", hint: "No fuss. Put it down and let them get on with it.", img: 'place_occupation', imgAlt: 'Sarah stepping back while Scruffy investigates his food activity', cta: "They're working →" },
       { instruction: "Stay settled for the first 10 minutes after [dog name] finishes.", hint: "Just notice what [dog name] does once they've finished.", cta: "Done ✓" },
     ],
     obs: { label: "What happened when you sat down before giving [dog name] the occupation?", hint: "For example: did [dog name] come straight to you, wait near where the occupation usually goes, or carry on as normal?" },
@@ -1600,6 +1600,22 @@ const WEEK_INTROS = {
       d7: "Last session of the programme. This was your highest-rated session this week, so we're finishing on it.",
     },
   },
+};
+
+// ── Step image vocabulary ────────────────────────────────────────────────
+// Semantic keys map to instructional assets. The renderer selects the image
+// from the stage's img key. Keys are set in SESSIONS stage objects.
+// Adding a new key here is the only change needed to add a new step image.
+
+const STEP_IMAGES = {
+  scatter:          'https://altitudeaico.github.io/apartmentdog/images/bdc/asset-20-step-scatter.png',
+  towel_roll:       'https://altitudeaico.github.io/apartmentdog/images/bdc/asset-21-step-towel-roll.png',
+  place_occupation: 'https://altitudeaico.github.io/apartmentdog/images/bdc/asset-22-step-place-occupation.png',
+  departure:        'https://altitudeaico.github.io/apartmentdog/images/bdc/asset-23-step-departure.png',
+  return:           'https://altitudeaico.github.io/apartmentdog/images/bdc/asset-24-step-return.png',
+  sit_no_engage:    'https://altitudeaico.github.io/apartmentdog/images/bdc/asset-25-step-sit-no-engage.png',
+  observe:          'https://altitudeaico.github.io/apartmentdog/images/bdc/asset-26-step-observe.png',
+  settle:           'https://altitudeaico.github.io/apartmentdog/images/bdc/asset-6-settling.webp',
 };
 
 // ── resolveEffectiveThreshold(dogId, beforeWeek) ─────────────────────────
@@ -2440,7 +2456,18 @@ function renderStep() {
   const durSec = S.currentPrescription ? S.currentPrescription.durationSeconds : null;
   document.getElementById('stepInstruction').textContent = resolveStageText(stage.instruction, durSec);
   document.getElementById('stepHint').textContent = stage.hint || '';
-  document.getElementById('stepSettleImg').style.display = (i === stages.length - 1) ? 'block' : 'none';
+
+  // Step image: use semantic key from stage.img if present, else hide
+  const stepImg = document.getElementById('stepSettleImg');
+  const imgKey = stage.img || (i === stages.length - 1 ? 'settle' : null);
+  const imgSrc = imgKey ? STEP_IMAGES[imgKey] : null;
+  if (imgSrc) {
+    stepImg.src = imgSrc;
+    stepImg.alt = stage.imgAlt || '';
+    stepImg.style.display = 'block';
+  } else {
+    stepImg.style.display = 'none';
+  }
 
   const btn = document.getElementById('mainCta');
   btn.textContent = (i === stages.length - 1) ? 'Report how it went' : stage.cta;
