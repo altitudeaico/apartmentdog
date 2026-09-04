@@ -442,6 +442,7 @@ const S = {
   resolvedSessionKey: null,
   reinforcementKey:   null,
   currentPrescription: null, // set by resolveSessionPrescription in loadDogFromAuth
+  sessionJustCompleted: false, // true immediately after submitCheckin succeeds
 };
 
 function n() { return S.name; }
@@ -2547,11 +2548,14 @@ async function submitCheckin() {
     }
   }
 
+  S.sessionJustCompleted = true;
   buildCelebration();
   show('screenCelebration');
-  document.getElementById('mainCta').textContent = 'Back to my plan';
-  document.getElementById('mainCta').disabled = false;
-  document.getElementById('mainCta').className = 'btn btn-olive';
+  const celebCta = document.getElementById('mainCta');
+  celebCta.textContent = 'Back to my plan';
+  celebCta.disabled = false;
+  celebCta.className = 'btn btn-olive';
+  celebCta.onclick = () => { buildHome(); show('screenHome'); };
 }
 
 // ── Celebration screen ──
@@ -2663,11 +2667,25 @@ function buildHome(week2Locked) {
     });
 
     const cta = document.getElementById('mainCta');
-    cta.textContent = 'Back to my plan';
-    cta.disabled = false;
-    cta.style.opacity = '';
-    cta.className = 'btn btn-primary';
-    cta.onclick = null;
+    // If we just completed today's session and the next session is tomorrow,
+    // the CTA confirms they're done for today — not a session launch button.
+    // If they return on a different day and a session IS due, it launches the session.
+    // Session is due now if NOT just completed (fresh return visit with a session waiting)
+    // vs just completed (celebration → Home flow, Day N+1 is tomorrow)
+    const sessionIsDueNow = !S.sessionJustCompleted;
+    if (sessionIsDueNow) {
+      cta.textContent = 'Start Day ' + S.dayNumber;
+      cta.disabled = false;
+      cta.style.opacity = '';
+      cta.className = 'btn btn-primary';
+      cta.onclick = () => { buildIntro(); show('screenIntro'); };
+    } else {
+      cta.textContent = 'Done for today';
+      cta.disabled = true;
+      cta.style.opacity = '0.5';
+      cta.className = 'btn btn-primary';
+      cta.onclick = null;
+    }
   }
 }
 
