@@ -2986,11 +2986,11 @@ function showUnauthenticated() {
     div.style.cssText = 'display:flex;flex-direction:column;align-items:center;padding:48px 24px;gap:16px;text-align:center;';
     div.innerHTML = `
       <div style="font-family:'Lora',serif;font-size:22px;color:var(--ink);margin-bottom:8px;">Welcome back</div>
-      <div style="font-size:15px;color:var(--warm);line-height:1.6;max-width:300px;">To pick up where you left off, get a new sign-in link from the wizard.</div>
-      <button id="unauthCta" style="margin-top:24px;background:var(--terra);color:#fff;border:none;border-radius:99px;padding:16px 32px;font-size:16px;font-weight:600;cursor:pointer;width:100%;max-width:360px;">Get a new sign-in link</button>
+      <div style="font-size:15px;color:var(--warm);line-height:1.6;max-width:300px;">Your sign-in link has expired. Get a new one to pick up where you left off.</div>
+      <button id="unauthCta" style="margin-top:24px;background:var(--terra);color:#fff;border:none;border-radius:99px;padding:16px 32px;font-size:16px;font-weight:600;cursor:pointer;width:100%;max-width:360px;">Sign in to continue</button>
     `;
     container.appendChild(div);
-    document.getElementById('unauthCta').onclick = () => { window.location.href = '/bdc-wizard.html'; };
+    document.getElementById('unauthCta').onclick = () => { window.location.href = '/login.html'; };
   } else {
     existing.classList.add('active');
   }
