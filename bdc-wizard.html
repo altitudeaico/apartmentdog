@@ -316,6 +316,7 @@ const A = {
   sniff:    ASSETS + 'asset-5-sniff.png',
   settle:   ASSETS + 'asset-6-settling.webp',
   building: ASSETS + 'asset-17-wizard-building-plan.png',
+  planReady: ASSETS + 'asset-18-wizard-plan-ready.png',
 };
 function n() { return S.name || 'your dog'; }
 function route() { return (S.primaryProblem || S.problem) === 'evenings' ? 'evenings' : 'alone'; }
@@ -615,7 +616,8 @@ function buildReveal() {
   document.getElementById('d1watch').textContent = f(d.watch);
   document.getElementById('d1why').textContent = f(d.why);
   document.getElementById('d1tomorrow').textContent = f(d.tomorrow);
-  document.getElementById('instructImg').src = rt === 'evenings' ? A.sniff : A.sniff;
+  document.getElementById('instructImg').src = A.planReady;
+  document.getElementById('instructImg').alt = 'Sarah and Scruffy getting ready to start a session';
 
   const stepsEl = document.getElementById('d1steps');
   stepsEl.innerHTML = '';
