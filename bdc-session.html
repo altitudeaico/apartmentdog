@@ -2582,7 +2582,7 @@ async function submitCheckin() {
   }
 
   S.sessionJustCompleted = true;
-  buildCelebration();
+  buildCelebration(dayNum);
   show('screenCelebration');
   const celebCta = document.getElementById('mainCta');
   celebCta.textContent = 'Back to my plan';
@@ -2592,8 +2592,12 @@ async function submitCheckin() {
 }
 
 // ── Celebration screen ──
-function buildCelebration() {
-  document.getElementById('celebTitle').textContent = 'Day ' + S.dayNumber + ' done.';
+function buildCelebration(completedDay) {
+  // completedDay is the day that was actually just saved.
+  // S.dayNumber has already been advanced to the next due day.
+  // Never use S.dayNumber here — it would show the wrong day number.
+  const cd = completedDay || S.dayNumber;
+  document.getElementById('celebTitle').textContent = 'Day ' + cd + ' done.';
   const celebSubs = {
     alone: "That's today's bit done. Small sessions, repeated consistently.",
     evenings: "That's today's bit done. Now go enjoy your evening."
@@ -2602,12 +2606,12 @@ function buildCelebration() {
   document.getElementById('celebSessionName').textContent = session().title;
   const ratingLabels = ['','Really struggled','A bit difficult','About right','Went well','Smashed it'];
   document.getElementById('celebRatingText').textContent = ratingLabels[S.rating] || 'Session logged';
-  if (S.dayNumber === 7) {
+  if (cd === 7) {
     document.getElementById('celebNext').textContent = S.week < 4
       ? 'That\'s the end of Week ' + S.week + '. Your reflection is next.'
       : 'That\'s the last session. Your reflection is next.';
   } else {
-    document.getElementById('celebNext').textContent = 'Day ' + (S.dayNumber + 1) + ' tomorrow.';
+    document.getElementById('celebNext').textContent = 'Day ' + (cd + 1) + ' tomorrow.';
   }
 }
 
