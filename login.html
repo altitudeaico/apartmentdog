@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign in — Bored Dog Club</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <style>
+    :root {
+      --ink: #2C2417;
+      --warm: #6B5C45;
+      --faint: #F7F3EE;
+      --terra: #C8562A;
+      --terra-light: #F5EBE5;
+      --terra-dark: #9E3F1A;
+      --muted: #9B8E82;
+      --border: #E4DDD4;
+      --radius: 18px;
+      --radius-sm: 12px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--faint);
+      color: var(--ink);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .page-wrap {
+      width: 100%;
+      max-width: 420px;
+      padding: 0 20px;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 0 0;
+      margin-bottom: 48px;
+    }
+
+    .logo {
+      font-family: 'Lora', serif;
+      font-size: 14px;
+      color: var(--terra);
+      letter-spacing: 0.02em;
+    }
+
+    .main {
+      flex: 1;
+    }
+
+    .eyebrow {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--terra);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      font-family: 'Lora', serif;
+      font-size: 26px;
+      line-height: 1.25;
+      color: var(--ink);
+      margin-bottom: 10px;
+    }
+
+    .sub {
+      font-size: 15px;
+      line-height: 1.65;
+      color: var(--warm);
+      margin-bottom: 36px;
+    }
+
+    .field-wrap {
+      margin-bottom: 12px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    input[type="email"] {
+      width: 100%;
+      font-family: 'Inter', sans-serif;
+      font-size: 17px;
+      color: var(--ink);
+      background: white;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      outline: none;
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
+    }
+
+    input[type="email"]:focus {
+      border-color: var(--terra);
+    }
+
+    input[type="email"]::placeholder {
+      color: var(--border);
+    }
+
+    .btn {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: var(--radius);
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s, background 0.15s;
+      margin-top: 8px;
+    }
+
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: var(--terra);
+      color: white;
+    }
+
+    .btn-primary:not(:disabled):hover {
+      background: var(--terra-dark);
+    }
+
+    /* State cards */
+    .state-card {
+      border-radius: var(--radius);
+      padding: 22px 20px;
+      margin-top: 24px;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .state-sent {
+      background: #EEF5E8;
+      color: #3A5728;
+    }
+
+    .state-error {
+      background: var(--terra-light);
+      color: var(--terra-dark);
+    }
+
+    .state-card strong {
+      display: block;
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .state-card .masked-email {
+      font-weight: 500;
+    }
+
+    /* Redirect state */
+    .redirect-card {
+      background: white;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      text-align: center;
+      margin-top: 24px;
+    }
+
+    .redirect-card .dog-emoji {
+      font-size: 36px;
+      margin-bottom: 12px;
+    }
+
+    .redirect-card p {
+      font-size: 15px;
+      line-height: 1.65;
+      color: var(--warm);
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .footer-note {
+      font-size: 13px;
+      color: var(--muted);
+      text-align: center;
+      padding: 28px 0 40px;
+      line-height: 1.6;
+    }
+
+    .footer-note a {
+      color: var(--terra);
+      text-decoration: none;
+    }
+
+    /* Already-authenticated state */
+    #alreadyAuth {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-wrap">
+    <div class="top-bar">
+      <div class="logo">Bored Dog Club</div>
+    </div>
+
+    <!-- Already authenticated: redirect them straight in -->
+    <div id="alreadyAuth" class="main">
+      <div class="redirect-card">
+        <div class="dog-emoji">🐾</div>
+        <p id="alreadyAuthText">You're already signed in. Taking you back to your plan...</p>
+      </div>
+    </div>
+
+    <!-- Login form -->
+    <div id="loginMain" class="main">
+      <div class="eyebrow">Welcome back</div>
+      <h1>Sign in to pick up where you left off</h1>
+      <p class="sub">Enter your email and we'll send you a link that takes you straight back to your dog's plan. No password needed.</p>
+
+      <div class="field-wrap">
+        <label for="emailInput">Your email</label>
+        <input
+          type="email"
+          id="emailInput"
+          placeholder="you@example.com"
+          autocomplete="email"
+          autocapitalize="none"
+          spellcheck="false"
+        >
+      </div>
+
+      <button class="btn btn-primary" id="sendBtn" onclick="sendLink()">
+        Send me my sign-in link
+      </button>
+
+      <div id="stateCard"></div>
+    </div>
+
+    <div class="footer-note">
+      New here? <a href="/bdc-wizard.html">Build your dog's plan</a>
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = 'https://fpgecjgymgosfnkrvjue.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZwZ2Vjamd5bWdvc2Zua3J2anVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg0MTY4MTIsImV4cCI6MjEwMzk5MjgxMn0.5aPn9pcZI_lgUuTwGIZ_J8kepY1Pn_X-JWvX9IkJSMA';
+    const BDC_SESSION_URL = 'https://boreddogclub.com/bdc-session.html';
+
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // ── On load: handle three scenarios ──────────────────────────────────────
+
+    (async () => {
+      const url = new URL(location.href);
+
+      // Scenario 1: Returning via magic link (Supabase appends tokens to hash or query)
+      // Supabase JS picks this up automatically via onAuthStateChange.
+      // We listen and redirect on SIGNED_IN.
+
+      sb.auth.onAuthStateChange(async (event, session) => {
+        if (event === 'SIGNED_IN' && session) {
+          await redirectToSessionPage(session);
+        }
+      });
+
+      // Scenario 2: Already authenticated — skip login, send them in
+      const { data: { session } } = await sb.auth.getSession();
+      if (session) {
+        document.getElementById('loginMain').style.display = 'none';
+        document.getElementById('alreadyAuth').style.display = 'block';
+        setTimeout(() => redirectToSessionPage(session), 800);
+        return;
+      }
+
+      // Scenario 3: Arrived normally — show login form (already visible by default)
+    })();
+
+    // ── Send magic link ───────────────────────────────────────────────────────
+
+    async function sendLink() {
+      const emailEl = document.getElementById('emailInput');
+      const btn = document.getElementById('sendBtn');
+      const email = emailEl.value.trim().toLowerCase();
+
+      // Basic validation
+      if (!email || !email.includes('@') || !email.includes('.')) {
+        showError('Please enter a valid email address.');
+        emailEl.focus();
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span>Sending...';
+
+      const redirectTo = BDC_SESSION_URL + '?login=1';
+
+      const { error } = await sb.auth.signInWithOtp({
+        email,
+        options: {
+          shouldCreateUser: false,   // Never create a new account from /login
+          emailRedirectTo: redirectTo,
+        },
+      });
+
+      btn.disabled = false;
+      btn.textContent = 'Send me my sign-in link';
+
+      if (error) {
+        // Supabase returns an error for unknown emails when shouldCreateUser=false
+        // We deliberately show the same message either way — no email enumeration
+        if (error.message?.toLowerCase().includes('rate limit') || error.status === 429) {
+          showError("We've just sent you a link. Give it a minute before trying again.");
+        } else {
+          // Unknown email or any other error — same message both ways
+          showSent(email, true);
+        }
+        return;
+      }
+
+      showSent(email, false);
+    }
+
+    function showSent(email, isUnknown) {
+      // We show the same "check your email" message whether the address is known or not.
+      // This prevents email enumeration: an attacker can't tell if an address exists.
+      const masked = email.replace(/(.{2})(.*)(@.*)/, (_, a, b, c) => a + b.replace(/./g, '•') + c);
+      document.getElementById('stateCard').innerHTML = `
+        <div class="state-card state-sent">
+          <strong>Check your email</strong>
+          We've sent a sign-in link to <span class="masked-email">${masked}</span>.
+          Open it on this device to pick up ${isUnknown ? 'your plan' : "where you left off"}.
+          <br><br>
+          <span style="font-size:13px;opacity:0.8;">The link expires after an hour. If you don't see it, check your spam folder.</span>
+        </div>
+      `;
+      document.getElementById('sendBtn').style.display = 'none';
+    }
+
+    function showError(msg) {
+      document.getElementById('stateCard').innerHTML = `
+        <div class="state-card state-error"><strong>Couldn't send the link</strong>${msg}</div>
+      `;
+    }
+
+    // Allow Enter key to submit
+    document.getElementById('emailInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter') sendLink();
+    });
+
+    // ── Redirect to session page after auth ───────────────────────────────────
+
+    async function redirectToSessionPage(session) {
+      // Look up the dog belonging to this user.
+      // resolvePosition() on the session page does the full lifecycle routing —
+      // we just need to pass dog_id. If there's no dog, go to the wizard.
+
+      try {
+        const { data: dog, error } = await sb
+          .from('dogs')
+          .select('id')
+          .eq('owner_id', session.user.id)
+          .maybeSingle();
+
+        if (error) throw error;
+
+        if (!dog) {
+          // Valid account but no dog — something went wrong during onboarding.
+          // Send to wizard to create a dog record, not silently into a broken state.
+          window.location.href = '/bdc-wizard.html?reason=no_dog';
+          return;
+        }
+
+        // Pass dog_id to the session page. resolvePosition() does the rest.
+        window.location.href = BDC_SESSION_URL + '?dog_id=' + dog.id;
+
+      } catch (err) {
+        console.error('redirectToSessionPage error:', err);
+        // Don't leave the owner stranded — offer the wizard as recovery
+        document.getElementById('alreadyAuthText') && (
+          document.getElementById('alreadyAuthText').textContent =
+            'Something went wrong loading your plan. Please try the link in your email again.'
+        );
+        document.getElementById('stateCard').innerHTML = `
+          <div class="state-card state-error">
+            <strong>Couldn't load your plan</strong>
+            Please click the link in your email again, or <a href="/bdc-wizard.html">start a new plan</a>.
+          </div>
+        `;
+      }
+    }
+  </script>
+</body>
+</html>
