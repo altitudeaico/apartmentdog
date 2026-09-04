@@ -209,6 +209,7 @@ body { font-family: 'Inter', sans-serif; background: var(--faint); color: var(--
 
 <!-- STEP 3: Route-specific baseline -->
 <div class="screen" id="step3">
+  <img id="step3Img" src="" alt="" style="width:100%;border-radius:var(--radius);margin-bottom:20px;object-fit:cover;object-position:center 30%;max-height:240px;display:none;" loading="lazy">
   <div class="screen-eyebrow" id="s3eyebrow">Where things are right now</div>
   <h1 class="screen-title" id="s3title">How long can they manage alone?</h1>
   <p class="screen-sub" id="s3sub">Think about the last time. Roughly how long before things went downhill?</p>
@@ -551,6 +552,22 @@ function buildStep3() {
   document.getElementById('s3eyebrow').textContent = cfg.eyebrow;
   document.getElementById('s3title').textContent = f(cfg.title);
   document.getElementById('s3sub').textContent = f(cfg.sub);
+
+  // Route-aware image
+  const step3Img = document.getElementById('step3Img');
+  const STEP3_IMAGES = {
+    alone:   { src: 'https://altitudeaico.github.io/apartmentdog/images/bdc/asset-14a-wizard-alone-threshold.png', alt: 'Scruffy waiting calmly near the front door' },
+    evenings: { src: 'https://altitudeaico.github.io/apartmentdog/images/bdc/asset-14b-wizard-evenings-threshold.png', alt: 'Scruffy unsettled on the sofa during the evening' },
+  };
+  const imgCfg = STEP3_IMAGES[rt];
+  if (imgCfg) {
+    step3Img.src = imgCfg.src;
+    step3Img.alt = imgCfg.alt;
+    step3Img.style.display = 'block';
+  } else {
+    step3Img.style.display = 'none';
+  }
+
   const container = document.getElementById('s3choices');
   container.innerHTML = '';
   cfg.choices.forEach(c => {
