@@ -2515,6 +2515,33 @@ async function submitCheckin() {
       if (error) {
         console.error('Session write error:', error.message);
       }
+
+      // Fire Resend lifecycle event after D1 to trigger the Day 2–7 return email sequence.
+      // Fire-and-forget: never blocks the owner or shows an error if this fails.
+      if (dayNum === 1 && week === 1) {
+        try {
+          const { data: { session: authSession } } = await sb.auth.getSession();
+          // Fire via edge function — Resend key never in browser
+          if (authSession?.access_token) {
+            const sessionUrl = 'https://boreddogclub.com/bdc-session.html?dog_id=' + dogId;
+            await fetch('https://fpgecjgymgosfnkrvjue.supabase.co/functions/v1/notify-day1-complete', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + authSession.access_token,
+              },
+              body: JSON.stringify({
+                dog_id:      dogId,
+                dog_name:    S.name || 'your dog',
+                session_url: sessionUrl,
+              }),
+            });
+          }
+        } catch (evtErr) {
+          console.warn('Resend event fire failed (non-critical):', evtErr.message);
+        }
+      }
+
     } catch (e) {
       console.error('Supabase init error:', e);
     }
