@@ -222,9 +222,8 @@ body { font-family: 'Inter', sans-serif; background: var(--faint); color: var(--
   <img src="https://altitudeaico.github.io/apartmentdog/images/bdc/asset-16-wizard-email.png" alt="Sarah at her laptop putting together your dog's plan" style="width:100%;border-radius:var(--radius);margin-bottom:20px;object-fit:cover;object-position:center 20%;max-height:240px;" loading="lazy">
   <div class="screen-eyebrow">Almost there</div>
   <h1 class="screen-title" id="s4title">Where should we send the plan?</h1>
-  <p class="screen-sub">One short email a day for seven days. Just what you need for that day's session.</p>
+  <p class="screen-sub">We'll send you a private link so you can start when you're ready and come back anytime.</p>
   <input class="email-input" id="emailInput" type="email" placeholder="your@email.com" oninput="updateEmailCta()">
-  <p class="email-note">Day 2 will arrive tomorrow.</p>
 </div>
 
 <!-- STEP 5: Calculation + Full Reveal -->
@@ -260,30 +259,14 @@ body { font-family: 'Inter', sans-serif; background: var(--faint); color: var(--
 
     <div class="day-one">
       <div class="day-one-header">
-        <div class="day-one-label">Do this tonight</div>
+        <div class="day-one-label">Starting with</div>
         <div class="day-one-title" id="d1title"></div>
         <div class="day-one-duration" id="d1duration"></div>
       </div>
       <div class="day-one-body">
         <div class="day-one-intro" id="d1intro"></div>
         <div class="instruct-img-wrap">
-          <img class="instruct-img" id="instructImg" src="" alt="Scruffy session" loading="lazy">
-        </div>
-        <div>
-          <div class="steps-label">What to do</div>
-          <div class="steps" id="d1steps"></div>
-        </div>
-        <div class="insight">
-          <div class="insight-label">What to watch for</div>
-          <div class="insight-text" id="d1watch"></div>
-        </div>
-        <div class="why-box">
-          <div class="why-label">Why this works</div>
-          <div class="why-text" id="d1why"></div>
-        </div>
-        <div class="tomorrow-box">
-          <div class="tomorrow-label">Tomorrow</div>
-          <div class="tomorrow-text" id="d1tomorrow"></div>
+          <img class="instruct-img" id="instructImg" src="" alt="Sarah and Scruffy getting ready to start a session" loading="lazy">
         </div>
       </div>
     </div>
@@ -514,11 +497,15 @@ function handleCta() {
 
 function updateCta(screenId) {
   const btn = document.getElementById('mainCta');
+  const ctaWrap = document.querySelector('.cta-wrap');
+  // Auto-advance screens: hide CTA entirely — selection itself advances
+  if (screenId === 'step2' || screenId === 'step2b' || screenId === 'step3') {
+    ctaWrap.style.display = 'none';
+    return;
+  }
+  ctaWrap.style.display = '';
   if (screenId === 'step1') { btn.textContent = 'Continue'; btn.disabled = S.name.length < 2; }
-  else if (screenId === 'step2') { btn.textContent = 'Continue'; btn.disabled = !S.problem; }
-  else if (screenId === 'step2b') { btn.textContent = 'Continue'; btn.disabled = !S.primaryProblem; }
-  else if (screenId === 'step3') { btn.textContent = 'Continue'; btn.disabled = !S.threshold; }
-  else if (screenId === 'step4') { btn.textContent = "Build " + n() + "'s plan"; btn.disabled = true; }
+  else if (screenId === 'step4') { btn.textContent = "Send " + n() + "'s plan"; btn.disabled = !S.email; }
   else { btn.textContent = 'Check your email to start Day 1'; btn.disabled = false; }
 }
 
