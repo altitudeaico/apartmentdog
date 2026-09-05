@@ -2925,6 +2925,14 @@ async function resolvePosition(dogId) {
 }
 
 async function loadDogFromAuth(userId, isAnonymous) {
+  // Guard: if a session was just completed, the celebration screen is showing.
+  // onAuthStateChange can fire again (e.g. token refresh) after submitCheckin runs.
+  // Without this guard, loadDogFromAuth would call buildIntro() for the next due day
+  // and overwrite the celebration CTA with "Start today's session".
+  if (S.sessionJustCompleted) {
+    console.log('loadDogFromAuth: session just completed, skipping re-init');
+    return;
+  }
   // If the user is confirmed (not anonymous) and has a dog_id in the URL,
   // check if ownership needs to be claimed from an anonymous account.
   const urlDogId = new URLSearchParams(location.search).get('dog_id');
